@@ -21,6 +21,7 @@ export async function updateDatabase() {
         } catch (err) {
             console.error(err);
         }
+        console.log(`updated/added ${steamId}`)
         await new Promise(resolve => setTimeout(resolve, 1200));
     }
 }

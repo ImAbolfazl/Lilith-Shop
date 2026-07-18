@@ -49,7 +49,7 @@ router.post("/",authMiddleware, roleMiddleware, async (req, res) => {
     if(req.role != "admin"){return res.status(401).json({status: "access denied"})}
 
     try{
-        const {title, category, image, banner, price, info, steamId}
+        const {title, category, image, banner, price, info, steamId} = req.body
 
         if(steamId){
             addSteamGameToDB(steamId)

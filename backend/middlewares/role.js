@@ -1,4 +1,4 @@
-import { getUserById } from "../src/db";
+import { getUserById } from "../src/db.js";
 
 export function roleMiddleware(req, res, next) {
     const id = req.userId
