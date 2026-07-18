@@ -8,10 +8,10 @@ const pool = mysql.createPool({
     database: process.env.MYSQL_DATABASE,
 }).promise()
 
-export async function createUser(firstname, lastname, gmail, phone, password){
+export async function createUser(firstname, lastname, phone, password){
     const [result] = await pool.query(
-        "INSERT INTO users (firstname, lastname, gmail, phone, password) VALUES (?, ?, ?, ?, ?)",
-        [firstname, lastname, gmail, phone, password]
+        "INSERT INTO users (firstname, lastname, phone, password) VALUES (?, ?, ?, ?)",
+        [firstname, lastname, phone, password]
     )
     return result;
 }
@@ -54,4 +54,18 @@ export async function getProductBySteamId(steamId){
 export async function getProductById(id) {
     const [result] = await pool.query("SELECT * FROM products WHERE id = ?", [id])
     return result
+}
+
+export async function updateProductById(id, title, category, image, banner, price, discountedPrice, discount, info){
+    const [result] = await pool.query(
+        "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discountedPrice = ?, discount = ?, info = ? WHERE id = ?",
+        [title, category, image, banner, price, discountedPrice, discount, info, id]
+    )
+}
+
+export async function getAllCategories() {
+    const [result] = await pool.query(
+        "SELECT DISTINCT category FROM products"
+    );
+    return result.map(row => row.category);
 }

@@ -8,7 +8,7 @@ export async function addSteamGameToDB(steamId){
     if(gameData){
         await createProduct(
             gameData.name,
-            'استیم',
+            'steam',
             gameData.header_image,
             gameData.background,
             gameData.price_overview.initial ?? 0,
