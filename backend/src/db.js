@@ -8,10 +8,10 @@ const pool = mysql.createPool({
     database: process.env.MYSQL_DATABASE,
 }).promise()
 
-export async function createUser(firstname, lastname, gmail, password){
+export async function createUser(firstname, lastname, gmail, phone, password){
     const [result] = await pool.query(
-        "INSERT INTO users (firstname, lastname, gmail, password) VALUES (?, ?, ?, ?)",
-        [firstname, lastname, gmail, password]
+        "INSERT INTO users (firstname, lastname, gmail, phone, password) VALUES (?, ?, ?, ?, ?)",
+        [firstname, lastname, gmail, phone, password]
     )
     return result;
 }
@@ -46,7 +46,12 @@ export async function updateGamePrice(price, discount, steamId) {
     )
 }
 
-export async function getProductBySteamId(id){
-    const [result] = await pool.query("SELECT * FROM products WHERE steamId = ?", [id])
+export async function getProductBySteamId(steamId){
+    const [result] = await pool.query("SELECT * FROM products WHERE steamId = ?", [steamId])
+    return result
+}
+
+export async function getProductById(id) {
+    const [result] = await pool.query("SELECT * FROM products WHERE id = ?", [id])
     return result
 }
