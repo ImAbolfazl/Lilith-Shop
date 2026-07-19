@@ -28,6 +28,7 @@ export async function addSteamGameToDB(steamId){
             gameData.header_image,
             gameData.background,
             initialPrice,
+            "USA",
             finalPrice,
             discountPrice,
             gameDesc,

@@ -52,8 +52,8 @@ const Header = ({theme, setTheme}) => {
       </div>
       <Link to="/Dashboard" className='max-lg:hidden text-3xl'>داشبورد</Link>
       {theme == "light" ?
-      <MdSunny className='size-10' onClick={toggleTheme}/> :
-      <FaMoon className='size-10' onClick={toggleTheme}/>}
+      <MdSunny className='size-10 cursor-pointer' onClick={toggleTheme}/> :
+      <FaMoon className='size-10 cursor-pointer' onClick={toggleTheme}/>}
       <GiHamburgerMenu className='lg:hidden size-10 cursor-pointer' onClick={() => {setSideMenu(true)}}/>
       <div className={`lg:hidden flex flex-col absolute text-left bg-bg-secondary p-10 left-0 top-0 h-screen gap-2 items-center overflow-hidden transition-all duration-300 w-70 z-111 ${sideMenu ? "translate-x-0" : "-translate-x-full"}`}>
         <IoMdClose className='size-10 mb-8 cursor-pointer' onClick={() => {setSideMenu(false)}}/>

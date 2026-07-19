@@ -6,9 +6,9 @@ import axios from "axios"
 import Card from '../components/Card'
 
 const Products = () => {
-    document.title = "Lilith | Products"
-    const [searchParams] = useSearchParams()
-    const category = searchParams.get("c")
+  const [searchParams] = useSearchParams()
+  const category = searchParams.get("c")
+  document.title = `Lilith | ${category}`
     const [data, setData] = useState([])
     useEffect(() => {
       const fetchData = async () => {
@@ -26,10 +26,12 @@ const Products = () => {
     },[category])
   return (
     <div className='flex justify-center flex-col items-center gap-20 mt-30'>
-      <h1 className='text-4xl font-bold'>محصولات  {category}</h1>
+      {category.toLocaleLowerCase() == "all" ?
+      <h1 className='text-4xl font-bold'>تمام محصولات</h1> :
+      <h1 className='text-4xl font-bold'>محصولات  {category}</h1>}
       <div className='grid gap-8 grid-cols-1 xl:grid-cols-4 md:grid-cols-2'>
         {data.map((product) => (
-          <Card key={product.id} banner={product.banner} category={product.category} discount={product.discount} discountPrice={product.discountPrice} id={product.id} image={product.image} info={product.info} price={product.price} steamId={product.steamId} title={product.title}/>
+          <Card key={product.id} currency={product.currency} banner={product.banner} category={product.category} discount={product.discount} discountPrice={product.discountPrice} id={product.id} image={product.image} info={product.info} price={product.price} steamId={product.steamId} title={product.title}/>
         ))}
       </div>
     </div>

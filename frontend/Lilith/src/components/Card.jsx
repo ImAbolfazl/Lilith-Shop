@@ -1,17 +1,23 @@
 import React from 'react'
 import { Link } from 'react-router'
+import { getImageUrl } from '../utils/imageUrl'
 
-const Card = ({banner, category, discount, discountPrice, id, image, info, price, steamId, title}) => {
+const Card = ({banner, category, discount, discountPrice, id, image, info, price, currency, steamId, title}) => {
     const dollarPrice = Number(import.meta.env.VITE_DOLLAR_RIAL_PRICE)
     let formatedPrice
     let formatedDiscountPrice
-    if(!steamId){
-        let formatedPrice = price.toLocaleString("fa-IR")
-        let formatedDiscountPrice = discountPrice.toLocaleString("fa-IR")
-    }else{
+    if(currency == "IRAN"){
+        formatedPrice = price.toLocaleString("fa-IR")
+        if(discount > 0){
+            formatedDiscountPrice = discountPrice.toLocaleString("fa-IR")
+        }
+    }else if(currency == "USA"){
         formatedPrice = Math.round((price / 100) * dollarPrice).toLocaleString("fa-IR")
-        formatedDiscountPrice = Math.round((discountPrice / 100) * dollarPrice).toLocaleString("fa-IR")
+        if(discount > 0){
+            formatedDiscountPrice = Math.round((discountPrice / 100) * dollarPrice).toLocaleString("fa-IR")
+        }
     }
+    
 
     const PriceSvg = () => {
         return(
@@ -21,8 +27,8 @@ const Card = ({banner, category, discount, discountPrice, id, image, info, price
     
   return (
     <Link to={`/product/${id}`} className='relative flex flex-col gap-3 w-70 bg-card-primary rounded-3xl p-3 h-auto group shadow-[0_8px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_2px_30px_rgba(168,85,247,0.35)] transition-all shrink-0'>
-        {discount != 0 && <p className='absolute bg-accent-primary/90 rounded-full p-2 z-10 rotate-27 -top-2 -right-2 font-bold'>{discount}%</p>}
-        <img src={image} alt={title} className='rounded-t-3xl group-hover:scale-102 duration-300'/>
+        {discount > 0 && <p className='absolute bg-accent-primary/90 rounded-full p-2 z-10 rotate-27 -top-2 -right-2 font-bold'>{discount}%</p>}
+        <img src={getImageUrl(image)} alt={title} className='rounded-t-3xl group-hover:scale-102 duration-300'/>
         <div>
             <p>{title}</p>
             <div className='flex items-center gap-2'>{discount > 0 ? (

@@ -8,6 +8,23 @@ const pool = mysql.createPool({
     database: process.env.MYSQL_DATABASE,
 }).promise()
 
+export async function connectDatabase() {
+    try {
+        const connection = await pool.getConnection();
+        console.log("connected to database");
+        connection.release();
+        await pool.query(
+            `UPDATE products
+             SET image = REPLACE(image, '../../../../backend/public/uploads/', '/uploads/'),
+                 banner = REPLACE(banner, '../../../../backend/public/uploads/', '/uploads/')
+             WHERE image LIKE '../../../../backend/public/uploads/%'
+                OR banner LIKE '../../../../backend/public/uploads/%'`
+        );
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 export async function createUser(firstname, lastname, phone, password){
     const [result] = await pool.query(
         "INSERT INTO users (firstname, lastname, phone, password) VALUES (?, ?, ?, ?)",
@@ -31,10 +48,10 @@ export async function getAllProducts() {
     return result
 }
 
-export async function createProduct(title, category, image, banner, price, discountPrice, discount, info, steamId) {
+export async function createProduct(title, category, image, banner, price, currency, discountPrice, discount, info, steamId) {
     const [result] = await pool.query(
-        "INSERT INTO products (title, category, image, banner, price, discountPrice, discount, info, steamId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [title, category, image, banner, price, discountPrice, discount, info, steamId]
+        "INSERT INTO products (title, category, image, banner, price, currency, discountPrice, discount, info, steamId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [title, category, image, banner, price, currency, discountPrice, discount, info, steamId]
     )
     return result
 }
