@@ -1,11 +1,12 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import Main from './pages/Main'
-import Product from './pages/Product'
-import Cart from './pages/Cart'
+import Products from './pages/Products'
+import Dashboard from './pages/Dashboard'
 import Header from './components/Header'
 import { useEffect } from 'react'
 import axios from "axios"
+import Product from './pages/Product'
 
 const App = () => {
   return (
@@ -13,8 +14,9 @@ const App = () => {
       <Header/>
       <Routes>
         <Route path='/' element={<Main/>}/>
-        <Route path='/product' element={<Product/>}/>
-        <Route path='/cart' element={<Cart/>}/>
+        <Route path='/Products' element={<Products/>}/>
+        <Route path='Product' element={<Product/>}/>
+        <Route path='/Dashboard' element={<Dashboard/>}/>
       </Routes>
     </BrowserRouter>
   )

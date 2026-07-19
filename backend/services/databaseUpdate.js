@@ -9,7 +9,7 @@ export async function updateDatabase() {
         try {
             const game = await getProductBySteamId(steamId)
             if(game.length > 0){
-                const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=usd`);
+                const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=us`);
                 const gameData = response.data[steamId];
                 if (gameData?.success && gameData.data?.price_overview) {
                     const priceInfo = gameData.data.price_overview;

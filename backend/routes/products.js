@@ -7,10 +7,9 @@ import { roleMiddleware } from "../middlewares/role.js"
 
 export const router = express.Router()
 
-router.get("/:category", async (req, res) => {
+router.get("/category/:category", async (req, res) => {
     try{
         const {category} = req.params
-
         const result = await getProductsByCategory(category)
 
         if(result.length == 0){return res.status(400).json({status: "fail"})}
@@ -26,7 +25,7 @@ router.get("/:category", async (req, res) => {
     }
 })
 
-router.get("/:id", async (req, res) => {
+router.get("/product/:id", async (req, res) => {
     try{
         const {id} = req.params
 
@@ -71,11 +70,11 @@ router.put("/", authMiddleware, roleMiddleware, async (req, res) => {
     if(req.role != "admin"){return res.status(401).json({status: "access denied"})}
 
     try{
-        const {id, title, category, image, banner, price, discountedPrice, discount, info} = req.body
+        const {id, title, category, image, banner, price, discountPrice, discount, info} = req.body
 
-        if(!title || !category || !image || !banner || !price || !discountedPrice || !discount || !info){}
+        if(!title || !category || !image || !banner || !price || !discountPrice || !discount || !info){}
 
-        updateProductById(id, title, category, image, banner, price, discountedPrice, discount, info)
+        updateProductById(id, title, category, image, banner, price, discountPrice, discount, info)
 
         res.status(200).json({status: "success"})
     }catch(err){
@@ -100,4 +99,4 @@ router.get("/categories", async (req, res) => {
     }
 })
 
-export {router as gamesRouter}
+export {router as productRouter}

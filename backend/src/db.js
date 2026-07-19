@@ -56,10 +56,10 @@ export async function getProductById(id) {
     return result
 }
 
-export async function updateProductById(id, title, category, image, banner, price, discountedPrice, discount, info){
+export async function updateProductById(id, title, category, image, banner, price, discountPrice, discount, info){
     const [result] = await pool.query(
-        "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discountedPrice = ?, discount = ?, info = ? WHERE id = ?",
-        [title, category, image, banner, price, discountedPrice, discount, info, id]
+        "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discountPrice = ?, discount = ?, info = ? WHERE id = ?",
+        [title, category, image, banner, price, discountPrice, discount, info, id]
     )
 }
 

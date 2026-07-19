@@ -4,8 +4,13 @@
   src: url("./assets/Vazir.ttf");
 }
 
+@theme{
+  --color-bg-primary: #2D0029;
+  --color-bg-secondary: #18181D;
+}
+
 body {
-  background-color: #2D0029;
+  background-color: #0B0B0F;
   font-family: "Vazir";
   font-weight: medium;
   color: white;
