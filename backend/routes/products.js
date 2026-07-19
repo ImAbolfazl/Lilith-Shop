@@ -85,18 +85,23 @@ router.put("/", authMiddleware, roleMiddleware, async (req, res) => {
 })
 
 router.get("/categories", async (req, res) => {
-    try{
-        const result = await getAllCategories()
+    try {
+        const categories = await getAllCategories() || [];
+        const result = await Promise.all(categories.map(async (category) => {
+            const categoryData = await getProductsByCategory(category);
+            return {
+                name: category,
+                data: categoryData
+        }}))
 
         res.status(200).json({
             status: "success",
             data: result
-        })
-    }catch(err){
+        });
+    } catch (err) {
         console.log(err);
-        
-        return res.status(500).json({status: "error"})
+        res.status(500).json({ status: "error" });
     }
-})
+});
 
 export {router as productRouter}

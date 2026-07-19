@@ -11,7 +11,7 @@ const Products = () => {
     const category = searchParams.get("c")
     const [data, setData] = useState([])
     useEffect(() => {
-      const getCategoryData = async () => {
+      const fetchData = async () => {
         try{
           const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/category/${category}`)
           if(response.data){
@@ -22,7 +22,7 @@ const Products = () => {
           console.log(err)
         }
       }
-      getCategoryData()
+      fetchData()
     },[category])
   return (
     <div className='flex justify-center flex-col items-center gap-20 mt-30'>
