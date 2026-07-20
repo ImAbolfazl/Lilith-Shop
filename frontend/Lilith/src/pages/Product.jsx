@@ -8,8 +8,7 @@ const Product = () => {
   const id = useParams().id
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
-  document.title = `Lilith | ${data.title}`
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try{
@@ -22,14 +21,14 @@ const Product = () => {
         console.log(err);
       }
     }
-
+    
     fetchData()
   }, [])
-
+  
   useEffect(() => {
     console.log(data);
-    
-  })
+    document.title = `Lilith | ${data && data.title}` 
+  }, [data])
 
   if(loading){
     return <div className='flex items-center justify-center text-3xl h-screen'>

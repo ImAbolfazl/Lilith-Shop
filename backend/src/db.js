@@ -13,13 +13,6 @@ export async function connectDatabase() {
         const connection = await pool.getConnection();
         console.log("connected to database");
         connection.release();
-        await pool.query(
-            `UPDATE products
-             SET image = REPLACE(image, '../../../../backend/public/uploads/', '/uploads/'),
-                 banner = REPLACE(banner, '../../../../backend/public/uploads/', '/uploads/')
-             WHERE image LIKE '../../../../backend/public/uploads/%'
-                OR banner LIKE '../../../../backend/public/uploads/%'`
-        );
     } catch (err) {
         console.error(err);
     }
@@ -44,14 +37,20 @@ export async function getProductsByCategory(category) {
 }
 
 export async function getAllProducts() {
-    const [result] = await pool.query("SELECT * FROM products")
+    const [result] = await pool.query("SELECT * FROM products ORDER BY id DESC")
     return result
 }
 
-export async function createProduct(title, category, image, banner, price, currency, discountPrice, discount, info, steamId) {
+export async function createProduct(title, category, image, banner, price, discount, info, steamId) {
+    const finalPrice = price
+    if(!steamId){
+        finalPrice = {
+            currency: price
+        }
+    }
     const [result] = await pool.query(
-        "INSERT INTO products (title, category, image, banner, price, currency, discountPrice, discount, info, steamId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [title, category, image, banner, price, currency, discountPrice, discount, info, steamId]
+        "INSERT INTO products (title, category, image, banner, price, discount, info, steamId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [title, category, image, banner, finalPrice, discount, info, steamId]
     )
     return result
 }
@@ -73,10 +72,10 @@ export async function getProductById(id) {
     return result
 }
 
-export async function updateProductById(id, title, category, image, banner, price, discountPrice, discount, info){
+export async function updateProductById(id, title, category, image, banner, price, discount, info){
     const [result] = await pool.query(
-        "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discountPrice = ?, discount = ?, info = ? WHERE id = ?",
-        [title, category, image, banner, price, discountPrice, discount, info, id]
+        "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discount = ?, info = ? WHERE id = ?",
+        [title, category, image, banner, price, discount, info, id]
     )
 }
 
