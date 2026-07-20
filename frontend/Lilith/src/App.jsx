@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 import axios from "axios"
 import Product from './pages/Product'
 import { useState } from 'react'
+import Footer from './components/Footer'
 
 const App = () => {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark")
@@ -33,6 +34,7 @@ const App = () => {
         <Route path='Product/:id' element={<Product/>}/>
         <Route path='/Dashboard' element={<Dashboard/>}/>
       </Routes>
+      <Footer/>
     </BrowserRouter>
   )
 }

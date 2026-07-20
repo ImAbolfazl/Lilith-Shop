@@ -29,3 +29,8 @@ body {
   font-weight: medium;
   color: var(--color-text-primary);
 }
+
+html,
+body {
+  overflow-x: hidden;
+}

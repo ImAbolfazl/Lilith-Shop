@@ -53,13 +53,13 @@ const Product = () => {
   }
   
   if(!loading && data){
-    return<><div className="h-[80vh] w-screen rounded-3xl overflow-hidden relative" style={{backgroundImage: `linear-gradient(to top, var(--color-bg-primary) 0%, transparent 50%), ${data.steamId ? `url(${data.banner})` : `url(${import.meta.env.VITE_BACKEND_URL}${data.banner}`}`, backgroundSize: "cover", backgroundPosition: "center"}}></div>
-    <div className='relative z-20 -mt-100 px-6 md:px-12 pb-10 flex flex-col gap-20'>
-      <h1 className='md:text-5xl text-3xl font-bold'>{data.title}</h1>
+    return<><div className="h-[80vh] overflow-hidden relative opacity-60" style={{backgroundImage: `linear-gradient(to top, var(--color-bg-primary) 0%, transparent 70%), ${data.steamId ? `url(${data.banner})` : `url(${import.meta.env.VITE_BACKEND_URL}${data.banner}`}`, backgroundSize: "cover", backgroundPosition: "center"}}></div>
+    <div className='relative z-20 -mt-100 m-6 flex flex-col gap-20'>
+      <h1 className='md:text-5xl text-3xl font-bold text-text-primary'>{data.title}</h1>
       <div className='flex items-center gap-10 flex-col'>
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-4'>
           ریجن اکانت خودتون رو انتخاب کنید:
-          <div className='flex gap-3'>
+          <div className='max-md:grid gap-3 max-md:grid-cols-2 flex text-center'>
             {data.price.map((price) => (
               <p className={`bg-bg-secondary py-3 px-4 rounded-2xl cursor-pointer ${price.country == region && "border-2 border-text-primary"}`} key={price.country[0]} onClick={() => setRegion(price.country)}>{price.persian}</p>
             ))}
@@ -72,7 +72,7 @@ const Product = () => {
           <PriceSVG/>
         </div>
       </div>
-      <div className='flex gap-10'>
+      <div className='max-md:grid flex gap-10 max-md:grid-cols-2'>
         <div>
           <p className='text-text-secondary text-[12px]'>دسته بندی:</p>
           <p className='text-[18px]'>{data.category}</p>
@@ -89,13 +89,13 @@ const Product = () => {
           <a href='#requiredSys' className='text-[18px] text-text-secondary'>سیستم مورد نیاز</a>
         </div>}
       </div>
-      <div>
-        <p className='text-2xl font-bold text-red-600'>اگر DLC بازی رو میخواید لطفا به پشتیبانی پیام بدید.</p>
+      <div className='flex flex-col gap-3'>
+        <p className='md:text-2xl font-bold text-red-600'>اگر DLC بازی رو میخواید لطفا به پشتیبانی پیام بدید.</p>
         {data.category == "Steam" && (<>
-          <p className='flex items-center gap-1'><span className='text-red-600 text-xl'>توجه!</span> اگر ریجن اکانتتون ایران باشه میتونید هر ریجنی خواستید انتخاب کنید.</p>
+          <p><span className='text-red-600 text-xl'>توجه!</span> اگر ریجن اکانتتون ایران باشه میتونید هر ریجنی خواستید انتخاب کنید.</p>
           <p>قبل از سفارش استیم گارد خودتون رو خاموش کنید</p>
         </>)}
-      <div className='md:flex gap-5 text-center #requiredSys'>
+      <div className='md:flex md:flex-row flex flex-col gap-10 text-center mt-30 w-screen justify-center scroll-mt-[35vh] text-sm pl-13 md:px-20' id='requiredSys'>
         <div className="prose prose-invert max-w-none flex flex-col items-center dir-ltr" dangerouslySetInnerHTML={{__html: data.recommended}}/>
         <div className="prose prose-invert max-w-none flex flex-col items-center dir-ltr" dangerouslySetInnerHTML={{__html: data.minimum}}/>
       </div>

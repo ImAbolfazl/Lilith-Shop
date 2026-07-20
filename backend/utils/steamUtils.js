@@ -40,7 +40,7 @@ export async function addSteamGameToDB(steamId){
             gameData.name,
             'Steam',
             gameData.header_image,
-            gameData.background,
+            gameData.background_raw,
             JSON.stringify(price),
             discount,
             gameDesc,
