@@ -5,15 +5,12 @@ export function HTMLTranslator(html, type = "description") {
         .replace(/\\u003C/g, "<")
         .replace(/\\u003E/g, ">")
         .replace(/\\u0026/g, "&")
-
         .replace(/\sclass="[^"]*"/gi, "")
         .replace(/\sstyle="[^"]*"/gi, "")
         .replace(/\sid="[^"]*"/gi, "")
-
         .replace(/<p>\s*<\/p>/gi, "")
-
-        .replace(/(<br\s*\/?>\s*){2,}/gi, "<br><br>")
-
+        .replace(/(<br\s*\/?>\s*){2,}/gi, " | ")
+        .replace("<br>", "")
         .trim();
 
     if (type === "description") {
@@ -26,7 +23,9 @@ export function HTMLTranslator(html, type = "description") {
         cleaned = cleaned
             .replace(/<br\s*\/?>/gi, "")
             .replace(/<ul[^>]*>/gi, "<ul>")
-            .replace(/<li[^>]*>/gi, "<li>");
+            .replace(/<li[^>]*>/gi, "<li>")
+            .replace("Minimum", "مورد نیاز")
+            .replace("Recommended", "پیشنهادی")
     }
 
     return cleaned;

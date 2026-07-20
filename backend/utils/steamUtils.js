@@ -8,6 +8,7 @@ export async function addSteamGameToDB(steamId){
     const gameData = response.data[steamId].data
     let price = []
     let discount = 0
+    let hasDLC = "ندارد"
     if(gameData.is_free){
         if(gameData.dlc){
             for (const country in countryCodes) {
@@ -29,9 +30,10 @@ export async function addSteamGameToDB(steamId){
             }
         }
     }
+    if(gameData.packages){hasDLC = "دارد"}
     const gameDesc = HTMLTranslator(gameData.detailed_description, "description")
-    const minimumSys = HTMLTranslator(gameData.pc_requirements.minimum)
-    const recommendedSys = HTMLTranslator(gameData.pc_requirements.recommended)
+    const minimumSys = HTMLTranslator(gameData.pc_requirements.minimum, "requirements")
+    const recommendedSys = HTMLTranslator(gameData.pc_requirements.recommended, "requirements")
     price.sort((a, b) => a.price - b.price);
     if(gameData){
         await createProduct(
@@ -44,7 +46,9 @@ export async function addSteamGameToDB(steamId){
             gameDesc,
             steamId,
             recommendedSys,
-            minimumSys
+            minimumSys,
+            gameData.publishers[0],
+            hasDLC
         )
     }
 }

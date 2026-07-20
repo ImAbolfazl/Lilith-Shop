@@ -41,16 +41,16 @@ export async function getAllProducts() {
     return result
 }
 
-export async function createProduct(title, category, image, banner, price, discount, info, steamId, recommended, minimum) {
+export async function createProduct(title, category, image, banner, price, discount, info, steamId, recommended, minimum, publisher, dlc) {
     let finalPrice = price
     if(!steamId){
-        finalPrice = {
-            "Iran": price
-        }
+        finalPrice = [
+            {country: "Iran", persian: "ایران", price: price}
+        ]
     }
     const [result] = await pool.query(
-        "INSERT INTO products (title, category, image, banner, price, discount, info, steamId, recommended, minimum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [title, category, image, banner, finalPrice, discount, info, steamId, recommended, minimum]
+        "INSERT INTO products (title, category, image, banner, price, discount, info, steamId, recommended, minimum, publisher, dlc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [title, category, image, banner, JSON.stringify(finalPrice), discount, info, steamId, recommended, minimum, publisher, dlc]
     )
     return result
 }
@@ -59,6 +59,12 @@ export async function updateGamePrice(price, discount, steamId) {
     const [result] = await pool.query(
         "UPDATE products SET price = ?, discount = ? WHERE steamId = ?",
         [price, discount, steamId]
+    )
+}
+
+export async function updatePriceById(price, discount, id) {
+    const [result] = await pool.query(
+        "UPDATE products SET price = ?, discount = ? WHERE steamId = ?"
     )
 }
 
@@ -72,10 +78,10 @@ export async function getProductById(id) {
     return result
 }
 
-export async function updateProductById(id, title, category, image, banner, price, discount, info, recommended, minimum){
+export async function updateProductById(id, title, category, image, banner, price, discount, info, recommended, minimum, publisher, dlc){
     const [result] = await pool.query(
-        "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discount = ?, info = ?, recommended = ?, minimum = ? WHERE id = ?",
-        [title, category, image, banner, price, discount, info, id, recommended, minimum]
+        "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discount = ?, info = ?, recommended = ?, minimum = ?, publisher = ?, dlc = ? WHERE id = ?",
+        [title, category, image, banner, price, discount, info, id, recommended, minimum, publisher, dlc]
     )
 }
 
