@@ -31,7 +31,7 @@ const Products = () => {
       <h1 className='text-4xl font-bold'>محصولات  {category}</h1>}
       <div className='grid gap-8 grid-cols-1 xl:grid-cols-4 md:grid-cols-2'>
         {data.map((product) => (
-          <Card key={product.id} currency={product.currency} banner={product.banner} category={product.category} discount={product.discount} discountPrice={product.discountPrice} id={product.id} image={product.image} info={product.info} price={product.price} steamId={product.steamId} title={product.title}/>
+          <Card key={product.id} banner={product.banner} category={product.category} discount={product.discount} id={product.id} image={product.image} info={product.info} price={product.price} steamId={product.steamId} title={product.title}/>
         ))}
       </div>
     </div>

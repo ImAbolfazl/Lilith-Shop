@@ -5,7 +5,7 @@ import { productRouter } from "../routes/products.js"
 import { updateDatabase } from "../services/databaseUpdate.js"
 import cors from "cors"
 import { connectDatabase } from "./db.js"
-import { updateExchangeRates } from "../services/exchangePrice.js"
+import { countryCodes, loadPrices, updateExchangeRates } from "../services/exchangePrice.js"
 const app = express()
 const PORT = process.env.PORT
 
@@ -19,13 +19,12 @@ app.listen(PORT, async () => {
 
     console.log(`server running on port ${PORT}`);
 
-    
-    updateExchangeRates();
+    await updateExchangeRates();
     setInterval(updateExchangeRates, 60 * 1000);
 
-    updateDatabase().catch(err => console.error("Initial database update failed:", err));
+    await loadPrices();
+    setInterval(await loadPrices, 5000);
 
-    setInterval(() => {
-        updateDatabase().catch(err => console.error("Scheduled database update failed:", err));
-    }, 10 * 60 * 60 * 1000);
+    await updateDatabase()
+    setInterval(await updateDatabase, 10 * 60 * 60 * 1000);
 });

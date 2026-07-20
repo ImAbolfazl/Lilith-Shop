@@ -1,0 +1,37 @@
+{
+  "China": {
+    "tag": "cn",
+    "price": 2,
+    "persian": "چین"
+  },
+  "India": {
+    "tag": "in",
+    "price": 2,
+    "persian": "هند"
+  },
+  "Brazil": {
+    "tag": "br",
+    "price": 2,
+    "persian": "برزیل"
+  },
+  "Argentina": {
+    "tag": "ar",
+    "price": 2,
+    "persian": "ارژانتین"
+  },
+  "USA": {
+    "tag": "us",
+    "price": 1,
+    "persian": "امریکا"
+  },
+  "Ukraine": {
+    "tag": "ua",
+    "price": 2,
+    "persian": "اوکراین"
+  },
+  "Turkey": {
+    "tag": "tr",
+    "price": 2,
+    "persian": "ترکیه"
+  }
+}

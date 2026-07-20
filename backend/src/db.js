@@ -41,16 +41,16 @@ export async function getAllProducts() {
     return result
 }
 
-export async function createProduct(title, category, image, banner, price, discount, info, steamId) {
-    const finalPrice = price
+export async function createProduct(title, category, image, banner, price, discount, info, steamId, recommended, minimum) {
+    let finalPrice = price
     if(!steamId){
         finalPrice = {
-            currency: price
+            "Iran": price
         }
     }
     const [result] = await pool.query(
-        "INSERT INTO products (title, category, image, banner, price, discount, info, steamId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-        [title, category, image, banner, finalPrice, discount, info, steamId]
+        "INSERT INTO products (title, category, image, banner, price, discount, info, steamId, recommended, minimum) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [title, category, image, banner, finalPrice, discount, info, steamId, recommended, minimum]
     )
     return result
 }
@@ -72,10 +72,10 @@ export async function getProductById(id) {
     return result
 }
 
-export async function updateProductById(id, title, category, image, banner, price, discount, info){
+export async function updateProductById(id, title, category, image, banner, price, discount, info, recommended, minimum){
     const [result] = await pool.query(
-        "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discount = ?, info = ? WHERE id = ?",
-        [title, category, image, banner, price, discount, info, id]
+        "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discount = ?, info = ?, recommended = ?, minimum = ? WHERE id = ?",
+        [title, category, image, banner, price, discount, info, id, recommended, minimum]
     )
 }
 

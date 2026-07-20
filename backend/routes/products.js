@@ -70,7 +70,7 @@ router.post(
             const image = req.files.image ? `/uploads/${req.files.image[0].filename}` : null;
             const banner = req.files.banner ? `/uploads/${req.files.banner[0].filename}` : null;
 
-            await createProduct(title, category, image, banner, price, currency, null, null, info, null);
+            await createProduct(title, category, image, banner, price, null, info, null, null, null);
 
             res.json({ status: "success" });
         } catch (err) {

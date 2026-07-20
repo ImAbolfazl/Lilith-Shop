@@ -30,7 +30,7 @@ const Main = () => {
         </div>
         <ScrollContainer className='flex gap-5 no-scrollbar active:cursor-grabbing py-7 px-4'>
             {category.data.map((product) => (
-              <Card key={product.id} currency={product.currency} banner={product.banner} category={product.category} discount={product.discount} discountPrice={product.discountPrice} id={product.id} image={product.image} info={product.info} price={product.price} steamId={product.steamId} title={product.title}/>
+              <Card key={product.id} banner={product.banner} category={product.category} discount={product.discount} id={product.id} image={product.image} info={product.info} price={product.price} steamId={product.steamId} title={product.title}/>
           ))}
         </ScrollContainer>
       </div>))}
