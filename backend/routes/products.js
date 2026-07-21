@@ -10,7 +10,7 @@ import {
 } from "../src/db.js";
 import { addSteamGameToDB } from "../utils/steamUtils.js";
 import { authMiddleware } from "../middlewares/auth.js";
-import { roleMiddleware } from "../middlewares/role.js";
+import { roleMiddleware } from "../middlewares/adminMiddleware.js";
 import { upload } from "../middlewares/upload.js";
 import { config } from "../utils/fetchSettingsJSON.js";
 
@@ -101,7 +101,7 @@ router.post(
     ]),
     async (req, res) => {
         try {
-            const { title, category, price, info, steamId } = req.body;
+            const { title, category, price, info, steamId, publisher, dlc } = req.body;
 
             if (steamId) {
                 await addSteamGameToDB(steamId);
@@ -126,7 +126,10 @@ router.post(
                 info,
                 null,
                 null,
-                null
+                null,
+                publisher,
+                null,
+                dlc
             );
 
             res.json({ status: "success" });

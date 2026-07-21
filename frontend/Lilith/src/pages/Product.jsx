@@ -12,6 +12,7 @@ const Product = () => {
   const [region, setRegion] = useState()
   
   useEffect(() => {
+    window.scrollTo(0,0)
     const fetchData = async () => {
       try{
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/product/${id}`)

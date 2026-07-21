@@ -14,7 +14,8 @@ const PORT = process.env.PORT
 app.use(cors({origin: "*", credentials: true}))
 app.use("/uploads", express.static("public/uploads"))
 app.use(express.json())
-app.use("/api/auth", authLimitMiddleware, authRouter)
+// authLimitMiddleware
+app.use("/api/auth", authRouter)
 app.use("/api/products", productRouter)
 
 

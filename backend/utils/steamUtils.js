@@ -73,7 +73,7 @@ export async function addSteamGameToDB(steamId) {
     }
 
     const gameDesc = HTMLTranslator(
-        gameData.detailed_description,
+        gameData.about_the_game,
         "description"
     );
 
@@ -96,7 +96,7 @@ export async function addSteamGameToDB(steamId) {
     const backgroundPath = `/uploads/backgrounds/${steamId}.jpg`;
 
     await createProduct(
-        gameData.name,
+        `خرید بازی ${gameData.name} استیم`,
         "Steam",
         headerPath,
         backgroundPath,

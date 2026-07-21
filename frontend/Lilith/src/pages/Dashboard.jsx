@@ -10,6 +10,8 @@ const Dashboard = () => {
         const formData = new FormData();
         formData.append('title', form.title.value);
         formData.append('category', form.category.value);
+        formData.append('publisher', form.publisher.value);
+        formData.append('dlc', form.dlc.value);
         formData.append('price', form.price.value);
         formData.append('currency', form.currency.value);
         formData.append('info', form.info.value);
@@ -31,11 +33,6 @@ const Dashboard = () => {
                 },
             });
             
-            form.title.value = ""
-            form.category.value = ""
-            form.price.value = ""
-            form.currency.value = ""
-            form.info.value = ""
             alert("Product uploaded successfully!");
             form.reset()
         } catch (err) {
@@ -49,6 +46,12 @@ const Dashboard = () => {
             <form className='flex flex-col gap-5' onSubmit={handleSubmit}>
                 <input name="title" type="text" placeholder='title' required />
                 <input name="category" type="text" placeholder='category' required />
+                <input name="publisher" type="text" placeholder='publisher' required />
+                <label for="dlc">dlc</label>
+                <select className='[&_option]:bg-bg-primary' id='dlc' name="dlc">
+                    <option value="دارد">دارد</option>
+                    <option value="ندارد">ندارد</option>
+                </select>
                 <input name="image" type="file" accept='image/*' required />
                 <input name="banner" type="file" accept='image/*' />
                 <input name="price" type="number" placeholder='price' required />

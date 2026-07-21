@@ -35,7 +35,7 @@ const Header = ({theme, setTheme}) => {
       setTheme(prev => prev == "dark" ? "light" : "dark");
   }
   return (
-    <div className='flex items-center justify-around h-20 hover:h-25 duration-300 transition-all fixed top-0 left-0 right-0 z-100 bg-bg-secondary/90 backdrop-blur-xl border-b border-black/5 shadow-sm' >
+    <div className='flex items-center justify-around h-20 hover:h-25 duration-300 transition-all fixed top-0 left-0 right-0 z-100 bg-bg-secondary/70 backdrop-blur-xl border-b border-black/5 shadow-sm' >
       <Link to="/"><img src={logo} alt="Lilith" className='h-20 hover:scale-103 transition-all duration-300'/></Link>
       <div className='flex gap-10 text-2xl max-lg:hidden '>
           <Link to="/Products?c=Steam" className='hover:scale-103 transition-all duration-300'>خدمات استیم</Link>
@@ -44,7 +44,7 @@ const Header = ({theme, setTheme}) => {
           <div className="relative group pb-1">
               <Link to="/Products?c=All">سایر خدمات</Link>
               <div className="absolute top-full left-0 origin-top-left invisible opacity-0 -translate-x-3 -translate-y-3 scale-95 pointer-events-none transition-all duration-300 ease-out group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:scale-100 group-hover:pointer-events-auto">
-                  <div className="grid grid-cols-3 gap-3 w-200 bg-bg-secondary p-5 rounded-2xl">
+                  <div className="grid grid-cols-3 gap-3 w-200 bg-bg-secondary/98 backdrop-blur-3xl p-5 rounded-2xl">
                       {pathsMap.map((path) => (<Link className="hover:scale-103 transition-all duration-300" key={path.path} to={path.path}>{path.name}</Link>))}
                   </div>
               </div>
@@ -55,7 +55,7 @@ const Header = ({theme, setTheme}) => {
       <MdSunny className='size-8 cursor-pointer' onClick={toggleTheme}/> :
       <FaMoon className='size-8 cursor-pointer' onClick={toggleTheme}/>}
       <GiHamburgerMenu className='lg:hidden size-10 cursor-pointer' onClick={() => {setSideMenu(true)}}/>
-      <div className={`lg:hidden flex flex-col absolute text-left bg-bg-secondary p-10 left-0 top-0 h-screen gap-2 items-center overflow-hidden transition-all duration-300 w-70 z-111 ${sideMenu ? "translate-x-0" : "-translate-x-full"}`}>
+      <div className={`lg:hidden flex flex-col absolute text-left bg-bg-secondary/70 backdrop-blur-[1px] p-10 left-0 top-0 h-screen gap-2 items-center overflow-hidden transition-all duration-300 w-70 z-999 ${sideMenu ? "translate-x-0" : "-translate-x-full"}`}>
         <IoMdClose className='size-10 mb-8 cursor-pointer' onClick={() => {setSideMenu(false)}}/>
         <Link to="/Products?c=Steam" className='hover:scale-103 transition-all duration-300' onClick={() => {setSideMenu(false)}}>خدمات استیم</Link>
         <Link to="/Products?c=MineCraft" className='hover:scale-103 transition-all duration-300' onClick={() => {setSideMenu(false)}}>خدمات ماینکرفت</Link>
@@ -65,7 +65,7 @@ const Header = ({theme, setTheme}) => {
           ))}
       </div>
       {sideMenu && (
-        <div className='fixed inset-0 bg-black/50 backdrop-blur-sm z-110' onClick={() => {setSideMenu(false)}}></div>
+        <div className='fixed inset-0 bg-black/70 h-screen w-screen z-998' onClick={() => {setSideMenu(false)}}></div>
       )}
     </div>
   )

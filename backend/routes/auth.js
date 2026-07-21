@@ -2,8 +2,9 @@ import express from "express"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import crypto from "crypto"
-import { createUser, getUserByNumber } from "../src/db.js"
+import { createUser, getUserById, getUserByNumber } from "../src/db.js"
 import { sendSMSValidation } from "../utils/generalUtils.js"
+import { authMiddleware } from "../middlewares/auth.js"
 
 const router = express.Router()
 
@@ -79,7 +80,7 @@ router.post("/login", async (req, res) => {
 
             if(!isPasswordValid){return res.status(400).json({status: "fail", data:"شماره یا رمز نادرست است"})}
 
-            const token = jwt.sign({id: user.id}, process.env.JWT_TOKEN, {expiresIn: "7d"})
+            const token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {expiresIn: "7d"})
 
             pendingLogin.delete(number);
             res.status(200).json({status: "success", token: token})
@@ -153,7 +154,7 @@ router.post("/verifyLogin", async (req, res) => {
         pendingLogin.delete(number)
         const user = await getUserByNumber(number)
 
-        const token = jwt.sign({id: user.id}, process.env.JWT_TOKEN, {expiresIn: "7d"})
+        const token = jwt.sign({id: user.id}, process.env.JWT_SECRET, {expiresIn: "7d"})
 
         res.status(201).json({status: "success", token: token})
     }catch(err){
@@ -188,12 +189,24 @@ router.post("/verifyRegister", async (req, res) => {
         pendingRegistration.delete(number)
         const user = await createUser(savedData.firstname, savedData.lastname, savedData.email, number, savedData.password)
 
-        const token = jwt.sign({id: user.insertId}, process.env.JWT_TOKEN, {expiresIn: "7d"})
+        const token = jwt.sign({id: user.insertId}, process.env.JWT_SECRET, {expiresIn: "7d"})
 
         res.status(201).json({status: "success", token: token})
     }catch(err){
         console.log(err);
         return res.status(500).json({status:"error"});
+    }
+})
+
+router.get("/check", authMiddleware, async (req, res) => {
+    try{
+        const userId = req.userId
+        const user = await getUserById(userId)
+
+        res.status(200).json({status: "success", data: user})
+    }catch(err){
+        console.log(err);
+        return res.status(500).json({status: "error"})
     }
 })
 

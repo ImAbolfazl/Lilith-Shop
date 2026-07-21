@@ -9,6 +9,8 @@ import axios from "axios"
 import Product from './pages/Product'
 import { useState } from 'react'
 import Footer from './components/Footer'
+import Register from './pages/Register'
+import Login from './pages/Login'
 
 const App = () => {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark")
@@ -33,10 +35,12 @@ const App = () => {
         <Route path='/Products' element={<Products/>}/>
         <Route path='Product/:id' element={<Product/>}/>
         <Route path='/Dashboard' element={<Dashboard/>}/>
+        <Route path='/Register' element={<Register/>}/>
+        <Route path='/Login' element={<Login/>}/>
       </Routes>
       <Footer/>
     </BrowserRouter>
   )
 }
 
-export default App
+export default App;
