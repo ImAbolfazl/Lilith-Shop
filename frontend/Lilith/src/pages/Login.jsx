@@ -28,7 +28,7 @@ const Field = ({ label, name, value, onChange, placeholder, type = "text", icon 
 const Login = () => {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState("password"); // password | sms | verify
+  const [step, setStep] = useState("password");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -41,7 +41,6 @@ const Login = () => {
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  // ---------------- LOGIN WITH PASSWORD ----------------
   const handlePasswordLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -71,7 +70,6 @@ const Login = () => {
     }
   };
 
-  // ---------------- REQUEST SMS LOGIN ----------------
   const handleSMSLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -101,7 +99,6 @@ const Login = () => {
     }
   };
 
-  // ---------------- VERIFY SMS LOGIN ----------------
   const handleVerify = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -142,18 +139,15 @@ const Login = () => {
         transition={{ duration: 0.6 }}
         className="relative w-full max-w-md bg-cardPrimary rounded-2xl p-8 shadow-[0_0_40px_rgba(0,0,0,0.45)] overflow-hidden border border-white/5"
       >
-        {/* نوار نئونی حرفه‌ای */}
         <motion.div
           initial={{ x: "-120%" }}
           animate={{ x: "120%" }}
           transition={{ repeat: Infinity, duration: 2.8, ease: "linear" }}
-          className="absolute top-0 left-0 w-1/2 h-[4px] bg-gradient-to-r from-accentPrimary to-accentSecondary blur-[2px]"
+          className="absolute top-0 left-0 w-1/2 h-1 bg-leaner-to-r from-accentPrimary to-accentSecondary blur-[2px]"
         />
 
-        {/* Glow دور کارت */}
         <div className="absolute inset-0 pointer-events-none rounded-2xl border border-accentPrimary/20 shadow-[0_0_25px_var(--color-accent-primary)]"></div>
 
-        {/* هدر */}
         <div className="flex items-center justify-center gap-3 mb-6">
           <motion.div
             initial={{ rotate: -15, scale: 0.7 }}
@@ -168,13 +162,9 @@ const Login = () => {
             <h2 className="text-textPrimary text-2xl font-bold drop-shadow-[0_0_6px_var(--color-accent-secondary)]">
               ورود به لیلیث
             </h2>
-            <p className="text-textSecondary text-sm">
-              دنیای گیمینگ همین‌جاست.
-            </p>
           </div>
         </div>
 
-        {/* پیام‌ها */}
         <AnimatePresence>
           {message && (
             <motion.div
@@ -201,7 +191,6 @@ const Login = () => {
           )}
         </AnimatePresence>
 
-        {/* فرم‌ها */}
         <AnimatePresence mode="wait">
           {step === "password" && (
             <motion.form
@@ -236,7 +225,7 @@ const Login = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 disabled={loading}
-                className={`w-full py-3 rounded-xl text-white transition-all bg-gradient-to-r from-accentPrimary to-accentSecondary shadow-[0_0_15px_var(--color-accent-primary)] ${
+                className={`w-full py-3 rounded-xl text-white transition-all bg-leaner-to-r from-accentPrimary to-accentSecondary shadow-[0_0_15px_var(--color-accent-primary)] ${
                   loading ? "opacity-50 cursor-not-allowed" : "hover:shadow-[0_0_25px_var(--color-accent-secondary)]"
                 }`}
               >
@@ -286,7 +275,7 @@ const Login = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 disabled={loading}
-                className={`w-full py-3 rounded-xl text-white transition-all bg-gradient-to-r from-accentSecondary to-accentPrimary shadow-[0_0_15px_var(--color-accent-secondary)] ${
+                className={`w-full py-3 rounded-xl text-white transition-all bg-leaner-to-r from-accentSecondary to-accentPrimary shadow-[0_0_15px_var(--color-accent-secondary)] ${
                   loading ? "opacity-50 cursor-not-allowed" : "hover:shadow-[0_0_25px_var(--color-accent-primary)]"
                 }`}
               >
@@ -330,7 +319,7 @@ const Login = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 disabled={loading}
-                className={`w-full py-3 rounded-xl text-white transition-all bg-gradient-to-r from-accentPrimary to-accentSecondary shadow-[0_0_15px_var(--color-accent-primary)] ${
+                className={`w-full py-3 rounded-xl text-white transition-all bg-leaner-to-r from-accentPrimary to-accentSecondary shadow-[0_0_15px_var(--color-accent-primary)] ${
                   loading ? "opacity-50 cursor-not-allowed" : "hover:shadow-[0_0_25px_var(--color-accent-secondary)]"
                 }`}
               >
