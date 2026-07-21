@@ -28,10 +28,9 @@ const Product = () => {
   }, [])
   
   useEffect(() => {
-    console.log(data);
     if(data){
       document.title = `Lilith | ${data && data.title}` 
-      setRegion(data.price[0].country[0])
+      setRegion(data.price[0].country)
     }
   }, [data])
 
@@ -53,7 +52,7 @@ const Product = () => {
   }
   
   if(!loading && data){
-    return<><div className="h-[80vh] overflow-hidden relative opacity-60" style={{backgroundImage: `linear-gradient(to top, var(--color-bg-primary) 0%, transparent 70%), ${data.steamId ? `url(${data.banner})` : `url(${import.meta.env.VITE_BACKEND_URL}${data.banner}`}`, backgroundSize: "cover", backgroundPosition: "center"}}></div>
+    return<><div className="h-[80vh] overflow-hidden relative opacity-60" style={{backgroundImage: `linear-gradient(to top, var(--color-bg-primary) 0%, transparent 70%), url(${`${import.meta.env.VITE_BACKEND_URL}${data.banner}`})`, backgroundSize: "cover", backgroundPosition: "center"}}></div>
     <div className='relative z-20 -mt-100 m-6 flex flex-col gap-20'>
       <h1 className='md:text-5xl text-3xl font-bold text-text-primary'>{data.title}</h1>
       <div className='flex items-center gap-10 flex-col'>
@@ -61,13 +60,13 @@ const Product = () => {
           ریجن اکانت خودتون رو انتخاب کنید:
           <div className='max-md:grid gap-3 max-md:grid-cols-2 flex text-center'>
             {data.price.map((price) => (
-              <p className={`bg-bg-secondary py-3 px-4 rounded-2xl cursor-pointer ${price.country == region && "border-2 border-text-primary"}`} key={price.country[0]} onClick={() => setRegion(price.country)}>{price.persian}</p>
+              <p className={`bg-bg-secondary py-3 px-4 rounded-2xl cursor-pointer ${price.country == region && "border-2 border-text-primary"}`} key={Math.random()} onClick={() => setRegion(price.country)}>{price.persian}</p>
             ))}
           </div>
         </div>
         <div className='flex items-center gap-3 text-2xl'>
           {data.price.map((price) => (
-            price.country[0] == region && <p key={price.country[0]}>{calculateDiscount(price, data)}</p>
+            price.country == region && <p key={Math.random()}>{calculateDiscount(price, data)}</p>
           ))}
           <PriceSVG/>
         </div>

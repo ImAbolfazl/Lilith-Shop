@@ -1,19 +1,20 @@
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "public/uploads");
+        const folder = req.body.folder || "others";
+
+        const uploadPath = `public/uploads/${folder}`;
+
+        fs.mkdirSync(uploadPath, { recursive: true });
+
+        cb(null, uploadPath);
     },
+
     filename: (req, file, cb) => {
-        const uniqueName =
-            Date.now() +
-            "-" +
-            Math.round(Math.random() * 1e9) +
-            path.extname(file.originalname);
-
-
-        cb(null, uniqueName);
+        cb(null, `${Date.now()}${path.extname(file.originalname)}`);
     }
 });
 

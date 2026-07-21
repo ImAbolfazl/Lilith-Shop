@@ -1,4 +1,6 @@
-import axios from "axios"
+import fs from "fs";
+import path from "path";
+import axios from "axios";
 
 export async function sendSMSValidation(number, code) {
     const response = await axios({
@@ -22,4 +24,25 @@ export async function sendSMSValidation(number, code) {
     })
 
     return response
+}
+
+export async function downloadImage(url, outputPath) {
+    const response = await axios({
+        url,
+        method: "GET",
+        responseType: "stream"
+    });
+
+    await fs.promises.mkdir(path.dirname(outputPath), {
+        recursive: true
+    });
+
+    return new Promise((resolve, reject) => {
+        const writer = fs.createWriteStream(outputPath);
+
+        response.data.pipe(writer);
+
+        writer.on("finish", resolve);
+        writer.on("error", reject);
+    });
 }

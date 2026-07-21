@@ -109,11 +109,11 @@ router.post(
             }
 
             const image = req.files.image
-                ? `/uploads/${req.files.image[0].filename}`
+                ? `/uploads/others/${req.files.image[0].filename}`
                 : null;
 
             const banner = req.files.banner
-                ? `/uploads/${req.files.banner[0].filename}`
+                ? `/uploads/others/${req.files.banner[0].filename}`
                 : null;
 
             await createProduct(

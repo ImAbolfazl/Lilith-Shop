@@ -3,3 +3,5 @@ frontend/Lilith/node_modules/
 
 backend/.env
 frontend/Lilith/.env
+
+backend/public/uploads
