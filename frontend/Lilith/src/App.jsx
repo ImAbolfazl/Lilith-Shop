@@ -11,6 +11,8 @@ import { useState } from 'react'
 import Footer from './components/Footer'
 import Register from './pages/Register'
 import Login from './pages/Login'
+import MainLayout from './pages/MainLayout'
+import BlankLayout from './pages/BlankLayout'
 
 export const UserContext = createContext();
 
@@ -50,7 +52,7 @@ const App = () => {
             })
 
             if(response.data){
-              setUser(response.data)
+              setUser(response.data.data)
               setLoading(false)
             }
           }catch(err){
@@ -76,17 +78,19 @@ const App = () => {
   return (
     <UserContext.Provider value={{user, token, setToken}}>
         <BrowserRouter>
-          <Header theme={theme} setTheme={setTheme}/>
           <Routes>
-            <Route path='/' element={<Main/>}/>
-            <Route path='/Products' element={<Products/>}/>
-            <Route path='Product/:id' element={<Product/>}/>
-            <Route path='/Dashboard' element={<Dashboard/>}/>
-            <Route path='/Register' element={<Register/>}/>
-            <Route path='/Login' element={<Login/>}/>
+              <Route element={<MainLayout theme={theme} setTheme={setTheme} />}>
+                  <Route path="/" element={<Main />} />
+                  <Route path="/Products" element={<Products />} />
+                  <Route path="/Product/:id" element={<Product />} />
+              </Route>
+              <Route element={<BlankLayout theme={theme} setTheme={setTheme}  />}>
+                  <Route path="/Login" element={<Login />} />
+                  <Route path="/Register" element={<Register />} />
+                  <Route path="/Dashboard" element={<Dashboard />} />
+              </Route>
           </Routes>
-          <Footer/>
-        </BrowserRouter>
+      </BrowserRouter>
     </UserContext.Provider>
   )
 }
