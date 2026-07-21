@@ -1,3 +1,5 @@
+import axios from "axios"
+
 export async function sendSMSValidation(number, code) {
     const response = await axios({
         method: "post",

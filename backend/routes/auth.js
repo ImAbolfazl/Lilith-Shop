@@ -2,8 +2,8 @@ import express from "express"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 import crypto from "crypto"
-import { createUser, getUserByNumber } from "../src/db"
-import { sendSMSValidation } from "../utils/generalUtils"
+import { createUser, getUserByNumber } from "../src/db.js"
+import { sendSMSValidation } from "../utils/generalUtils.js"
 
 const router = express.Router()
 
@@ -25,7 +25,7 @@ setInterval(() => {
 
 router.post("/register", async (req, res) => {
     try{
-        const {firstname, lastname, number, password} = req.body
+        const {firstname, lastname, email, number, password} = req.body
         try{
             if (!firstname || firstname.length > 50){return res.status(400).json({status: "fail", data: "نام اشتباه است"})}
             if (!lastname || lastname.length > 50){return res.status(400).json({status: "fail", data: "نام خانوادگی اشتباه است"})}
@@ -45,11 +45,13 @@ router.post("/register", async (req, res) => {
             pendingRegistration.set(number, {
                 firstname: firstname,
                 lastname: lastname,
+                email: email,
                 password: encryptedPassword,
                 verificationCode: verificationCode,
                 expiresAt: Date.now() + 5 * 60 * 1000,
                 attempts: 0
             })
+            console.log(verificationCode);
             res.status(200).json({status: "success", data: "کد ارسال شد"})
 
         }catch(err){
@@ -111,7 +113,7 @@ router.post("/loginWithNumber", async (req, res) => {
                 expiresAt: Date.now() + 5 * 60 * 1000,
                 attempts: 0
             })
-
+            console.log(verificationCode);
             res.status(200).json({status: "success", data: "کد ارسال شد"})
 
         }catch(err){
@@ -184,7 +186,7 @@ router.post("/verifyRegister", async (req, res) => {
         }
 
         pendingRegistration.delete(number)
-        const user = await createUser(savedData.firstname, savedData.lastname, number, savedData.password)
+        const user = await createUser(savedData.firstname, savedData.lastname, savedData.email, number, savedData.password)
 
         const token = jwt.sign({id: user.insertId}, process.env.JWT_TOKEN, {expiresIn: "7d"})
 

@@ -18,10 +18,10 @@ export async function connectDatabase() {
     }
 }
 
-export async function createUser(firstname, lastname, phone, password){
+export async function createUser(firstname, lastname, email, phone, password){
     const [result] = await pool.query(
-        "INSERT INTO users (firstname, lastname, phone, password) VALUES (?, ?, ?, ?)",
-        [firstname, lastname, phone, password]
+        "INSERT INTO users (firstname, lastname, email, phone, password) VALUES (?, ?, ?, ?, ?)",
+        [firstname, lastname, email, phone, password]
     )
     return result
 }

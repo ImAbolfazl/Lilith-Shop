@@ -8,4 +8,4 @@ const authLimit = rateLimit({
     message: {status: "fail", data: "تعداد درخواست بیش از حد مجاز است. لطفا بعدا تلاش کنید."}
 });
 
-export {authLimiter as authLimitMiddleware}
+export {authLimit as authLimitMiddleware}
