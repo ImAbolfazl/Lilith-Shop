@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { GiGamepad } from "react-icons/gi";
 import { FaPhoneAlt } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 import { useNavigate } from "react-router";
+import { UserContext } from "../App";
 
 const Field = ({ label, name, value, onChange, placeholder, type = "text", icon }) => (
   <div className="mb-4">
@@ -33,6 +34,13 @@ const Login = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [code, setCode] = useState("");
+  const {token, setToken} = useContext(UserContext)
+
+  useEffect(() => {
+    if(token){
+        navigate("/")
+    }
+  }, [token])
 
   const [form, setForm] = useState({
     number: "",
@@ -54,7 +62,7 @@ const Login = () => {
       );
 
       if (res.status === 200 && res.data.status === "success") {
-        localStorage.setItem("token", res.data.token);
+        setToken(res.data.token)
         navigate("/");
       } else {
         setError(res.data.data || "شماره یا رمز اشتباه است");
@@ -115,7 +123,7 @@ const Login = () => {
       );
 
       if (res.status === 201 && res.data.status === "success") {
-        localStorage.setItem("token", res.data.token);
+        setToken(res.data.token)
         navigate("/");
       } else {
         setError(res.data.data || "کد اشتباه است یا زمان تمام شده");
@@ -137,7 +145,7 @@ const Login = () => {
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.6 }}
-        className="relative w-full max-w-md bg-cardPrimary rounded-2xl p-8 shadow-[0_0_40px_rgba(0,0,0,0.45)] overflow-hidden border border-white/5"
+        className="relative w-full max-w-md bg-cardPrimary rounded-2xl p-8 shadow-[0_0_40px_rgba(0,0,0,0.45)] overflow-hidden"
       >
         <motion.div
           initial={{ x: "-120%" }}
@@ -146,7 +154,7 @@ const Login = () => {
           className="absolute top-0 left-0 w-1/2 h-1 bg-leaner-to-r from-accentPrimary to-accentSecondary blur-[2px]"
         />
 
-        <div className="absolute inset-0 pointer-events-none rounded-2xl border border-accentPrimary/20 shadow-[0_0_25px_var(--color-accent-primary)]"></div>
+        <div className="absolute inset-0 pointer-events-none rounded-2xl shadow-[0_0_25px_var(--color-accent-primary)]"></div>
 
         <div className="flex items-center justify-center gap-3 mb-6">
           <motion.div
@@ -222,10 +230,8 @@ const Login = () => {
 
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
                 disabled={loading}
-                className={`w-full py-3 rounded-xl text-white transition-all bg-leaner-to-r from-accentPrimary to-accentSecondary shadow-[0_0_15px_var(--color-accent-primary)] ${
+                className={`w-full py-3 rounded-xl text-white transition-all bg-leaner-to-r from-accentPrimary to-accentSecondary shadow-[0_0_15px_var(--color-accent-primary)] cursor-pointer ${
                   loading ? "opacity-50 cursor-not-allowed" : "hover:shadow-[0_0_25px_var(--color-accent-secondary)]"
                 }`}
               >
@@ -272,10 +278,8 @@ const Login = () => {
 
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
                 disabled={loading}
-                className={`w-full py-3 rounded-xl text-white transition-all bg-leaner-to-r from-accentSecondary to-accentPrimary shadow-[0_0_15px_var(--color-accent-secondary)] ${
+                className={`w-full py-3 rounded-xl text-white transition-all bg-leaner-to-r from-accentSecondary to-accentPrimary shadow-[0_0_15px_var(--color-accent-secondary)] cursor-pointer ${
                   loading ? "opacity-50 cursor-not-allowed" : "hover:shadow-[0_0_25px_var(--color-accent-primary)]"
                 }`}
               >
@@ -316,10 +320,8 @@ const Login = () => {
 
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
                 disabled={loading}
-                className={`w-full py-3 rounded-xl text-white transition-all bg-leaner-to-r from-accentPrimary to-accentSecondary shadow-[0_0_15px_var(--color-accent-primary)] ${
+                className={`w-full py-3 rounded-xl text-white transition-all bg-leaner-to-r from-accentPrimary to-accentSecondary shadow-[0_0_15px_var(--color-accent-primary)] cursor-pointer ${
                   loading ? "opacity-50 cursor-not-allowed" : "hover:shadow-[0_0_25px_var(--color-accent-secondary)]"
                 }`}
               >

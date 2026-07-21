@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { GiGamepad } from "react-icons/gi";
 import { FaUser, FaPhoneAlt } from "react-icons/fa";
 import { MdEmail, MdPassword } from "react-icons/md";
 import { useNavigate } from "react-router";
+import { UserContext } from "../App";
 
 const Field = ({ label, name, value, onChange, placeholder, type = "text", icon }) => (
   <div className="mb-4">
@@ -27,12 +28,18 @@ const Field = ({ label, name, value, onChange, placeholder, type = "text", icon 
 
 const Register = () => {
   const navigate = useNavigate();
-
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [code, setCode] = useState("");
+  const {token, setToken} = useContext(UserContext)
+
+  useEffect(() => {
+    if(token){
+        navigate("/")
+    }
+  }, [token])
 
   const [form, setForm] = useState({
     firstname: "",
@@ -90,7 +97,7 @@ const Register = () => {
 
       if (res.status === 201 && res.data.status === "success") {
         setMessage("ثبت‌نام با موفقیت انجام شد! 🎮");
-        localStorage.setItem("token", res.data.token);
+        setToken(res.data.token)
         navigate("/");
       } else {
         setError(res.data.data || "کد اشتباه است یا زمان تمام شده");
@@ -177,21 +184,21 @@ const Register = () => {
               onSubmit={handleRegister}
             >
               <Field
-                label="نام"
+                label="نام (به فارسی)"
                 name="firstname"
                 value={form.firstname}
                 onChange={handleChange}
                 icon={<FaUser />}
-                placeholder="مثلاً: آرش"
+                placeholder="نام"
               />
 
               <Field
-                label="نام خانوادگی"
+                label="نام خانوادگی (به فارسی)"
                 name="lastname"
                 value={form.lastname}
                 onChange={handleChange}
                 icon={<FaUser />}
-                placeholder="مثلاً: نیک‌پی"
+                placeholder="نام خانوادگی"
               />
 
               <Field
@@ -225,8 +232,6 @@ const Register = () => {
 
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
                 disabled={loading}
                 className={`w-full py-3 rounded-xl text-text-primary transition-all bg-leaner-to-r from-accentPrimary to-accentSecondary shadow-[0_0_15px_var(--color-accent-primary)] cursor-pointer ${
                   loading ? "opacity-50 cursor-not-allowed" : "hover:shadow-[0_0_25px_var(--color-accent-secondary)]"
@@ -271,8 +276,6 @@ const Register = () => {
 
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
                 disabled={loading}
                 className={`w-full py-3 rounded-xl text-white transition-all bg-leaner-to-r from-accentSecondary to-accentPrimary shadow-[0_0_15px_var(--color-accent-secondary)] cursor-pointer ${
                   loading ? "opacity-50 cursor-not-allowed" : "hover:shadow-[0_0_25px_var(--color-accent-primary)]"

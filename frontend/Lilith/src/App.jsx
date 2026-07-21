@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { createContext } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import Main from './pages/Main'
 import Products from './pages/Products'
@@ -12,8 +12,14 @@ import Footer from './components/Footer'
 import Register from './pages/Register'
 import Login from './pages/Login'
 
+export const UserContext = createContext();
+
+
 const App = () => {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark")
+  const [token, setToken] = useState(localStorage.getItem("token"))
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     localStorage.setItem("theme", theme);
@@ -27,19 +33,61 @@ const App = () => {
     document.documentElement.style.setProperty("--color-accent-secondary", theme === "dark" ? "#B86BFF" : "#9A5CF8");
   }, [theme]);
 
+  useEffect(() => {
+    if(token){
+      localStorage.setItem("token", token)
+    }else{
+      localStorage.removeItem("token")
+    }
+    const fetchData = async () => {
+          try{
+            const response = await axios({
+              method: "get",
+              url: `${import.meta.env.VITE_BACKEND_URL}/api/auth/check`,
+              headers: {
+                "authorization": token
+              }
+            })
+
+            if(response.data){
+              setUser(response.data)
+              setLoading(false)
+            }
+          }catch(err){
+            setLoading(false)
+            console.log(err);
+          }
+      }
+      if(localStorage.getItem("token")){
+        fetchData()
+      }else{
+        setLoading(false)
+      }
+  }, [token])
+
+  if(loading){
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        Loading...
+      </div>
+    )
+  }
+
   return (
-  <BrowserRouter>
-      <Header theme={theme} setTheme={setTheme}/>
-      <Routes>
-        <Route path='/' element={<Main/>}/>
-        <Route path='/Products' element={<Products/>}/>
-        <Route path='Product/:id' element={<Product/>}/>
-        <Route path='/Dashboard' element={<Dashboard/>}/>
-        <Route path='/Register' element={<Register/>}/>
-        <Route path='/Login' element={<Login/>}/>
-      </Routes>
-      <Footer/>
-    </BrowserRouter>
+    <UserContext.Provider value={{user, token, setToken}}>
+        <BrowserRouter>
+          <Header theme={theme} setTheme={setTheme}/>
+          <Routes>
+            <Route path='/' element={<Main/>}/>
+            <Route path='/Products' element={<Products/>}/>
+            <Route path='Product/:id' element={<Product/>}/>
+            <Route path='/Dashboard' element={<Dashboard/>}/>
+            <Route path='/Register' element={<Register/>}/>
+            <Route path='/Login' element={<Login/>}/>
+          </Routes>
+          <Footer/>
+        </BrowserRouter>
+    </UserContext.Provider>
   )
 }
 
