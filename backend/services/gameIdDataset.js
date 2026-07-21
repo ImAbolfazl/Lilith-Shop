@@ -1,11 +1,11 @@
 export const gamesDataSet = [
-    319630,   // Life is Strange
-    513710, // SCUM
-    218620, // PADYDAY 2
-    1174180,  // Red Dead Redemption 2
-    883710,   // Resident Evil 2
-    952060,   // Resident Evil 3
-    2050650,  // Resident Evil 4
+    // 319630,   // Life is Strange
+    // 513710, // SCUM
+    // 218620, // PADYDAY 2
+    // 1174180,  // Red Dead Redemption 2
+    // 883710,   // Resident Evil 2
+    // 952060,   // Resident Evil 3
+    // 2050650,  // Resident Evil 4
     // 554620,   // Life is Strange: Before the Storm
     // 1265920,  // Life is Strange Remastered
     // 1265930,  // Life is Strange: Before the Storm Remastered

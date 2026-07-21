@@ -6,11 +6,14 @@ import { updateDatabase } from "../services/databaseUpdate.js"
 import cors from "cors"
 import { connectDatabase } from "./db.js"
 import { countryCodes, loadPrices, updateExchangeRates } from "../services/exchangePrice.js"
+import { authRouter } from "../routes/auth.js"
 const app = express()
 const PORT = process.env.PORT
 
-app.use(cors({origin: "http://localhost:5173", credentials: true}))
+app.use(cors({origin: "*", credentials: true}))
 app.use("/uploads", express.static("public/uploads"))
+app.use(express.json())
+app.use("/api/auth", authRouter)
 app.use("/api/products", productRouter)
 
 

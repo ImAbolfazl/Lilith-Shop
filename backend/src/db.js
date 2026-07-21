@@ -23,12 +23,17 @@ export async function createUser(firstname, lastname, phone, password){
         "INSERT INTO users (firstname, lastname, phone, password) VALUES (?, ?, ?, ?)",
         [firstname, lastname, phone, password]
     )
-    return result;
+    return result
 }
 
 export async function getUserById(id) {
     const [result] = await pool.query("SELECT * FROM users WHERE id = ?", [id])
-    return result
+    return result[0]
+}
+
+export async function getUserByNumber(number) {
+    const [result] = await pool.query("SELECT * FROM users WHERE phone = ?", [number])
+    return result[0]
 }
 
 export async function getProductsByCategory(category) {
