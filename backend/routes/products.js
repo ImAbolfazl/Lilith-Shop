@@ -17,7 +17,7 @@ import { countryCodes, exchangeRates } from "../services/exchangePrice.js";
 
 export const router = express.Router();
 
-const applyProfit = (products) => {
+export const applyProfit = async (products) => {
     return products.map(product => ({
         ...product,
         price: (typeof product.price === "string"
@@ -44,7 +44,7 @@ router.get("/category/:category", async (req, res) => {
             result = await getProductsByCategory(category);
         }
 
-        result = applyProfit(result);
+        result = await applyProfit(result);
 
         if (result.length === 0) {
             return res.status(400).json({
@@ -79,7 +79,7 @@ router.get("/product/:id", async (req, res) => {
             });
         }
 
-        result = applyProfit(result);
+        result = await applyProfit(result);
 
         res.status(200).json({
             status: "success",
@@ -211,7 +211,7 @@ router.get("/categories", async (req, res) => {
             categories.map(async category => {
                 let categoryData = await getProductsByCategory(category);
 
-                categoryData = applyProfit(categoryData);
+                categoryData = await applyProfit(categoryData);
 
                 return {
                     name: category,

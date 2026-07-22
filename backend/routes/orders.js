@@ -1,5 +1,7 @@
 import express from "express"
-import { createOrder, deleteOrderByID, getOrdersByUserID, updateOrderByID } from "../src/db.js"
+import {createOrder, deleteOrderByID, getOrdersByUserID, getProductById, updateOrderByID} from "../src/db.js"
+import axios from "axios";
+import {applyProfit} from "./products.js";
 
 const router = express.Router()
 
@@ -21,8 +23,19 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
     try{
         const result = await getOrdersByUserID(req.userId)
+        const finalResult = []
 
-        res.status(200).json({status: "success", data: result})
+        for(const order of result){
+            const region = order.info.region
+            const product = await applyProfit(await getProductById(order.productId))
+            for(const price of product[0].price){
+                if(price.country == region){
+                    finalResult.push({...order, info: {...order.info, price: price.price}})
+                }
+            }
+        }
+
+        res.status(200).json({status: "success", data: finalResult})
     }catch(err){
         console.log(err)
         return res.status(500).json({status: "fail"})
@@ -52,7 +65,7 @@ router.delete("/", async (req, res) => {
 
         await deleteOrderByID(id)
 
-        res.json(200).json({status: "success"})
+        res.status(200).json({status: "success"})
     }catch(err){
         console.log(err)
         return res.status(500).json({status: "fail"})

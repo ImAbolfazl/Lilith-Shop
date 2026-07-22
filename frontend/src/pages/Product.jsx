@@ -87,8 +87,6 @@ const Product = () => {
           quantity: 1,
           info: {
             region: region,
-            price: selectedPrice.price,
-            finalPrice: calculateDiscount(selectedPrice, data),
             steamUsername: steamUsername,
             steamPassword: steamPassword
           }

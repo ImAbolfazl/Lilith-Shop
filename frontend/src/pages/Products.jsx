@@ -16,6 +16,7 @@ const Products = () => {
           const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/category/${category}`)
           if(response.data){
             setData(response.data.data)
+            console.log(data)
           }
         }catch(err){
           setData([])

@@ -18,7 +18,7 @@ export const gamesDataSet = [
     // 3240220,   // Grand Theft Auto V
     // 418370,   // Resident Evil 7 Biohazard
     // 1196590,  // Resident Evil Village
-    // 3764200,  // Resident Evil Requiem
+    3764200,  // Resident Evil Requiem
     // 1091500,  // Cyberpunk 2077
     // 1245620,  // ELDEN RING
     // 1817070,  // Marvel's Spider-Man Remastered

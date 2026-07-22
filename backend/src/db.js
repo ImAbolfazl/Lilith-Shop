@@ -31,9 +31,17 @@ export async function getUserById(id) {
     return result[0]
 }
 
-export async function getUserByNumber(number) {
-    const [result] = await pool.query("SELECT * FROM users WHERE phone = ?", [number])
+export async function getUserByNumber(phone) {
+    const [result] = await pool.query("SELECT * FROM users WHERE phone = ?", [phone])
     return result[0]
+}
+
+export async function updateUserById(id, firstname, lastname, phone, email, password) {
+    const [result] = await pool.query(
+        "UPDATE users SET firstname = ?, lastname = ?, phone = ?, email = ?, password = ? WHERE id = ?",
+        [firstname, lastname, phone, email, password, id]
+    )
+    return result
 }
 
 export async function getProductsByCategory(category) {
