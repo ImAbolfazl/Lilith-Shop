@@ -24,10 +24,10 @@ export async function addSteamGameToDB(steamId) {
     if (gameData.is_free) {
         if (gameData.dlc) {
             for (const country in countryCodes) {
-                const response = await axios.get(
-                    `https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`
-                );
-
+                const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`);
+                if(countryCodes[country] = "Iran"){
+                    z
+                }
                 price.push({
                     country,
                     persian: countryCodes[country].persian,

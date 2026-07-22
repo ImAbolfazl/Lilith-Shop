@@ -8,10 +8,10 @@ const Footer = () => {
 
         <div className="grid md:grid-cols-4 gap-10">
 
-          <div className="space-y-4">
+          <div>
             <img src={logo} alt="Lilith" className="h-14"/>
             <p className="text-text-secondary leading-7">
-              فروش انواع گیفت کارت، بازی‌های استیم، آیتم‌های ماینکرفت و
+              فروش انواع گیفت کارت و
               سرویس‌های دیجیتال با بهترین قیمت.
             </p>
           </div>

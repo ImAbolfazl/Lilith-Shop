@@ -91,10 +91,10 @@ export async function getAllCategories() {
     return result.map(row => row.category);
 }
 
-export async function createOrder(userId, productId, quantity) {
+export async function createOrder(userId, productId, quantity, info) {
     const [result] = await pool.query(
-        "INSERT INRO orders (userId, productId, quantity) VALUES (?, ?, ?)",
-        [userId, productId, quantity]
+        "INSERT INRO orders (userId, productId, quantity? info) VALUES (?, ?, ?, ?)",
+        [userId, productId, quantity, info]
     )
     return result
 }
@@ -104,10 +104,10 @@ export async function getOrdersByUserID(id) {
     return result
 }
 
-export async function updateOrderByID(id, quantity) {
+export async function updateOrderByID(id, quantity, info) {
     const [result] = await pool.query(
-        "UPDATE orders SET quantity = ? WHERE id = ?",
-        [quantity, id]
+        "UPDATE orders SET quantity = ?, info = ? WHERE id = ?",
+        [quantity, info, id]
     )
     return result
 }

@@ -57,6 +57,7 @@ const App = () => {
             }
           }catch(err){
             setLoading(false)
+            localStorage.removeItem("token")
             console.log(err);
           }
       }
