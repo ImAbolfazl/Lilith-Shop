@@ -93,7 +93,7 @@ export async function getAllCategories() {
 
 export async function createOrder(userId, productId, quantity, info) {
     const [result] = await pool.query(
-        "INSERT INRO orders (userId, productId, quantity? info) VALUES (?, ?, ?, ?)",
+        "INSERT INTO orders (userId, productId, quantity, info) VALUES (?, ?, ?, ?)",
         [userId, productId, quantity, info]
     )
     return result

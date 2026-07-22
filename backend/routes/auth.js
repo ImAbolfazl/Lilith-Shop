@@ -5,6 +5,7 @@ import crypto from "crypto"
 import { createUser, getUserById, getUserByNumber } from "../src/db.js"
 import { sendSMSValidation } from "../utils/generalUtils.js"
 import { authMiddleware } from "../middlewares/auth.js"
+import { authLimitMiddleware } from "../middlewares/rateLimit.js";
 
 const router = express.Router()
 
@@ -24,7 +25,7 @@ setInterval(() => {
     }
 }, 60000);
 
-router.post("/register", async (req, res) => {
+router.post("/register", authLimitMiddleware, async (req, res) => {
     try{
         const {firstname, lastname, email, number, password} = req.body
         try{
@@ -66,7 +67,7 @@ router.post("/register", async (req, res) => {
     }
 })
 
-router.post("/login", async (req, res) => {
+router.post("/login", authLimitMiddleware, async (req, res) => {
     try{
         const {number, password} = req.body
         try{
@@ -95,7 +96,7 @@ router.post("/login", async (req, res) => {
     }
 })
 
-router.post("/loginWithNumber", async (req, res) => {
+router.post("/loginWithNumber", authLimitMiddleware, async (req, res) => {
     try{
         const {number} = req.body
         try{
@@ -127,7 +128,7 @@ router.post("/loginWithNumber", async (req, res) => {
     }
 })
 
-router.post("/verifyLogin", async (req, res) => {
+router.post("/verifyLogin", authLimitMiddleware, async (req, res) => {
     try{
         const {number, code} = req.body
         const savedData = pendingLogin.get(number)
@@ -163,7 +164,7 @@ router.post("/verifyLogin", async (req, res) => {
     }
 })
 
-router.post("/verifyRegister", async (req, res) => {
+router.post("/verifyRegister", authLimitMiddleware, async (req, res) => {
     try{
         const {number, code} = req.body
         const savedData = pendingRegistration.get(number)

@@ -7,7 +7,7 @@ import cors from "cors"
 import { connectDatabase } from "./db.js"
 import { countryCodes, loadPrices, updateExchangeRates } from "../services/exchangePrice.js"
 import { authRouter } from "../routes/auth.js"
-import { authLimitMiddleware, ordersLimitMiddleware } from "../middlewares/rateLimit.js"
+import { ordersLimitMiddleware } from "../middlewares/rateLimit.js"
 import { authMiddleware } from "../middlewares/auth.js"
 import { ordersRouter } from "../routes/orders.js"
 const app = express()
@@ -16,7 +16,7 @@ const PORT = process.env.PORT
 app.use(cors({origin: "*", credentials: true}))
 app.use(express.json())
 app.use("/uploads", express.static("public/uploads"))
-app.use("/api/auth", authLimitMiddleware, authRouter)
+app.use("/api/auth", authRouter)
 app.use("/api/products", productRouter)
 app.use("/api/orders", ordersLimitMiddleware, authMiddleware, ordersRouter)
 

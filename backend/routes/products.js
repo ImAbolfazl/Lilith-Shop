@@ -72,6 +72,7 @@ router.get("/product/:id", async (req, res) => {
 
         let result = await getProductById(id);
 
+
         if (result.length === 0) {
             return res.status(404).json({
                 status: "fail"
@@ -80,7 +81,7 @@ router.get("/product/:id", async (req, res) => {
 
         result = applyProfit(result);
 
-        return res.status(200).json({
+        res.status(200).json({
             status: "success",
             data: result[0]
         });

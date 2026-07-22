@@ -3,13 +3,13 @@ import { createOrder, deleteOrderByID, getOrdersByUserID, updateOrderByID } from
 
 const router = express.Router()
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
     try{
-        const {userId, productId} = req.body
+        const {userId, productId, quantity, info} = req.body
 
         if(!userId || !productId){return res.status(400).json({status: "fail", data: "please provide the credentials"})}
 
-        createOrder(userId, productId)
+        await createOrder(userId, productId, quantity, JSON.stringify(info))
 
         res.status(200).json({status: "success"})
     }catch(err){
@@ -18,9 +18,9 @@ router.post("/", (req, res) => {
     }
 })
 
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
     try{
-        const result = getOrdersByUserID(req.userId)
+        const result = await getOrdersByUserID(req.userId)
 
         res.status(200).json({status: "success", data: result})
     }catch(err){
@@ -29,13 +29,13 @@ router.get("/", (req, res) => {
     }
 })
 
-router.put("/", (req, res) => {
+router.put("/", async (req, res) => {
     try{
-        const {id, quantity} = req.body
+        const {id, quantity, info} = req.body
 
-        if(!quantity){return res.status(400).json({status: "fail", data: "please provide the credentials"})}
+        if(!quantity || !info){return res.status(400).json({status: "fail", data: "please provide the credentials"})}
 
-        const result = updateOrderByID(id, quantity)
+        const result = await updateOrderByID(id, quantity, info)
 
         res.status(200).json({status: "success", data: result})
     }catch(err){
@@ -44,13 +44,13 @@ router.put("/", (req, res) => {
     }
 })
 
-router.delete("/", (req, res) => {
+router.delete("/", async (req, res) => {
     try{
         const {id} = req.body
 
         if(!id){return res.status(400).json({status: "fail", data: "please provide the credentials"})}
 
-        deleteOrderByID(id)
+        await deleteOrderByID(id)
 
         res.json(200).json({status: "success"})
     }catch(err){

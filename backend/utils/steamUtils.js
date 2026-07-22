@@ -25,21 +25,23 @@ export async function addSteamGameToDB(steamId) {
         if (gameData.dlc) {
             for (const country in countryCodes) {
                 const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`);
-                if(countryCodes[country] = "Iran"){
-                    z
+                if(countryCodes[country] == "Iran"){
+                    return
+                }else{
+                    price.push({
+                        country,
+                        persian: countryCodes[country].persian,
+                        price: Math.round(
+                            Number(
+                                (
+                                    response.data[steamId].data.package_groups[0].subs[0]
+                                        .price_in_cents_with_discount / 100
+                                ).toFixed(2)
+                            ) * exchangeRates[countryCodes[country].tag]
+                        )
+                    });
                 }
-                price.push({
-                    country,
-                    persian: countryCodes[country].persian,
-                    price: Math.round(
-                        Number(
-                            (
-                                response.data[steamId].data.package_groups[0].subs[0]
-                                    .price_in_cents_with_discount / 100
-                            ).toFixed(2)
-                        ) * exchangeRates[countryCodes[country].tag]
-                    )
-                });
+
                 await new Promise(r => setTimeout(r, 700));
             }
         } else {
