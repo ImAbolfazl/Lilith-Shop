@@ -2,11 +2,6 @@ import axios from "axios"
 import { gamesDataSet } from "./gameIdDataset.js"
 import { createProduct, getAllProducts, getProductBySteamId, updateGamePrice } from "../src/db.js"
 import { addSteamGameToDB, updateGmaePriceInDB } from "../utils/steamUtils.js";
-import fs from "fs/promises";
-
-const config = JSON.parse(
-  await fs.readFile("./config.json", "utf8")
-);
 
 export async function updateDatabase() {
     for (let i = 0; i < gamesDataSet.length; i++) {

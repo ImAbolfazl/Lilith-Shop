@@ -1,18 +1,28 @@
-import fs from "fs/promises";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import fs from "fs/promises";
+import { watch } from "fs";
 
 const FILE_PATH = "./prices.json";
 
 export let countryCodes = {};
 
-export async function loadPrices() {
+async function reloadPrices() {
     try {
-        const file = await fs.readFile(FILE_PATH, "utf8");
-        countryCodes = JSON.parse(file);
+        const data = await fs.readFile(FILE_PATH, "utf8");
+        countryCodes = JSON.parse(data);
     } catch (err) {
-        console.error("Failed to load prices:", err);
+        console.error("Failed to reload prices:", err);
     }
+}
+
+export async function loadPrices() {
+    await reloadPrices();
+    watch(FILE_PATH, async (eventType) => {
+        if (eventType === "change") {
+            await reloadPrices();
+        }
+    });
 }
 
 

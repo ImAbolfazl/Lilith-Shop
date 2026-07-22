@@ -1,5 +1,5 @@
 import axios from "axios";
-import express from "express";
+import express, { json } from "express";
 import {
     createProduct,
     getAllCategories,
@@ -13,6 +13,7 @@ import { authMiddleware } from "../middlewares/auth.js";
 import { roleMiddleware } from "../middlewares/adminMiddleware.js";
 import { upload } from "../middlewares/upload.js";
 import { config } from "../utils/fetchSettingsJSON.js";
+import { countryCodes, exchangeRates } from "../services/exchangePrice.js";
 
 export const router = express.Router();
 
@@ -101,11 +102,26 @@ router.post(
     ]),
     async (req, res) => {
         try {
-            const { title, category, price, info, steamId, publisher, dlc } = req.body;
+            const { title, category, price, info, steamId, publisher, dlc, currency } = req.body;
+            let finalPrice
 
             if (steamId) {
                 await addSteamGameToDB(steamId);
                 return res.json({ status: "success" });
+            }else{
+                if(currency == "Iran"){
+                    finalPrice = [{
+                        price: price,
+                        country: currency,
+                        persian: countryCodes[currency].persian
+                    }]
+                }else{
+                    finalPrice = [{
+                        price: price * exchangeRates[countryCodes[currency].tag],
+                        country: currency,
+                        persian: countryCodes[currency].persian
+                    }]
+                }
             }
 
             const image = req.files.image
@@ -121,7 +137,7 @@ router.post(
                 category,
                 image,
                 banner,
-                price,
+                JSON.stringify(finalPrice),
                 null,
                 info,
                 null,

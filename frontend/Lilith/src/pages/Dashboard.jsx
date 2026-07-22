@@ -49,7 +49,7 @@ const Dashboard = () => {
             });
 
             alert("Product uploaded successfully!");
-            form.reset()
+            // form.reset()
         } catch (err) {
             console.error(err);
             alert("Upload failed");

@@ -47,15 +47,9 @@ export async function getAllProducts() {
 }
 
 export async function createProduct(title, category, image, banner, price, discount, info, steamId, recommended, minimum, publisher, dlc) {
-    let finalPrice = price
-    if(!steamId){
-        finalPrice = [
-            {country: "Iran", persian: "ایران", price: price}
-        ]
-    }
     const [result] = await pool.query(
         "INSERT INTO products (title, category, image, banner, price, discount, info, steamId, recommended, minimum, publisher, dlc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [title, category, image, banner, JSON.stringify(finalPrice), discount, info, steamId, recommended, minimum, publisher, dlc]
+        [title, category, image, banner, price, discount, info, steamId, recommended, minimum, publisher, dlc]
     )
     return result
 }
@@ -95,4 +89,30 @@ export async function getAllCategories() {
         "SELECT DISTINCT category FROM products"
     );
     return result.map(row => row.category);
+}
+
+export async function createOrder(userId, productId, quantity) {
+    const [result] = await pool.query(
+        "INSERT INRO orders (userId, productId, quantity) VALUES (?, ?, ?)",
+        [userId, productId, quantity]
+    )
+    return result
+}
+
+export async function getOrdersByUserID(id) {
+    const [result] = await pool.query("SELECT * FROM orders WHERE userId = ?", [id])
+    return result
+}
+
+export async function updateOrderByID(id, quantity) {
+    const [result] = await pool.query(
+        "UPDATE orders SET quantity = ? WHERE id = ?",
+        [quantity, id]
+    )
+    return result
+}
+
+export async function deleteOrderByID(id) {
+    const [result] = await pool.query("DELETE FROM orders WHERE id = ?", [id])
+    return result
 }

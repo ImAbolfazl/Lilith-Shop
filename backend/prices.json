@@ -33,5 +33,10 @@
     "tag": "tr",
     "price": 2,
     "persian": "ترکیه"
+  },
+  "Iran": {
+    "tag": "ir",
+    "price": 2,
+    "persian": "ایران"
   }
 }

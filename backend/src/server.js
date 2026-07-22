@@ -7,16 +7,18 @@ import cors from "cors"
 import { connectDatabase } from "./db.js"
 import { countryCodes, loadPrices, updateExchangeRates } from "../services/exchangePrice.js"
 import { authRouter } from "../routes/auth.js"
-import { authLimitMiddleware } from "../middlewares/rateLimit.js"
+import { authLimitMiddleware, ordersLimitMiddleware } from "../middlewares/rateLimit.js"
+import { authMiddleware } from "../middlewares/auth.js"
+import { ordersRouter } from "../routes/orders.js"
 const app = express()
 const PORT = process.env.PORT
 
 app.use(cors({origin: "*", credentials: true}))
-app.use("/uploads", express.static("public/uploads"))
 app.use(express.json())
-// authLimitMiddleware
-app.use("/api/auth", authRouter)
+app.use("/uploads", express.static("public/uploads"))
+app.use("/api/auth", authLimitMiddleware, authRouter)
 app.use("/api/products", productRouter)
+app.use("/api/orders", ordersLimitMiddleware, authMiddleware, ordersRouter)
 
 
 app.listen(PORT, async () => {
@@ -28,7 +30,6 @@ app.listen(PORT, async () => {
     setInterval(updateExchangeRates, 60 * 1000);
 
     await loadPrices();
-    setInterval(await loadPrices, 5000);
 
     await updateDatabase()
     setInterval(await updateDatabase, 10 * 60 * 60 * 1000);
