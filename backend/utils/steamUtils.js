@@ -6,8 +6,9 @@ import { downloadImage } from "./generalUtils.js";
 
 export async function addSteamGameToDB(steamId) {
     const response = await axios.get(
-        `https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=us`
-    );
+        `https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=us`,{
+            timeout: 10000
+        });
 
     const gameData = response.data[steamId].data;
 
@@ -39,6 +40,7 @@ export async function addSteamGameToDB(steamId) {
                         ) * exchangeRates[countryCodes[country].tag]
                     )
                 });
+                await new Promise(r => setTimeout(r, 700));
             }
         } else {
             console.log("Game is free or has no purchasable package.");
@@ -65,6 +67,7 @@ export async function addSteamGameToDB(steamId) {
             if (gameData.price_overview.discount_percent) {
                 discount = gameData.price_overview.discount_percent;
             }
+            await new Promise(r => setTimeout(r, 700));
         }
     }
 
