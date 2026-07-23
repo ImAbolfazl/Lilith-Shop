@@ -11,11 +11,9 @@ const Dashboard = () => {
     const [selected, setSelected] = useState("سبد خرید")
     const { token, setToken, user } = useContext(UserContext)
     const navigate = useNavigate()
-
     const [orders, setOrders] = useState([])
     const [ordersLoading, setOrdersLoading] = useState(false)
     const [ordersError, setOrdersError] = useState(null)
-
     const [profileOverride, setProfileOverride] = useState(null)
     const displayedUser = profileOverride || user
     const [editMode, setEditMode] = useState(false)
@@ -38,6 +36,8 @@ const Dashboard = () => {
             });
 
             const rawOrders = res.data.data || [];
+
+            console.log(rawOrders);
 
             const enriched = await Promise.all(
                 rawOrders.map(async (order) => {
@@ -164,7 +164,7 @@ const Dashboard = () => {
             console.log(formData)
 
             alert("Product uploaded successfully!");
-            // form.reset()
+            form.reset()
         } catch (err) {
             console.error(err);
             alert("Upload failed");

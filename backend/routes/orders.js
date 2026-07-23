@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
         const finalResult = await Promise.all(
             result.map(async (order) => {
                 const product = await applyProfit(await getProductById(order.productId))
-                const selectedPrice = product[0].price.find(p => p.country === order.info.region)
+                const selectedPrice = product[0]?.price.find(p => p.country[0] === order.info.region[0])
                 return {
                     ...order,
                     info: {
