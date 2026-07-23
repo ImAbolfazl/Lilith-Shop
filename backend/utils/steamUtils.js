@@ -5,6 +5,9 @@ import { HTMLTranslator } from "./htmlTranslator.js";
 import { downloadImage } from "./generalUtils.js";
 
 export async function addSteamGameToDB(steamId) {
+    let steamExchangeRates = {...exchangeRates, tr: exchangeRates.us, ar: exchangeRates.us};
+    console.log(exchangeRates);
+    console.log(steamExchangeRates);
     const response = await axios.get(
         `https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=us`,{
             timeout: 10000
@@ -20,7 +23,6 @@ export async function addSteamGameToDB(steamId) {
     let price = [];
     let discount = 0;
     let hasDLC = "ندارد";
-
     if (gameData.is_free) {
         if (gameData.dlc) {
             for (const country in countryCodes) {
@@ -35,7 +37,7 @@ export async function addSteamGameToDB(steamId) {
                                     response.data[steamId].data.package_groups[0].subs[0]
                                         .price_in_cents_with_discount / 100
                                 ).toFixed(2)
-                            ) * exchangeRates[countryCodes[country].tag]
+                            ) * steamExchangeRates[countryCodes[country].tag]
                         )
                     });
                 }
@@ -60,7 +62,7 @@ export async function addSteamGameToDB(steamId) {
                         (
                             response.data[steamId].data.price_overview.initial / 100
                         ).toFixed(2)
-                    ) * exchangeRates[countryCodes[country].tag]
+                    ) * steamExchangeRates[countryCodes[country].tag]
                 )
             });
 
@@ -117,6 +119,7 @@ export async function addSteamGameToDB(steamId) {
 export async function updateGmaePriceInDB(steamId) {
     const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=us`);
     const gameData = response.data[steamId].data;
+    let steamExchangeRates = {...exchangeRates, tr: exchangeRates.us, ar: exchangeRates.us};
     let price = []
     let discount = 0
     if(gameData.is_free){
@@ -124,7 +127,7 @@ export async function updateGmaePriceInDB(steamId) {
             for (const country in countryCodes) {
                 const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`)
                 
-                price = [...price, {country: [country], persian: countryCodes[country].persian, price: Math.round(Number((response.data[steamId].data.package_groups[0].subs[0].price_in_cents_with_discount / 100).toFixed(2)) * exchangeRates[countryCodes[country].tag])}]
+                price = [...price, {country: [country], persian: countryCodes[country].persian, price: Math.round(Number((response.data[steamId].data.package_groups[0].subs[0].price_in_cents_with_discount / 100).toFixed(2)) * steamExchangeRates[countryCodes[country].tag])}]
             }
         }else{
             console.log("game is either free or doesnt havea price in the steam api");
@@ -133,8 +136,8 @@ export async function updateGmaePriceInDB(steamId) {
     }else{
         for (const country in countryCodes) {
             const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`)
-            
-            price = [...price, {country: [country], persian: countryCodes[country].persian, price: Math.round(Number((response.data[steamId].data.price_overview.initial / 100).toFixed(2)) * exchangeRates[countryCodes[country].tag])}]
+
+            price = [...price, {country: [country], persian: countryCodes[country].persian, price: Math.round(Number((response.data[steamId].data.price_overview.initial / 100).toFixed(2)) * steamExchangeRates[countryCodes[country].tag])}]
             if(gameData.price_overview.discount_percent){
                 discount = gameData.price_overview.discount_percent
             }

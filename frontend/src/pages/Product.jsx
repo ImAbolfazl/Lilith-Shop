@@ -6,7 +6,7 @@ import {UserContext} from "../App.jsx";
 
 const Product = () => {
   const id = useParams().id
-  const [data, setData] = useState(null)
+  const [ data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [region, setRegion] = useState(null)
@@ -15,6 +15,7 @@ const Product = () => {
   const [steamError, setSteamError] = useState("")
   const {user, token} = useContext(UserContext)
   const [selectedPrice, setSelectedPrice] = useState(null)
+  let needsInput
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -61,8 +62,6 @@ const Product = () => {
     setSteamError("")
 
     try {
-      const selectedPrice = data.price.find(p => p.country == region)
-
       const response = await axios({
         method: "POST",
         url: `${import.meta.env.VITE_BACKEND_URL}/api/orders`,
@@ -114,6 +113,7 @@ const Product = () => {
 
 
   if(data){
+    needsInput = data.category == "Steam" || data.category == "Discord" ? true : false
     return (
         <>
           <div
@@ -167,12 +167,12 @@ const Product = () => {
 
               <div className="grid md:grid-cols-2 grid-cols-1 gap-10 w-full">
 
-                <div className="flex flex-col gap-4 bg-bg-secondary p-5 rounded-xl">
-                  <p className="text-lg font-bold text-text-primary">اطلاعات ورود استیم (اجباری)</p>
+                {needsInput && <div className="flex flex-col gap-4 bg-bg-secondary p-5 rounded-xl">
+                  <p className="text-lg font-bold text-text-primary">اطلاعات ورود { data.category } (اجباری) </p>
 
                   <input
                       type="text"
-                      placeholder="نام کاربری استیم"
+                      placeholder={`نام کاربری ${data.category}`}
                       className="bg-bg-primary border border-bg-secondary rounded-lg py-2 px-4 text-sm"
                       value={steamUsername}
                       onChange={(e) => setSteamUsername(e.target.value)}
@@ -180,7 +180,7 @@ const Product = () => {
 
                   <input
                       type="password"
-                      placeholder="رمز عبور استیم"
+                      placeholder={`رمز عبور ${data.category}`}
                       className="bg-bg-primary border border-bg-secondary rounded-lg py-2 px-4 text-sm"
                       value={steamPassword}
                       onChange={(e) => setSteamPassword(e.target.value)}
@@ -189,9 +189,9 @@ const Product = () => {
                   {steamError && (
                       <p className="text-red-500 text-sm">{steamError}</p>
                   )}
-                </div>
+                </div>}
 
-                <div className="grid grid-cols-2 gap-6 text-right">
+                <div className={`grid ${needsInput ? "grid-cols-2" : "grid-cols-3"} gap-6 text-right`}>
 
                   <div>
                     <p className='text-text-secondary text-sm'>دسته بندی</p>
@@ -231,7 +231,6 @@ const Product = () => {
               <p className='md:text-xl font-bold text-red-600'>
                 اگر DLC بازی رو میخواید لطفا به پشتیبانی پیام بدید.
               </p>
-
               {data.category === "Steam" && (
                   <>
                     <p>
@@ -240,6 +239,10 @@ const Product = () => {
                     <p>قبل از سفارش استیم گارد خودتون رو خاموش کنید</p>
                   </>
               )}
+              <p>این محصول کاملاً دیجیتالی بوده و پس از ارسال، امکان لغو یا بازگشت وجه وجود ندارد.</p>
+              <p>لطفا قبل از خرید از صحیح بودن ریجن یا محدودیت‌های احتمالی اطمینان حاصل کنید.</p>
+              <p>لطفا اطلاعات خود را با دقت وارد نمایید! اطلاعات بعد از ثبت سفارش قابل تدوین نیستند</p>
+              <p>بررسی زمان تخفیفات کاملا بر عهده کاربر است و در صورت به پایان رسیدن تخفیف قبل از تکمیل سفارش توسط ما، بعد از کسر کارمزد مبلغ به کاربر برگردانده میشود.</p>
             </div>
 
             <div
@@ -258,7 +261,7 @@ const Product = () => {
 
             <div
                 dir='ltr'
-                className='p-5 [&_img]:rounded-xl [&_img]:h-28 [&_video]:rounded-xl [&_video]:h-48 flex flex-col gap-6 text-left'
+                className={`p-5 [&_img]:rounded-xl [&_img]:h-28 [&_video]:rounded-xl [&_video]:h-48 flex flex-col gap-6 ${data.steamId ? "text-left" : "text-right rlt"}`}
                 dangerouslySetInnerHTML={{ __html: data.info }}
             />
           </div>

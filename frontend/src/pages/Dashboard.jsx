@@ -38,7 +38,6 @@ const Dashboard = () => {
             });
 
             const rawOrders = res.data.data || [];
-            console.log(rawOrders)
 
             const enriched = await Promise.all(
                 rawOrders.map(async (order) => {
@@ -151,6 +150,7 @@ const Dashboard = () => {
             formData.append('banner', form.banner.files[0]);
         }
 
+
         try {
             await axios({
                 method: "post",
@@ -161,9 +161,10 @@ const Dashboard = () => {
                     authorization: token,
                 },
             });
+            console.log(formData)
 
             alert("Product uploaded successfully!");
-            form.reset()
+            // form.reset()
         } catch (err) {
             console.error(err);
             alert("Upload failed");

@@ -105,7 +105,6 @@ router.post(
         try {
             const { title, category, price, info, steamId, publisher, dlc, currency } = req.body;
             let finalPrice
-
             if (steamId) {
                 await addSteamGameToDB(steamId);
                 return res.json({ status: "success" });
@@ -145,7 +144,6 @@ router.post(
                 null,
                 null,
                 publisher,
-                null,
                 dlc
             );
 

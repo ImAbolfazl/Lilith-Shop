@@ -1,31 +1,31 @@
 export const gamesDataSet = [
-    613100, // House Flipper
-    500, // Left 4 Dead
-    524220, // NieR:Automata
-    238320, // Outlast
-    414700, // Outlast 2
-    273300, // The Forest
-    1304930, // The Outlast Trials
-    1888930, // The Last of Us Part I
-    319630, // Life is Strange
-    513710, // SCUM
-    218620, // PAYDAY 2
-    1174180, // Red Dead Redemption 2
-    883710, // Resident Evil 2
-    952060, // Resident Evil 3
-    2050650, // Resident Evil 4
-    554620, // Life is Strange: Before the Storm
-    1265920, // Life is Strange Remastered
-    1265930, // Life is Strange: Before the Storm Remastered
-    532210, // Life is Strange 2
-    936790, // Life is Strange: True Colors
-    1874000, // Life is Strange: Double Exposure
-    2624870, // Life is Strange: Reunion
-    3240220, // Grand Theft Auto V Enhanced
+    3764200, // Resident Evil Requiem
+    // 319630, // Life is Strange
+    // 936790, // Life is Strange: True Colors
+    // 613100, // House Flipper
+    // 500, // Left 4 Dead
+    // 524220, // NieR:Automata
+    // 238320, // Outlast
+    // 414700, // Outlast 2
+    // 273300, // The Forest
+    // 1304930, // The Outlast Trials
+    // 1888930, // The Last of Us Part I
+    // 513710, // SCUM
+    // 218620, // PAYDAY 2
+    // 1174180, // Red Dead Redemption 2
+    // 883710, // Resident Evil 2
+    // 952060, // Resident Evil 3
+    // 2050650, // Resident Evil 4
+    // 554620, // Life is Strange: Before the Storm
+    // 1265920, // Life is Strange Remastered
+    // 1265930, // Life is Strange: Before the Storm Remastered
+    // 532210, // Life is Strange 2
+    // 1874000, // Life is Strange: Double Exposure
+    // 2624870, // Life is Strange: Reunion
+    // 3240220, // Grand Theft Auto V Enhanced
     // 2483190, // MiSide
     // 418370, // Resident Evil 7 Biohazard
     // 1196590, // Resident Evil Village
-    // 3764200, // Resident Evil Requiem
     // 3180070, // No, I'm not Human
     // 550, // Left 4 Dead 2
     // 1091500, // Cyberpunk 2077
