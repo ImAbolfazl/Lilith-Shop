@@ -21,6 +21,7 @@ const App = () => {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark")
   const [token, setToken] = useState(localStorage.getItem("token"))
   const [user, setUser] = useState(null)
+  const [allGames, setAllGames] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -68,6 +69,23 @@ const App = () => {
       }
   }, [token])
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try{
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/category/All`)
+
+                if(response.data){
+                    setAllGames(response.data.data)
+                    setLoading(false)
+                }
+            }catch(err){
+                setLoading(false)
+            }
+        }
+
+        fetchData()
+    }, [])
+
   if(loading){
     return (
       <div className='flex items-center justify-center h-screen'>
@@ -77,7 +95,7 @@ const App = () => {
   }
 
   return (
-    <UserContext.Provider value={{user, token, setToken}}>
+    <UserContext.Provider value={{user, token, setToken, allGames}}>
         <BrowserRouter>
           <Routes>
               <Route element={<MainLayout theme={theme} setTheme={setTheme} />}>

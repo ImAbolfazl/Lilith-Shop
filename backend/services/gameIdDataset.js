@@ -1,4 +1,8 @@
 export const gamesDataSet = [
+    238320,
+    414700,
+    273300,
+    1304930,
     // 1888930,
     // 2483190,
     // 319630,   // Life is Strange
@@ -19,6 +23,8 @@ export const gamesDataSet = [
     // 418370,   // Resident Evil 7 Biohazard
     // 1196590,  // Resident Evil Village
     3764200,  // Resident Evil Requiem
+    3180070, // No, I'm not Human
+    550, // Left 4 Dead 2
     // 1091500,  // Cyberpunk 2077
     // 1245620,  // ELDEN RING
     // 1817070,  // Marvel's Spider-Man Remastered

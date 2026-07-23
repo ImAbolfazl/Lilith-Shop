@@ -21,26 +21,29 @@ router.post("/", async (req, res) => {
 })
 
 router.get("/", async (req, res) => {
-    try{
+    try {
         const result = await getOrdersByUserID(req.userId)
-        const finalResult = []
-
-        for(const order of result){
-            const region = order.info.region
-            const product = await applyProfit(await getProductById(order.productId))
-            for(const price of product[0].price){
-                if(price.country == region){
-                    finalResult.push({...order, info: {...order.info, price: price.price}})
+        const finalResult = await Promise.all(
+            result.map(async (order) => {
+                const product = await applyProfit(await getProductById(order.productId))
+                const selectedPrice = product[0].price.find(p => p.country === order.info.region)
+                return {
+                    ...order,
+                    info: {
+                        ...order.info,
+                        price: selectedPrice?.price ?? null,
+                        discount: product[0].discount
+                    }
                 }
-            }
-        }
+            })
+        );
 
-        res.status(200).json({status: "success", data: finalResult})
-    }catch(err){
-        console.log(err)
-        return res.status(500).json({status: "fail"})
+        res.status(200).json({ status: "success", data: finalResult});
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({status: "fail"});
     }
-})
+});
 
 router.put("/", async (req, res) => {
     try{

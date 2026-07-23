@@ -38,6 +38,7 @@ const Dashboard = () => {
             });
 
             const rawOrders = res.data.data || [];
+            console.log(rawOrders)
 
             const enriched = await Promise.all(
                 rawOrders.map(async (order) => {
@@ -203,7 +204,7 @@ const Dashboard = () => {
                                 </div>
                                 {order.info?.price && (
                                     <div className="flex items-center gap-2 font-bold">
-                                        <span>{order.info.price.toLocaleString("ir")}</span>
+                                        <span>{order.info?.discount > 0 ? Math.round(order.info?.price * (1 - order.info?.discount / 100)).toLocaleString("fa-IR"): order.info?.price.toLocaleString("fa-IR")}</span>
                                         <PriceSVG />
                                     </div>
                                 )}
