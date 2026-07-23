@@ -95,6 +95,31 @@ router.get("/product/:id", async (req, res) => {
     }
 });
 
+router.get("/product/:id/raw", authMiddleware, roleMiddleware, async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        if (req.role !== "admin") {
+            return res.status(401).json({
+                status: "access denied"
+            });
+        }
+
+        const result = await getProductById(id)
+
+        res.status(200).json({
+            status: "success",
+            data: result[0]
+        });
+
+    } catch (err) {
+        console.error(err);
+
+        return res.status(500).json({
+            status: "error"
+        });
+    }
+});
+
 router.post(
     "/",
     upload.fields([
@@ -171,9 +196,12 @@ router.put("/", authMiddleware, roleMiddleware, async (req, res) => {
             image,
             banner,
             price,
-            discountPrice,
             discount,
-            info
+            info,
+            recommended,
+            minimum,
+            publisher,
+            dlc
         } = req.body;
 
         await updateProductById(
@@ -182,10 +210,13 @@ router.put("/", authMiddleware, roleMiddleware, async (req, res) => {
             category,
             image,
             banner,
-            price,
-            discountPrice,
+            JSON.stringify(price),
             discount,
-            info
+            info,
+            recommended,
+            minimum,
+            publisher,
+            dlc
         );
 
         res.status(200).json({

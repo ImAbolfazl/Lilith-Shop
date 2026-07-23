@@ -88,7 +88,7 @@ export async function getProductById(id) {
 export async function updateProductById(id, title, category, image, banner, price, discount, info, recommended, minimum, publisher, dlc){
     const [result] = await pool.query(
         "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discount = ?, info = ?, recommended = ?, minimum = ?, publisher = ?, dlc = ? WHERE id = ?",
-        [title, category, image, banner, price, discount, info, id, recommended, minimum, publisher, dlc]
+        [title, category, image, banner, price, discount, info, recommended, minimum, publisher, dlc, id]
     )
 }
 
