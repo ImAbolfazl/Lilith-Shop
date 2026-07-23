@@ -15,7 +15,7 @@ import { AnimatePresence } from "framer-motion";
 const Header = ({theme, setTheme}) => {
   const [sideMenu, setSideMenu] = useState(false)
   const {token} = useContext(UserContext)
-    const [search, setSearch] = useState(true)
+    const [search, setSearch] = useState(false)
   
   const pathsMap = [
     {name: "وورلد اف وارکرفت", path: "/Products?c=WoW" },

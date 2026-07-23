@@ -14,6 +14,7 @@ const Product = () => {
   const [steamPassword, setSteamPassword] = useState("")
   const [steamError, setSteamError] = useState("")
   const {user, token} = useContext(UserContext)
+  const [selectedPrice, setSelectedPrice] = useState(null)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -60,7 +61,7 @@ const Product = () => {
     setSteamError("")
 
     try {
-      const selectedPrice = data.price.find(p => p.country === region)
+      const selectedPrice = data.price.find(p => p.country == region)
 
       const response = await axios({
         method: "POST",
@@ -87,6 +88,14 @@ const Product = () => {
     }
   }
 
+  useEffect(() => {
+    data?.price.map(p =>{
+      if(p.country == region){
+        setSelectedPrice(p.price)
+      }
+    })
+  }, [region])
+
   if (loading) {
     return (
         <div className='flex items-center justify-center text-2xl h-screen opacity-70'>
@@ -103,7 +112,6 @@ const Product = () => {
     )
   }
 
-  const selectedPrice = data.price.find(p => p.country === region)
 
   if(data){
     return (
@@ -146,7 +154,14 @@ const Product = () => {
               </div>
 
               <div className='flex items-center gap-3 text-4xl font-bold'>
-                <p>{data?.discount > 0 ? Math.round(selectedPrice?.price * (1 - data.discount / 100)).toLocaleString("fa-IR"): selectedPrice?.price.toLocaleString("fa-IR")}</p>
+                {data?.discount ? (
+                    <div className="flex gap-6 text-xl md:text-3xl">
+                      <del className="text-text-secondary">{Number(selectedPrice).toLocaleString("fa-IR")}</del>
+                      <p>{Math.round(selectedPrice * (1 - data.discount / 100)).toLocaleString("fa-IR")}</p>
+                    </div>
+                  ) :(
+                    <p>{Number(selectedPrice).toLocaleString("fa-IR")}</p>
+                )}
                 <PriceSVG />
               </div>
 
