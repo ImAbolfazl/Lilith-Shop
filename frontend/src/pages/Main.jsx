@@ -116,7 +116,6 @@ const Main = () => {
                                 <motion.div
                                     key={product.id}
                                     variants={itemVariants}
-                                    whileHover={reduceMotion ? undefined : { y: -8, transition: { duration: 0.25 } }}
                                     className='shrink-0'
                                 >
                                     <Card
