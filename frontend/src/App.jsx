@@ -14,6 +14,7 @@ import Login from './pages/Login'
 import MainLayout from './pages/MainLayout'
 import BlankLayout from './pages/BlankLayout'
 import Discounts from "./pages/Discounts.jsx";
+import Lenis from "lenis"
 
 export const UserContext = createContext();
 
@@ -86,6 +87,21 @@ const App = () => {
 
         fetchData()
     }, [])
+
+    useEffect(() => {
+        const lenis = new Lenis({ duration: 1.2, smoothWheel: true });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        const rafId = requestAnimationFrame(raf);
+
+        return () => {
+            lenis.destroy();
+            cancelAnimationFrame(rafId);
+        };
+    }, []);
 
   if(loading){
     return (
