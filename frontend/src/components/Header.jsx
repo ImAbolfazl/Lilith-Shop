@@ -9,7 +9,6 @@ import { UserContext } from "../App";
 import Search from "./search.jsx";
 import { AnimatePresence, motion } from "framer-motion";
 
-// Soft underline using your accent color
 const Underline = ({ children }) => (
     <motion.span className="relative cursor-pointer text-text-primary" whileHover="hover">
         {children}
@@ -25,7 +24,6 @@ const Underline = ({ children }) => (
     </motion.span>
 );
 
-// Soft glow wrapper using your accent color
 const Glow = ({ children }) => (
     <div className="text-text-primary drop-shadow-[0_0_6px_var(--color-accent-primary)]">
         {children}
