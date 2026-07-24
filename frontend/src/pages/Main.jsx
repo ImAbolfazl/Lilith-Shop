@@ -114,14 +114,11 @@ const Main = () => {
                                     className='shrink-0'
                                 >
                                     <Card
-                                        banner={product.banner}
                                         category={product.category}
                                         discount={product.discount}
                                         id={product.id}
                                         image={product.image}
-                                        info={product.info}
                                         price={product.price}
-                                        steamId={product.steamId}
                                         title={product.title}
                                     />
                                 </motion.div>

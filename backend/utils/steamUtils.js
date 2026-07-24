@@ -18,42 +18,44 @@ export async function addSteamGameToDB(steamId) {
         return;
     }
 
-    let price = {subs: []};
-
+    let price = {
+        subs: {}
+    }
     let discount = 0;
     for (const country in countryCodes) {
         if(country != "Iran") {
             const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`);
-            let pushObject = {}
+            let pushObject = []
             const packageGroups = response.data[steamId].data.package_groups
             for(const packageGroup of packageGroups) {
                 for(const sub of packageGroup.subs) {
                     const name = sub.option_text.slice(0, sub.option_text.lastIndexOf("-")).trim();
-                    pushObject = {
+                    pushObject = [
                         ...pushObject,
-                        [countryCodes[country].persian]: [
-                            {
-                                name: name,
-                                price: Math.floor((sub.price_in_cents_with_discount / 100) * steamExchangeRates[countryCodes[country].tag]),
-                            }
-                        ]
-                    }
+                        {
+                            name: name,
+                            price: Math.floor((sub.price_in_cents_with_discount / 100) * steamExchangeRates[countryCodes[country].tag])
+                        }
+                    ]
                 }
             }
-            price.subs.push(pushObject)
+            price.subs[countryCodes[country].persian] = pushObject;
             await new Promise(r => setTimeout(r, 700));
         }
     }
-    function getPrice(sub) {
-        return Object.values(sub)[0][0].price;
-    }
-    price = [...price.subs].sort((a, b) => getPrice(a) - getPrice(b));
 
-    const cheapest = price[0][Object.keys(price[0])][0].price;
+    price.subs = Object.fromEntries(
+        Object.entries(price.subs).sort(
+            ([, countryA], [, countryB]) =>
+                countryA[0].price - countryB[0].price
+        )
+    );
+
+    const cheapest = price.subs[Object.keys(price.subs)[0]][0].price
 
     if(gameData.price_overview){
         price = {
-            subs: price,
+            subs: price.subs,
             initial: cheapest === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.price_overview.discount_percent / 100)),
             final: cheapest,
             discount: gameData.price_overview.discount_percent
@@ -111,52 +113,57 @@ export async function addSteamGameToDB(steamId) {
 
 export async function updateGmaePriceInDB(steamId) {
     let steamExchangeRates = {...exchangeRates, tr: exchangeRates.us, ar: exchangeRates.us};
-    let price = {subs: []};
     let gameData
+    let price = {
+        subs: {}
+    }
     let discount = 0;
     for (const country in countryCodes) {
         if(country != "Iran") {
             const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`);
-            let pushObject = {}
+            let pushObject = []
             const packageGroups = response.data[steamId].data.package_groups
             for(const packageGroup of packageGroups) {
                 for(const sub of packageGroup.subs) {
                     const name = sub.option_text.slice(0, sub.option_text.lastIndexOf("-")).trim();
-                    pushObject = {
+                    pushObject = [
                         ...pushObject,
-                        [countryCodes[country].persian]: [
-                            {
-                                name: name,
-                                price: Math.floor((sub.price_in_cents_with_discount / 100) * steamExchangeRates[countryCodes[country].tag]),
-                            }
-                        ]
-                    }
+                        {
+                            name: name,
+                            price: Math.floor((sub.price_in_cents_with_discount / 100) * steamExchangeRates[countryCodes[country].tag])
+                        }
+                    ]
                 }
             }
-            price.subs.push(pushObject)
-            gameData = response.data[steamId].data
+            price.subs[countryCodes[country].persian] = pushObject;
+            gameData = response.data[steamId].data;
             await new Promise(r => setTimeout(r, 700));
         }
     }
-    function getPrice(sub) {
-        return Object.values(sub)[0][0].price;
-    }
-    price = [...price.subs].sort((a, b) => getPrice(a) - getPrice(b));
 
-    const cheapest = price[0][Object.keys(price[0])][0].price;
+    price.subs = Object.fromEntries(
+        Object.entries(price.subs).sort(
+            ([, countryA], [, countryB]) =>
+                countryA[0].price - countryB[0].price
+        )
+    );
+
+    const cheapest = price.subs[Object.keys(price.subs)[0]][0].price
 
     if(gameData.price_overview){
         price = {
-            subs: price,
-            initial: gameData.price_overview.discount_percent === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.price_overview.discount_percent / 100)),
+            subs: price.subs,
+            initial: cheapest === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.price_overview.discount_percent / 100)),
             final: cheapest,
+            discount: gameData.price_overview.discount_percent
         };
         discount = gameData.price_overview.discount_percent
     }else{
         price = {
             subs: price,
-            initial: gameData.package_groups[0].subs[0].percent_savings === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.package_groups[0].subs[0].percent_savings / 100)),
+            initial: cheapest === 0 ? cheapest : Math.floor(gameData.package_groups[0].subs[0].percent_savings / (1 - 0 / 100)),
             final: cheapest,
+            discount: gameData.package_groups[0].subs[0].percent_savings
         };
         discount = gameData.package_groups[0].subs[0].percent_savings
     }

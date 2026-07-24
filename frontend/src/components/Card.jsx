@@ -2,9 +2,7 @@ import React from 'react'
 import { Link } from 'react-router'
 import PriceSVG from './priceSVG'
 
-const Card = ({banner, category, discount, id, image, info, price, steamId, title}) => {
-
-    console.log(price)
+const Card = ({discount, id, image, price, title, category}) => {
     let formatedPrice = Number(price.initial).toLocaleString("fa-IR")
     let formatedDiscountPrice
     if(discount){

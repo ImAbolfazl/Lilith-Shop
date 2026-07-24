@@ -1,14 +1,13 @@
 export const gamesDataSet = [
     // 1808500, // ARC Raiders
-    883710, // Resident Evil 2
-    3357650, // PRAGMATA
     3764200, // Resident Evil Requiem
-    4080220, // EA SPORTS FC™ 27
-    319630, // Life is Strange
-    532210, // Life is Strange 2
-    1938090, // Call of Duty: Modern Warfare II
-    209660, // Call of Duty: Advanced Warfare
-    952060, // Resident Evil 3
+    // 883710, // Resident Evil 2
+    // 3357650, // PRAGMATA
+    // 4080220, // EA SPORTS FC™ 27
+    // 319630, // Life is Strange
+    // 1938090, // Call of Duty: Modern Warfare II
+    // 209660, // Call of Duty: Advanced Warfare
+    // 952060, // Resident Evil 3
     // 238320, // Outlast
     // 1174180, // Red Dead Redemption 2
     // 2670630, // Supermarket Simulator
