@@ -12,7 +12,7 @@ const Search = ({ toggleSearch }) => {
     const searchFilter = allGames.filter(item => query !== "" && item.title.toLowerCase().includes(query.toLowerCase()));
 
     return (
-        <motion.div initial={{ opacity: 0, y: -1000 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -1000 }} transition={{ duration: 0.35 }} className="absolute top-0 left-0 right-0 z-[998] bg-bg-secondary overflow-y-auto h-screen">
+        <motion.div initial={{ opacity: 0, y: -1000 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -1000 }} transition={{ duration: 0.35 }} className="absolute top-0 left-0 right-0 z-[9999] bg-bg-secondary overflow-y-auto h-screen">
             <IoMdClose size={42} onClick={toggleSearch} className="absolute top-8 left-8 cursor-pointer hover:rotate-90 transition duration-300" />
 
             <div className="w-full flex flex-col items-center pt-24 pb-20">

@@ -63,7 +63,7 @@ const Main = () => {
                     transition={{ duration: 0.6 }}
                     className='text-accent-primary tracking-[0.3em] text-sm font-medium mb-4'
                 >
-                    فروشگاه دیجیتال لیلیث
+                    لیلیث
                 </motion.p>
 
                 <motion.h1
@@ -72,7 +72,7 @@ const Main = () => {
                     transition={{ duration: 0.7, delay: 0.1 }}
                     className='text-5xl md:text-7xl font-bold text-text-primary leading-[1.2]'
                 >
-                    دنیای بازی، <span className='text-accent-primary'>یک کلیک</span> با تو فاصله دارد
+                    دنیای گیمینگ، <span className='text-accent-primary'>یک کلیک</span> با تو فاصله دارد
                 </motion.h1>
 
                 <motion.p
@@ -81,7 +81,7 @@ const Main = () => {
                     transition={{ duration: 0.7, delay: 0.2 }}
                     className='text-text-primary/70 max-w-xl mt-6 text-lg'
                 >
-                    گیفت‌کارت و خدمات دیجیتال استیم، پلی‌استیشن، اپیک، دیسکورد و بیشتر — تحویل آنی، قیمت شفاف
+                    گیفت‌کارت و خدمات دیجیتال استیم، پلی‌استیشن، اپیک، دیسکورد و بیشتر — تحویل آنی، با پایین ترین قیمت
                 </motion.p>
             </section>
 

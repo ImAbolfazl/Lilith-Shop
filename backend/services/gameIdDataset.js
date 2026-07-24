@@ -1,11 +1,11 @@
 export const gamesDataSet = [
     3764200, // Resident Evil Requiem
+    238320, // Outlast
     // 319630, // Life is Strange
     // 936790, // Life is Strange: True Colors
     // 613100, // House Flipper
     // 500, // Left 4 Dead
     // 524220, // NieR:Automata
-    // 238320, // Outlast
     // 414700, // Outlast 2
     // 273300, // The Forest
     // 1304930, // The Outlast Trials

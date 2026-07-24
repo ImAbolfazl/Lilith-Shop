@@ -6,8 +6,6 @@ import { downloadImage } from "./generalUtils.js";
 
 export async function addSteamGameToDB(steamId) {
     let steamExchangeRates = {...exchangeRates, tr: exchangeRates.us, ar: exchangeRates.us};
-    console.log(exchangeRates);
-    console.log(steamExchangeRates);
     const response = await axios.get(
         `https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=us`,{
             timeout: 10000
