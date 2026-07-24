@@ -9,21 +9,6 @@ import { UserContext } from "../App";
 import Search from "./search.jsx";
 import { AnimatePresence, motion } from "framer-motion";
 
-const Underline = ({ children }) => (
-    <motion.span className="relative cursor-pointer text-text-primary" whileHover="hover">
-        {children}
-        <motion.span
-            variants={{
-                hover: { width: "100%" },
-                initial: { width: 0 }
-            }}
-            initial="initial"
-            transition={{ duration: 0.25 }}
-            className="absolute left-0 -bottom-1 h-[2px] bg-accent-primary/80"
-        />
-    </motion.span>
-);
-
 const Glow = ({ children }) => (
     <div className="text-text-primary drop-shadow-[0_0_6px_var(--color-accent-primary)]">
         {children}
@@ -70,8 +55,7 @@ const Header = ({ theme, setTheme }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
             className="flex items-center justify-around h-20 fixed top-0 left-0 right-0 z-100
-      bg-bg-secondary/60 backdrop-blur-xl border-b border-accent-primary/20
-      shadow-[0_0_15px_var(--color-accent-primary)]"
+      bg-bg-secondary/60 backdrop-blur-xl border-b border-accent-primary"
         >
             <AnimatePresence>
                 {search && <Search toggleSearch={toggleSearch} />}
@@ -97,21 +81,15 @@ const Header = ({ theme, setTheme }) => {
                     { name: "خدمات کالاف دیوتی", path: "/Products?c=CallOfDuty" },
                 ].map((item) => (
                     <motion.div
+                        className="relative before:content-[''] before:absolute before:right-0 before:bottom-0 before:h-[2px] before:w-0 before:bg-accent-primary/60 before:transition-all before:duration-300 hover:before:w-full hover:before:animate-[hoverAnimation_300ms]"
                         key={item.path}
-                        whileHover={{ scale: 1.12, x: 3 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 15 }}
                     >
-                        <Underline>
-                            <Link to={item.path}>{item.name}</Link>
-                        </Underline>
+                        <Link to={item.path}>{item.name}</Link>
                     </motion.div>
                 ))}
 
-                <motion.div className="relative group pb-1" whileHover={{ scale: 1.12 }}>
-                    <Underline>
-                        <Link to="/Products?c=All">سایر خدمات</Link>
-                    </Underline>
-
+                <motion.div className="relative group pb-1" whileHover={{ scale: 1.03 }}>
+                    <Link to="/Products?c=All">سایر خدمات</Link>
                     <motion.div
                         initial={{ opacity: 0, y: -10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -135,24 +113,22 @@ const Header = ({ theme, setTheme }) => {
                 className="bg-bg-secondary hover:bg-accent-primary/20 duration-300 px-6 py-2 rounded-3xl
         border border-accent-primary cursor-pointer hidden lg:block"
             >
-                <Glow>
-                    {token ? (
-                        <Link to="/Dashboard" className="text-xl xl:text-1xl">
-                            داشبورد
-                        </Link>
-                    ) : (
-                        <Link to="/Login" className="text-xl xl:text-1xl">
-                            ورود | ثبت نام
-                        </Link>
-                    )}
-                </Glow>
+                {token ? (
+                    <Link to="/Dashboard" className="text-xl xl:text-1xl">
+                        داشبورد
+                    </Link>
+                ) : (
+                    <Link to="/Login" className="text-xl xl:text-1xl">
+                        ورود | ثبت نام
+                    </Link>
+                )}
             </motion.div>
 
             <div className="flex items-center gap-10">
                 <FaSearch
                     size={30}
                     onClick={toggleSearch}
-                    className="cursor-pointer hidden lg:block text-text-primary drop-shadow-[0_0_6px_var(--color-accent-primary)]"
+                    className="cursor-pointer hidden lg:block text-text-primary"
                 />
 
                 <motion.div
@@ -162,12 +138,12 @@ const Header = ({ theme, setTheme }) => {
                 >
                     {theme === "light" ? (
                         <MdSunny
-                            className="size-8 cursor-pointer hidden lg:block text-accent-primary drop-shadow-[0_0_6px_var(--color-accent-primary)]"
+                            className="size-8 cursor-pointer hidden lg:block text-accent-primary"
                             onClick={toggleTheme}
                         />
                     ) : (
                         <FaMoon
-                            className="size-8 cursor-pointer hidden lg:block text-accent-primary drop-shadow-[0_0_6px_var(--color-accent-primary)]"
+                            className="size-8 cursor-pointer hidden lg:block text-accent-primary"
                             onClick={toggleTheme}
                         />
                     )}
@@ -175,7 +151,7 @@ const Header = ({ theme, setTheme }) => {
             </div>
 
             <GiHamburgerMenu
-                className="lg:hidden size-10 cursor-pointer text-text-primary drop-shadow-[0_0_6px_var(--color-accent-primary)]"
+                className="lg:hidden size-10 cursor-pointer text-text-primary"
                 onClick={() => setSideMenu(true)}
             />
 
@@ -187,37 +163,34 @@ const Header = ({ theme, setTheme }) => {
                             animate={{ x: 0 }}
                             exit={{ x: "-100%" }}
                             transition={{ duration: 0.3 }}
-                            className="lg:hidden flex flex-col absolute bg-bg-secondary/70 backdrop-blur-xl p-10
-              left-0 top-0 h-screen gap-4 items-center w-70 z-999
-              shadow-[0_0_15px_var(--color-accent-primary)]"
-                        >
+                            className="lg:hidden flex flex-col absolute bg-bg-secondary/70 backdrop-blur-xl p-10 left-0 top-0 h-screen gap-4 items-center w-70 z-999 border-r border-accent-primary/20">
                             <div className="flex items-center justify-center gap-10 mb-8">
                                 <FaSearch
                                     onClick={() => {
                                         toggleSearch();
                                         setSideMenu(false);
                                     }}
-                                    className="size-6 cursor-pointer text-text-primary drop-shadow-[0_0_6px_var(--color-accent-primary)]"
+                                    className="size-6 cursor-pointer text-accent-primary"
                                 />
                                 <IoMdClose
-                                    className="size-10 cursor-pointer text-accent-secondary drop-shadow-[0_0_6px_var(--color-accent-secondary)]"
+                                    className="size-10 cursor-pointer text-text-primary"
                                     onClick={() => setSideMenu(false)}
                                 />
                                 {theme === "light" ? (
                                     <MdSunny
-                                        className="size-8 cursor-pointer text-accent-primary drop-shadow-[0_0_6px_var(--color-accent-primary)]"
+                                        className="size-8 cursor-pointer text-accent-primary"
                                         onClick={toggleTheme}
                                     />
                                 ) : (
                                     <FaMoon
-                                        className="size-8 cursor-pointer text-accent-primary drop-shadow-[0_0_6px_var(--color-accent-primary)]"
+                                        className="size-8 cursor-pointer text-accent-primary"
                                         onClick={toggleTheme}
                                     />
                                 )}
                             </div>
 
-                            {token ? (
-                                <Glow>
+                            <motion.div initial={{opacity: 0, y: -20}} animate={{opacity: 1, y: 0 }} transition={{ duration: 0.2, delay: 0.2 }}>
+                                {token ? (
                                     <Link
                                         onClick={() => setSideMenu(false)}
                                         to="/Dashboard"
@@ -225,9 +198,7 @@ const Header = ({ theme, setTheme }) => {
                                     >
                                         داشبورد
                                     </Link>
-                                </Glow>
-                            ) : (
-                                <Glow>
+                                ) : (
                                     <Link
                                         onClick={() => setSideMenu(false)}
                                         to="/Login"
@@ -237,8 +208,8 @@ const Header = ({ theme, setTheme }) => {
                                         <p>|</p>
                                         <p>ثبت نام</p>
                                     </Link>
-                                </Glow>
-                            )}
+                                )}
+                            </motion.div>
 
                             {[
                                 { name: "خدمات استیم", path: "/Products?c=Steam" },
@@ -246,7 +217,7 @@ const Header = ({ theme, setTheme }) => {
                                 { name: "خدمات کالاف دیوتی", path: "/Products?c=CallOfDuty" },
                                 ...pathsMap,
                             ].map((item) => (
-                                <Glow key={item.path}>
+                                <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0 }} transition={{ duration: 0.2, delay: 0.2 }} key={item.path}>
                                     <Link
                                         to={item.path}
                                         onClick={() => setSideMenu(false)}
@@ -254,11 +225,10 @@ const Header = ({ theme, setTheme }) => {
                                     >
                                         {item.name}
                                     </Link>
-                                </Glow>
+                                </motion.div>
                             ))}
                         </motion.div>
 
-                        {/* Overlay */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 0.7 }}

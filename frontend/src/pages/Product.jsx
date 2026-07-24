@@ -1,9 +1,10 @@
 import React, {useState, useEffect, useContext} from 'react'
-import { useParams } from 'react-router'
+import {useNavigate, useParams} from 'react-router'
 import axios from "axios"
 import PriceSVG from '../components/priceSVG'
 import {UserContext} from "../App.jsx"
 import toast, {Toaster} from "react-hot-toast"
+import * as url from "node:url";
 
 const Product = () => {
     const id = useParams().id
@@ -22,6 +23,7 @@ const Product = () => {
     const [rawError, setRawError] = useState(false)
     const [savingProduct, setSavingProduct] = useState(false)
     const [priceJsonError, setPriceJsonError] = useState(false)
+    const navigate = useNavigate()
     let needsInput
 
     const successToast = text => {
@@ -127,6 +129,16 @@ const Product = () => {
             errorToast("خطا در دریافت اطلاعات محصول برای ویرایش")
         } finally {
             setRawLoading(false)
+        }
+    }
+
+    const handleProductDelete = async () => {
+        try{
+            await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/products/${data.id}`, {headers: {authorization: token}})
+
+            navigate("/")
+        }catch(err){
+            console.log(err)
         }
     }
 
@@ -328,16 +340,23 @@ const Product = () => {
                     </h1>
 
                     {user?.role === "admin" && (
-                        <button
-                            onClick={openAdminModal}
-                            className="bg-[var(--color-accent-primary)] text-[var(--color-text-primary)] px-4 py-2 rounded-xl text-sm font-bold hover:opacity-80 transition w-fit"
-                        >
-                            ویرایش محصول
-                        </button>
+                        <div className="flex gap-5">
+                            <button
+                                onClick={openAdminModal}
+                                className="bg-[var(--color-accent-primary)] text-[var(--color-text-primary)] px-4 py-2 rounded-xl text-sm font-bold hover:opacity-80 transition w-fit"
+                            >
+                                ویرایش محصول
+                            </button>
+                            <button
+                                onClick={handleProductDelete}
+                                className="bg-[var(--color-accent-primary)] text-[var(--color-text-primary)] px-4 py-2 rounded-xl text-sm font-bold hover:opacity-80 transition w-fit"
+                            >
+                                حذف کردن محصول
+                            </button>
+                        </div>
                     )}
 
                     <div className="flex gap-6 text-[var(--color-text-secondary)] text-sm md:text-base">
-                        <p>وضعیت: <span className="text-green-400">موجود</span></p>
                         <p>تحویل: 10 تا 30 دقیقه</p>
                     </div>
                 </div>
@@ -358,7 +377,7 @@ const Product = () => {
 
                     <div className='flex flex-col gap-3'>
                         <p className='text-lg text-[var(--color-text-secondary)]'>ریجن اکانت خودتون رو انتخاب کنید:</p>
-                        <div className='flex flex-wrap gap-3'>
+                        <div className='grid grid-cols-4 flex-wrap gap-3'>
                             {data.price.map(price => (
                                 <button
                                     key={price.country}

@@ -1,6 +1,7 @@
 export const gamesDataSet = [
     3764200, // Resident Evil Requiem
     238320, // Outlast
+    1174180, // Red Dead Redemption 2
     // 319630, // Life is Strange
     // 936790, // Life is Strange: True Colors
     // 613100, // House Flipper
@@ -12,7 +13,6 @@ export const gamesDataSet = [
     // 1888930, // The Last of Us Part I
     // 513710, // SCUM
     // 218620, // PAYDAY 2
-    // 1174180, // Red Dead Redemption 2
     // 883710, // Resident Evil 2
     // 952060, // Resident Evil 3
     // 2050650, // Resident Evil 4

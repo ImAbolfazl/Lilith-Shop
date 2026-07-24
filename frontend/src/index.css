@@ -36,3 +36,12 @@ body {
   scroll-behavior: auto;
   scroll-behavior: smooth;
 }
+
+@keyframes openBorderB {
+  0% {
+    width: 0;
+   }
+  100% {
+    width: 100%;
+  }
+}

@@ -1,7 +1,7 @@
 import axios from "axios";
 import express, { json } from "express";
 import {
-    createProduct,
+    createProduct, deleteProductById,
     getAllCategories,
     getAllProducts,
     getProductById,
@@ -257,10 +257,27 @@ router.get("/categories", async (req, res) => {
     } catch (err) {
         console.log(err);
 
-        res.status(500).json({
-            status: "error"
-        });
+        res.status(500).json({status: "error"});
     }
 });
+
+router.delete("/:id", authMiddleware, roleMiddleware, async (req, res) => {
+    if (req.role !== "admin") {
+        return res.status(401).json({
+            status: "access denied"
+        });
+    }
+
+    try{
+        const id = Number(req.params.id);
+
+        await deleteProductById(id)
+
+        res.status(200).json({status: "success"})
+    }catch(err){
+        console.error(err)
+        res.status(500).json({})
+    }
+})
 
 export { router as productRouter };

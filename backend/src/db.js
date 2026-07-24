@@ -62,6 +62,10 @@ export async function createProduct(title, category, image, banner, price, disco
     return result
 }
 
+export async function deleteProductById(id) {
+    const [result] = await pool.query("DELETE FROM products WHERE id = ?", [id])
+}
+
 export async function updateGamePrice(price, discount, steamId) {
     const [result] = await pool.query(
         "UPDATE products SET price = ?, discount = ? WHERE steamId = ?",
