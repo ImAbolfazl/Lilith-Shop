@@ -21,12 +21,12 @@ const Header = ({ theme, setTheme }) => {
     const { token } = useContext(UserContext);
 
     const pathsMap = [
-        { name: "وورلد اف وارکرفت", path: "/Products?c=WoW" },
+        { name: "وارکرفت", path: "/Products?c=WoW" },
         { name: "دیسکورد", path: "/Products?c=Discord" },
         { name: "تلگرام", path: "/Products?c=Telegram" },
         { name: "کیک", path: "/Products?c=Kick" },
         { name: "اپیک گیمز", path: "/Products?c=EpicGames" },
-        { name: "توییج", path: "/Products?c=Twitch" },
+        { name: "توییچ", path: "/Products?c=Twitch" },
         { name: "اسپاتیفای", path: "/Products?c=Spotify" },
         { name: "پلی استیشین", path: "/Products?c=PlayStation" },
         { name: "خدمات کاهش پینگ", path: "/Products?c=PingReduction" },

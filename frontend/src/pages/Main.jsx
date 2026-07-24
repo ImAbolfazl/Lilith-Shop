@@ -7,6 +7,7 @@ import ScrollContainer from "react-indiana-drag-scroll"
 import "react-indiana-drag-scroll/dist/style.css"
 import { Link } from 'react-router'
 import { CgPlayTrackPrevR } from "react-icons/cg"
+import MaskRevealText from "../components/Maskrevealtext.jsx";
 
 const sectionVariants = {
     hidden: { opacity: 0, y: 40 },
@@ -58,22 +59,13 @@ const Main = () => {
                 <div className='absolute inset-0 -z-10 bg-gradient-to-b from-bg-primary via-bg-primary/95 to-bg-primary' />
                 <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[36rem] rounded-full bg-accent-primary/20 blur-[140px] -z-10' />
 
-                <motion.p
-                    initial={reduceMotion ? false : { opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                    className='text-accent-primary tracking-[0.3em] text-sm font-medium mb-4'
-                >
-                    لیلیث
-                </motion.p>
-
                 <motion.h1
                     initial={reduceMotion ? false : { opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.1 }}
                     className='text-5xl md:text-7xl font-bold text-text-primary leading-[1.2]'
                 >
-                    دنیای گیمینگ، <span className='text-accent-primary'>یک کلیک</span> با تو فاصله داره
+                    دنیای گیمینگ، <MaskRevealText baseText="یک کلیک" revealText="لیلیث" radius={80} /> با تو فاصله داره
                 </motion.h1>
 
                 <motion.p
@@ -82,7 +74,9 @@ const Main = () => {
                     transition={{ duration: 0.7, delay: 0.2 }}
                     className='text-text-primary/70 max-w-xl mt-6 text-lg'
                 >
-                    گیفت‌کارت و خدمات دیجیتال استیم، پلی‌استیشن، اپیک، دیسکورد و بیشتر — تحویل آنی، با پایین ترین قیمت
+                    خدمات دیجیتال
+                    <br/>
+                    تحویل آنی، با پایین ترین قیمت
                 </motion.p>
             </section>
 

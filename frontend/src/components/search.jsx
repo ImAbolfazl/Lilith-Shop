@@ -20,12 +20,12 @@ const Search = ({ toggleSearch }) => {
 
                 <div className="relative w-[90%] max-w-5xl mb-10">
                     <FaSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-text-secondary text-xl" />
-                    <input type="text" placeholder="نام بازی مورد نظر خود را وارد کنید..." value={query} onChange={(e) => setQuery(e.target.value)} className="w-full bg-bg-primary border border-white/10 focus:border-accent-secondary rounded-2xl pl-16 pr-6 py-5 text-xl outline-none transition shadow-2xl" />
+                    <input type="text" placeholder="نام محصول مورد نظر خود را وارد کنید..." value={query} onChange={(e) => setQuery(e.target.value)} className="w-full bg-bg-primary border border-white/10 focus:border-accent-secondary rounded-2xl pl-16 pr-6 py-5 text-xl outline-none transition shadow-2xl" />
                 </div>
 
                 <div className="w-[90%] max-w-5xl flex flex-col gap-5">
                     {query === "" ? (
-                        <div className="text-center text-text-secondary mt-20 text-2xl">برای شروع جستجو، نام بازی را وارد کنید.</div>
+                        <div className="text-center text-text-secondary mt-20 text-2xl">برای شروع جستجو، نام محصول را وارد کنید.</div>
                     ) : searchFilter.length === 0 ? (
                         <div className="text-center text-text-secondary mt-20 text-2xl">بازی‌ای پیدا نشد.</div>
                     ) : (
