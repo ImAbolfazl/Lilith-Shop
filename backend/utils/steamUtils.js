@@ -58,6 +58,13 @@ export async function addSteamGameToDB(steamId) {
             final: cheapest,
             discount: gameData.price_overview.discount_percent
         };
+    }else{
+        price = {
+            subs: price,
+            initial: cheapest === 0 ? cheapest : Math.floor(gameData.package_groups[0].subs[0].percent_savings / (1 - 0 / 100)),
+            final: cheapest,
+            discount: gameData.package_groups[0].subs[0].percent_savings
+        };
     }
 
     const gameDesc = HTMLTranslator(
@@ -139,9 +146,16 @@ export async function updateGmaePriceInDB(steamId) {
     if(gameData.price_overview){
         price = {
             subs: price,
-            initial: cheapest === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.price_overview.discount_percent / 100)),
+            initial: gameData.price_overview.discount_percent === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.price_overview.discount_percent / 100)),
             final: cheapest,
             discount: gameData.price_overview.discount_percent
+        };
+    }else{
+        price = {
+            subs: price,
+            initial: gameData.package_groups[0].subs[0].percent_savings === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.package_groups[0].subs[0].percent_savings / 100)),
+            final: cheapest,
+            discount: gameData.package_groups[0].subs[0].percent_savings
         };
     }
     updateGamePrice(JSON.stringify(price), discount, steamId)

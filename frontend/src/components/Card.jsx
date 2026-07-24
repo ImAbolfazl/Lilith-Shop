@@ -3,11 +3,12 @@ import { Link } from 'react-router'
 import PriceSVG from './priceSVG'
 
 const Card = ({banner, category, discount, id, image, info, price, steamId, title}) => {
-    
-    let formatedPrice = price[0].price.toLocaleString("fa-IR")
+
+    console.log(price)
+    let formatedPrice = Number(price.initial).toLocaleString("fa-IR")
     let formatedDiscountPrice
     if(discount){
-        formatedDiscountPrice = Math.round((price[0].price * (1 - discount / 100))).toLocaleString("fa-IR")
+        formatedDiscountPrice = Number(price.final).toLocaleString("fa-IR")
     }
     
   return (

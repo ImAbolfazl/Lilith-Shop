@@ -31,26 +31,28 @@ export const applyProfit = async (products) => {
             price: {
                 ...parsedPrice,
 
-                initial: Math.floor(
-                    parsedPrice.initial * profitMultiplier
-                ),
+                initial: parsedPrice.initial
+                    ? Math.floor(parsedPrice.initial * profitMultiplier)
+                    : parsedPrice.initial,
 
-                final: Math.floor(
-                    parsedPrice.final * profitMultiplier
-                ),
+                final: parsedPrice.final
+                    ? Math.floor(parsedPrice.final * profitMultiplier)
+                    : parsedPrice.final,
 
-                subs: parsedPrice.subs.map(region => {
-                    const country = Object.keys(region)[0];
+                subs: Array.isArray(parsedPrice.subs)
+                    ? parsedPrice.subs.map(region => {
+                        const country = Object.keys(region)[0];
 
-                    return {
-                        [country]: region[country].map(item => ({
-                            ...item,
-                            price: Math.floor(
-                                item.price * profitMultiplier
-                            )
-                        }))
-                    };
-                })
+                        return {
+                            [country]: region[country].map(item => ({
+                                ...item,
+                                price: Math.floor(
+                                    item.price * profitMultiplier
+                                )
+                            }))
+                        };
+                    })
+                    : []
             }
         };
     });

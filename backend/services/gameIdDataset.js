@@ -1,11 +1,14 @@
 export const gamesDataSet = [
     // 1808500, // ARC Raiders
-    883710, // Resident Evil 2
+    // 883710, // Resident Evil 2
     // 3357650, // PRAGMATA
     // 3764200, // Resident Evil Requiem
     // 4080220, // EA SPORTS FC™ 27
+    319630, // Life is Strange
+    532210, // Life is Strange 2
+    1938090, // Call of Duty: Modern Warfare II
+    // 209660, // Call of Duty: Advanced Warfare
     // 952060, // Resident Evil 3
-    // 319630, // Life is Strange
     // 238320, // Outlast
     // 1174180, // Red Dead Redemption 2
     // 2670630, // Supermarket Simulator
@@ -23,7 +26,6 @@ export const gamesDataSet = [
     // 554620, // Life is Strange: Before the Storm
     // 1265920, // Life is Strange Remastered
     // 1265930, // Life is Strange: Before the Storm Remastered
-    // 532210, // Life is Strange 2
     // 1874000, // Life is Strange: Double Exposure
     // 2624870, // Life is Strange: Reunion
     // 3240220, // Grand Theft Auto V Enhanced
@@ -38,7 +40,6 @@ export const gamesDataSet = [
     // 990080, // Hogwarts Legacy
     // 1716740, // Starfield
     // 1623730, // Palworld
-    // 1938090, // Call of Duty: Modern Warfare II
     // 1063730, // New World: Aeternum
     // 2358720, // Black Myth: Wukong
     // 2246340, // Monster Hunter Wilds
@@ -268,7 +269,6 @@ export const gamesDataSet = [
     // 960990, // Beyond: Two Souls
     // 383180, // Dead Island Riptide Definitive Edition
     // 751780, // Forager
-    // 209660, // Call of Duty: Advanced Warfare
     // 226860, // Galactic Civilizations III
     // 939400, // LoveChoice
     // 2321470, // Deep Rock Galactic: Survivor
