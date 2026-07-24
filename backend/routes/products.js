@@ -18,18 +18,42 @@ import { countryCodes, exchangeRates } from "../services/exchangePrice.js";
 export const router = express.Router();
 
 export const applyProfit = async (products) => {
-    return products.map(product => ({
-        ...product,
-        price: (typeof product.price === "string"
-            ? JSON.parse(product.price)
-            : product.price
-        ).map(price => ({
-            ...price,
-            price: Math.floor(
-                price.price * (1 + Number(config.profitPercentage) / 100)
-            )
-        }))
-    }));
+    return products.map(product => {
+        const parsedPrice =
+            typeof product.price === "string"
+                ? JSON.parse(product.price)
+                : product.price;
+
+        const profitMultiplier = 1 + Number(config.profitPercentage) / 100;
+
+        return {
+            ...product,
+            price: {
+                ...parsedPrice,
+
+                initial: Math.floor(
+                    parsedPrice.initial * profitMultiplier
+                ),
+
+                final: Math.floor(
+                    parsedPrice.final * profitMultiplier
+                ),
+
+                subs: parsedPrice.subs.map(region => {
+                    const country = Object.keys(region)[0];
+
+                    return {
+                        [country]: region[country].map(item => ({
+                            ...item,
+                            price: Math.floor(
+                                item.price * profitMultiplier
+                            )
+                        }))
+                    };
+                })
+            }
+        };
+    });
 };
 
 router.get("/category/:category", async (req, res) => {

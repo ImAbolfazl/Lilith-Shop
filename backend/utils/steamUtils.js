@@ -5,7 +5,7 @@ import { HTMLTranslator } from "./htmlTranslator.js";
 import { downloadImage } from "./generalUtils.js";
 
 export async function addSteamGameToDB(steamId) {
-    let steamExchangeRates = {...exchangeRates, tr: exchangeRates.us, ar: exchangeRates.us};
+    const steamExchangeRates = {...exchangeRates, tr: exchangeRates.us, ar: exchangeRates.us};
     const response = await axios.get(
         `https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=us`,{
             timeout: 10000
@@ -18,61 +18,46 @@ export async function addSteamGameToDB(steamId) {
         return;
     }
 
-    let price = [];
+    let price = {subs: []};
+
     let discount = 0;
-    let hasDLC = "ندارد";
-    if (gameData.is_free) {
-        if (gameData.dlc) {
-            for (const country in countryCodes) {
-                const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`);
-                if(countryCodes[country] != "Iran"){
-                    price.push({
-                        country,
-                        persian: countryCodes[country].persian,
-                        price: Math.round(
-                            Number(
-                                (
-                                    response.data[steamId].data.package_groups[0].subs[0]
-                                        .price_in_cents_with_discount / 100
-                                ).toFixed(2)
-                            ) * steamExchangeRates[countryCodes[country].tag]
-                        )
-                    });
+    for (const country in countryCodes) {
+        if(country != "Iran") {
+            const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`);
+            let pushObject = {}
+            const packageGroups = response.data[steamId].data.package_groups
+            for(const packageGroup of packageGroups) {
+                for(const sub of packageGroup.subs) {
+                    const name = sub.option_text.slice(0, sub.option_text.lastIndexOf("-")).trim();
+                    pushObject = {
+                        ...pushObject,
+                        [countryCodes[country].persian]: [
+                            {
+                                name: name,
+                                price: Math.floor((sub.price_in_cents_with_discount / 100) * steamExchangeRates[countryCodes[country].tag]),
+                            }
+                        ]
+                    }
                 }
-
-                await new Promise(r => setTimeout(r, 700));
             }
-        } else {
-            console.log("Game is free or has no purchasable package.");
-            return;
-        }
-    } else {
-        for (const country in countryCodes) {
-            const response = await axios.get(
-                `https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`
-            );
-
-            price.push({
-                country,
-                persian: countryCodes[country].persian,
-                price: Math.round(
-                    Number(
-                        (
-                            response.data[steamId].data.price_overview.initial / 100
-                        ).toFixed(2)
-                    ) * steamExchangeRates[countryCodes[country].tag]
-                )
-            });
-
-            if (gameData.price_overview.discount_percent) {
-                discount = gameData.price_overview.discount_percent;
-            }
+            price.subs.push(pushObject)
             await new Promise(r => setTimeout(r, 700));
         }
     }
+    function getPrice(sub) {
+        return Object.values(sub)[0][0].price;
+    }
+    price = [...price.subs].sort((a, b) => getPrice(a) - getPrice(b));
 
-    if (gameData.packages) {
-        hasDLC = "دارد";
+    const cheapest = price[0][Object.keys(price[0])][0].price;
+
+    if(gameData.price_overview){
+        price = {
+            subs: price,
+            initial: cheapest === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.price_overview.discount_percent / 100)),
+            final: cheapest,
+            discount: gameData.price_overview.discount_percent
+        };
     }
 
     const gameDesc = HTMLTranslator(
@@ -90,7 +75,8 @@ export async function addSteamGameToDB(steamId) {
         "requirements"
     );
 
-    price.sort((a, b) => a.price - b.price);
+
+    let hasDLC = gameData.dlc ? "دارد" : "ندارد"
     const headerFile = `./public/uploads/headers/${steamId}.jpg`;
     const backgroundFile = `./public/uploads/backgrounds/${steamId}.jpg`;
     await downloadImage(gameData.header_image, headerFile);
@@ -115,32 +101,48 @@ export async function addSteamGameToDB(steamId) {
 }
 
 export async function updateGmaePriceInDB(steamId) {
-    const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=us`);
-    const gameData = response.data[steamId].data;
     let steamExchangeRates = {...exchangeRates, tr: exchangeRates.us, ar: exchangeRates.us};
-    let price = []
-    let discount = 0
-    if(gameData.is_free){
-        if(gameData.dlc){
-            for (const country in countryCodes) {
-                const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`)
-                
-                price = [...price, {country: [country], persian: countryCodes[country].persian, price: Math.round(Number((response.data[steamId].data.package_groups[0].subs[0].price_in_cents_with_discount / 100).toFixed(2)) * steamExchangeRates[countryCodes[country].tag])}]
+    let price = {subs: []};
+    let gameData
+    let discount = 0;
+    for (const country in countryCodes) {
+        if(country != "Iran") {
+            const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`);
+            let pushObject = {}
+            const packageGroups = response.data[steamId].data.package_groups
+            for(const packageGroup of packageGroups) {
+                for(const sub of packageGroup.subs) {
+                    const name = sub.option_text.slice(0, sub.option_text.lastIndexOf("-")).trim();
+                    pushObject = {
+                        ...pushObject,
+                        [countryCodes[country].persian]: [
+                            {
+                                name: name,
+                                price: Math.floor((sub.price_in_cents_with_discount / 100) * steamExchangeRates[countryCodes[country].tag]),
+                            }
+                        ]
+                    }
+                }
             }
-        }else{
-            console.log("game is either free or doesnt havea price in the steam api");
-            return
-        }
-    }else{
-        for (const country in countryCodes) {
-            const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${steamId}&cc=${countryCodes[country].tag}`)
-
-            price = [...price, {country: [country], persian: countryCodes[country].persian, price: Math.round(Number((response.data[steamId].data.price_overview.initial / 100).toFixed(2)) * steamExchangeRates[countryCodes[country].tag])}]
-            if(gameData.price_overview.discount_percent){
-                discount = gameData.price_overview.discount_percent
-            }
+            price.subs.push(pushObject)
+            gameData = response.data[steamId].data
+            await new Promise(r => setTimeout(r, 700));
         }
     }
-    price.sort((a, b) => a.price - b.price);
+    function getPrice(sub) {
+        return Object.values(sub)[0][0].price;
+    }
+    price = [...price.subs].sort((a, b) => getPrice(a) - getPrice(b));
+
+    const cheapest = price[0][Object.keys(price[0])][0].price;
+
+    if(gameData.price_overview){
+        price = {
+            subs: price,
+            initial: cheapest === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.price_overview.discount_percent / 100)),
+            final: cheapest,
+            discount: gameData.price_overview.discount_percent
+        };
+    }
     updateGamePrice(JSON.stringify(price), discount, steamId)
 }

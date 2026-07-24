@@ -1,10 +1,14 @@
 export const gamesDataSet = [
-    1808500, // ARC Raiders
-    3764200, // Resident Evil Requiem
+    // 1808500, // ARC Raiders
+    883710, // Resident Evil 2
+    // 3357650, // PRAGMATA
+    // 3764200, // Resident Evil Requiem
+    // 4080220, // EA SPORTS FC™ 27
+    // 952060, // Resident Evil 3
+    // 319630, // Life is Strange
     // 238320, // Outlast
     // 1174180, // Red Dead Redemption 2
     // 2670630, // Supermarket Simulator
-    // 319630, // Life is Strange
     // 936790, // Life is Strange: True Colors
     // 613100, // House Flipper
     // 500, // Left 4 Dead
@@ -15,8 +19,6 @@ export const gamesDataSet = [
     // 1888930, // The Last of Us Part I
     // 513710, // SCUM
     // 218620, // PAYDAY 2
-    // 883710, // Resident Evil 2
-    // 952060, // Resident Evil 3
     // 2050650, // Resident Evil 4
     // 554620, // Life is Strange: Before the Storm
     // 1265920, // Life is Strange Remastered
