@@ -39,20 +39,19 @@ export const applyProfit = async (products) => {
                     ? Math.floor(parsedPrice.final * profitMultiplier)
                     : parsedPrice.final,
 
-                subs: Array.isArray(parsedPrice.subs)
-                    ? parsedPrice.subs.map(region => {
-                        const country = Object.keys(region)[0];
-
-                        return {
-                            [country]: region[country].map(item => ({
+                subs: parsedPrice.subs
+                    ? Object.fromEntries(
+                        Object.entries(parsedPrice.subs).map(([country, items]) => [
+                            country,
+                            items.map(item => ({
                                 ...item,
                                 price: Math.floor(
                                     item.price * profitMultiplier
                                 )
                             }))
-                        };
-                    })
-                    : []
+                        ])
+                    )
+                    : {}
             }
         };
     });

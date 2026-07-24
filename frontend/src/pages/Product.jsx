@@ -28,8 +28,8 @@ const Product = () => {
 
     useEffect(() => {
         if(data){
-            setRegion(Object.keys(data.price.subs[0])[0])
-            console.log(region)
+            setRegion()
+            console.log(data.price.subs)
             console.log(typeof data.price.subs)
         }
     }, [data]);
