@@ -3,7 +3,7 @@ import express, { json } from "express";
 import {
     createProduct, deleteProductById,
     getAllCategories,
-    getAllProducts,
+    getAllProducts, getDiscountProducts,
     getProductById,
     getProductsByCategory,
     updateProductById
@@ -276,7 +276,18 @@ router.delete("/:id", authMiddleware, roleMiddleware, async (req, res) => {
         res.status(200).json({status: "success"})
     }catch(err){
         console.error(err)
-        res.status(500).json({})
+        res.status(500).json({status: "error"});
+    }
+})
+
+router.get("/discounts", async (req, res) => {
+    try{
+        const result = await getDiscountProducts()
+
+        res.status(200).json({status: "success", data: result})
+    }catch(err){
+        console.error(err);
+        res.status(500).json({status: "error"});
     }
 })
 

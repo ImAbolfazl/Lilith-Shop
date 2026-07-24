@@ -40,10 +40,10 @@ const pages = {
     cn: "https://www.tgju.org/profile/price_cny",
     in: "https://www.tgju.org/profile/price_inr",
     br: "https://www.tgju.org/profile/price_brl",
-    ar: "https://www.tgju.org/profile/price_dollar_rl",
+    ar: "https://www.tgju.org/profile/price_ars",
     us: "https://www.tgju.org/profile/price_dollar_rl",
     ua: "https://www.tgju.org/profile/price_uah",
-    tr: "https://www.tgju.org/profile/price_dollar_rl",
+    tr: "https://www.tgju.org/profile/price_try",
 };
 
 export async function updateExchangeRates() {

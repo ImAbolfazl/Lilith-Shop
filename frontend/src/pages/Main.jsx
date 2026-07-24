@@ -37,6 +37,7 @@ const Main = () => {
     const reduceMotion = useReducedMotion()
 
     useEffect(() => {
+        window.scrollTo(0, 0)
         const fetchData = async () => {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/categories`)
@@ -72,7 +73,7 @@ const Main = () => {
                     transition={{ duration: 0.7, delay: 0.1 }}
                     className='text-5xl md:text-7xl font-bold text-text-primary leading-[1.2]'
                 >
-                    دنیای گیمینگ، <span className='text-accent-primary'>یک کلیک</span> با تو فاصله دارد
+                    دنیای گیمینگ، <span className='text-accent-primary'>یک کلیک</span> با تو فاصله داره
                 </motion.h1>
 
                 <motion.p

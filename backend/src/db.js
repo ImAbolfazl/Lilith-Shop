@@ -128,3 +128,8 @@ export async function deleteOrderByID(id) {
     const [result] = await pool.query("DELETE FROM orders WHERE id = ?", [id])
     return result
 }
+
+export async function getDiscountProducts(){
+    const [result] = await pool.query("SELECT * FROM products WHERE discount > 0")
+    return result
+}

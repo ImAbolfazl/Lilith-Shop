@@ -357,7 +357,7 @@ const Product = () => {
                     )}
 
                     <div className="flex gap-6 text-[var(--color-text-secondary)] text-sm md:text-base">
-                        <p>تحویل: 10 تا 30 دقیقه</p>
+                        <p>تحویل: 1 تا 12 ساعت</p>
                     </div>
                 </div>
 
@@ -377,7 +377,7 @@ const Product = () => {
 
                     <div className='flex flex-col gap-3'>
                         <p className='text-lg text-[var(--color-text-secondary)]'>ریجن اکانت خودتون رو انتخاب کنید:</p>
-                        <div className='grid grid-cols-4 flex-wrap gap-3'>
+                        <div className='flex flex-wrap gap-3'>
                             {data.price.map(price => (
                                 <button
                                     key={price.country}
@@ -505,11 +505,11 @@ const Product = () => {
                     id='requiredSys'
                 >
                     <div
-                        className="prose prose-invert max-w-none dir-ltr text-center"
+                        className="prose prose-invert max-w-none dir-ltr text-rtl"
                         dangerouslySetInnerHTML={{ __html: data.recommended }}
                     />
                     <div
-                        className="prose prose-invert max-w-none dir-ltr text-center"
+                        className="prose prose-invert max-w-none dir-ltr text-rtl"
                         dangerouslySetInnerHTML={{ __html: data.minimum }}
                     />
                 </div>

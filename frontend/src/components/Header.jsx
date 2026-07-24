@@ -107,6 +107,7 @@ const Header = ({ theme, setTheme }) => {
                     </motion.div>
                 </motion.div>
             </div>
+            <Link to="/Discounts" className="hidden lg:block text-xl xl:text-1xl">تخفیفات</Link>
 
             <motion.div
                 whileHover={{ scale: 1.12 }}
@@ -211,6 +212,7 @@ const Header = ({ theme, setTheme }) => {
                                 )}
                             </motion.div>
 
+                            <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0 }} transition={{ duration: 0.2, delay: 0.2 }} ><Link className="text-xl" to="/Discounts">تخفیفات</Link></motion.div>
                             {[
                                 { name: "خدمات استیم", path: "/Products?c=Steam" },
                                 { name: "خدمات ماینکرفت", path: "/Products?c=MineCraft" },

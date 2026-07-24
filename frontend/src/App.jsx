@@ -13,6 +13,7 @@ import Register from './pages/Register'
 import Login from './pages/Login'
 import MainLayout from './pages/MainLayout'
 import BlankLayout from './pages/BlankLayout'
+import Discounts from "./pages/Discounts.jsx";
 
 export const UserContext = createContext();
 
@@ -102,6 +103,7 @@ const App = () => {
                   <Route path="/" element={<Main />} />
                   <Route path="/Products" element={<Products />} />
                   <Route path="/Product/:id" element={<Product />} />
+                  <Route path="/Discounts" element={<Discounts />} />
               </Route>
               <Route element={<BlankLayout theme={theme} setTheme={setTheme}  />}>
                   <Route path="/Login" element={<Login />} />
