@@ -130,6 +130,6 @@ export async function deleteOrderByID(id) {
 }
 
 export async function getDiscountProducts(){
-    const [result] = await pool.query("SELECT * FROM products WHERE discount > 0")
+    const [result] = await pool.query("SELECT * FROM products WHERE discount > 0 OR realDiscount > 0")
     return result
 }

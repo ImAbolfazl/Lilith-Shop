@@ -24,8 +24,8 @@ export function HTMLTranslator(html, type = "description") {
             .replace(/<br\s*\/?>/gi, "")
             .replace(/<ul[^>]*>/gi, "<ul>")
             .replace(/<li[^>]*>/gi, "<li>")
-            .replace("Minimum", "مورد نیاز")
-            .replace("Recommended", "پیشنهادی")
+            .replace("Minimum:", "")
+            .replace("Recommended:", "")
     }
 
     return cleaned;

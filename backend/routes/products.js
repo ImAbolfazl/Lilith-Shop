@@ -163,6 +163,7 @@ router.post(
                     finalPrice = {
                         "subs": {
                             [countryCodes[currency].persian]: [{
+                                    "tag": countryCodes[currency].tag.toUpperCase(),
                                     "name": title,
                                     "price": price
                                 }]
@@ -173,6 +174,7 @@ router.post(
                     finalPrice = finalPrice = {
                         "subs": {
                             [countryCodes[currency].persian]: [{
+                                "tag": countryCodes[currency].tag.toUpperCase(),
                                 "name": title,
                                 "price": price * exchangeRates[countryCodes[currency].tag]
                             }]

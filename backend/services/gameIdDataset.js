@@ -1,7 +1,7 @@
 export const gamesDataSet = [
     // 1808500, // ARC Raiders
     1245620, // ELDEN RING
-    3764200, // Resident Evil Requiem
+    // 3764200, // Resident Evil Requiem
     // 883710, // Resident Evil 2
     // 3357650, // PRAGMATA
     // 4080220, // EA SPORTS FC™ 27

@@ -5,7 +5,7 @@ import Card from '../components/Card'
 import ParticleField from '../components/ParticleField'
 import ScrollContainer from "react-indiana-drag-scroll"
 import "react-indiana-drag-scroll/dist/style.css"
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { CgPlayTrackPrevR } from "react-icons/cg"
 import MaskRevealText from "../components/Maskrevealtext.jsx";
 
@@ -36,9 +36,9 @@ const Main = () => {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true)
     const reduceMotion = useReducedMotion()
+    const { pathname } = useLocation();
 
     useEffect(() => {
-        window.scrollTo(0, 0)
         const fetchData = async () => {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/categories`)
@@ -51,6 +51,10 @@ const Main = () => {
         }
         fetchData()
     }, [])
+    
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [pathname])
 
     return (
         <div className='relative overflow-hidden'>

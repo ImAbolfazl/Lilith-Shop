@@ -33,6 +33,7 @@ export async function addSteamGameToDB(steamId) {
                     pushObject = [
                         ...pushObject,
                         {
+                            tag: countryCodes[country].tag.toUpperCase(),
                             name: name,
                             price: Math.floor((sub.price_in_cents_with_discount / 100) * steamExchangeRates[countryCodes[country].tag])
                         }
@@ -129,6 +130,7 @@ export async function updateGmaePriceInDB(steamId) {
                     pushObject = [
                         ...pushObject,
                         {
+                            tag: countryCodes[country].tag.toUpperCase(),
                             name: name,
                             price: Math.floor((sub.price_in_cents_with_discount / 100) * steamExchangeRates[countryCodes[country].tag])
                         }
