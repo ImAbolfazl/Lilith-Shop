@@ -1,5 +1,6 @@
 export const gamesDataSet = [
     // 1808500, // ARC Raiders
+    1245620, // ELDEN RING
     3764200, // Resident Evil Requiem
     // 883710, // Resident Evil 2
     // 3357650, // PRAGMATA
@@ -34,7 +35,6 @@ export const gamesDataSet = [
     // 3180070, // No, I'm not Human
     // 550, // Left 4 Dead 2
     // 1091500, // Cyberpunk 2077
-    // 1245620, // ELDEN RING
     // 1817070, // Marvel's Spider-Man Remastered
     // 990080, // Hogwarts Legacy
     // 1716740, // Starfield

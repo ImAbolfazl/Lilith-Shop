@@ -32,7 +32,7 @@ router.get("/", async (req, res) => {
                     info: {
                         ...order.info,
                         price: selectedPrice?.price ?? null,
-                        discount: product[0].discount
+                        discount: product[0].discount + product[0].realDiscount,
                     }
                 }
             })

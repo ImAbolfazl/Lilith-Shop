@@ -44,18 +44,18 @@ export async function addSteamGameToDB(steamId) {
         }
     }
 
-    price.subs = Object.fromEntries(
+    const sortedSubs = Object.fromEntries(
         Object.entries(price.subs).sort(
             ([, countryA], [, countryB]) =>
                 countryA[0].price - countryB[0].price
         )
     );
 
-    const cheapest = price.subs[Object.keys(price.subs)[0]][0].price
+    const cheapest = sortedSubs[Object.keys(sortedSubs)[0]][0].price
 
     if(gameData.price_overview){
         price = {
-            subs: price.subs,
+            subs: sortedSubs,
             initial: cheapest === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.price_overview.discount_percent / 100)),
             final: cheapest,
             discount: gameData.price_overview.discount_percent
@@ -63,7 +63,7 @@ export async function addSteamGameToDB(steamId) {
         discount = gameData.price_overview.discount_percent
     }else{
         price = {
-            subs: price,
+            subs: sortedSubs,
             initial: cheapest === 0 ? cheapest : Math.floor(gameData.package_groups[0].subs[0].percent_savings / (1 - 0 / 100)),
             final: cheapest,
             discount: gameData.package_groups[0].subs[0].percent_savings
@@ -141,31 +141,28 @@ export async function updateGmaePriceInDB(steamId) {
         }
     }
 
-    price.subs = Object.fromEntries(
+    const sortedSubs = Object.fromEntries(
         Object.entries(price.subs).sort(
             ([, countryA], [, countryB]) =>
                 countryA[0].price - countryB[0].price
         )
     );
 
-    const cheapest = price.subs[Object.keys(price.subs)[0]][0].price
+    const cheapest = sortedSubs[Object.keys(sortedSubs)[0]][0].price
 
     if(gameData.price_overview){
         price = {
-            subs: price.subs,
+            subs: sortedSubs,
             initial: cheapest === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.price_overview.discount_percent / 100)),
-            final: cheapest,
-            discount: gameData.price_overview.discount_percent
         };
         discount = gameData.price_overview.discount_percent
     }else{
         price = {
-            subs: price,
+            subs: sortedSubs,
             initial: cheapest === 0 ? cheapest : Math.floor(gameData.package_groups[0].subs[0].percent_savings / (1 - 0 / 100)),
-            final: cheapest,
-            discount: gameData.package_groups[0].subs[0].percent_savings
         };
         discount = gameData.package_groups[0].subs[0].percent_savings
     }
+
     updateGamePrice(JSON.stringify(price), discount, steamId)
 }

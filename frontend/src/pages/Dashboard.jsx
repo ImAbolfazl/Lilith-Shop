@@ -171,8 +171,14 @@ const Dashboard = () => {
         }
     };
 
-    return (
-        <div className='flex items-center justify-center h-screen flex-col'>
+    if(!user){
+        return <div className="flex items-center justify-center h-screen">
+            درحال بارگذاری اطلاعات...
+        </div>
+    }
+
+    if(user){
+        return <div className='flex items-center justify-center h-screen flex-col'>
             {selected == "سبد خرید" &&
                 <div className='md:w-[80vw] max-md:h-[95vh] w-full h-full overflow-y-auto pt-28 pb-24 px-5'>
                     <h1 className="text-2xl font-bold mb-6">سبد خرید</h1>
@@ -511,7 +517,7 @@ const Dashboard = () => {
                 </motion.div>
             </div>
         </div>
-    );
+    }
 };
 
 export default Dashboard;

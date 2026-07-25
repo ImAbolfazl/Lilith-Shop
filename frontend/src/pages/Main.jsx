@@ -116,6 +116,7 @@ const Main = () => {
                                     <Card
                                         category={product.category}
                                         discount={product.discount}
+                                        realDiscount={product.realDiscount}
                                         id={product.id}
                                         image={product.image}
                                         price={product.price}

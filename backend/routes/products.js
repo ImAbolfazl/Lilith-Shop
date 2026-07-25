@@ -153,24 +153,32 @@ router.post(
     ]),
     async (req, res) => {
         try {
-            const { title, category, price, info, steamId, publisher, dlc, currency } = req.body;
+            const { title, category, price, info, steamId, publisher, dlc, currency, discount } = req.body;
             let finalPrice
             if (steamId) {
                 await addSteamGameToDB(steamId);
                 return res.json({ status: "success" });
             }else{
                 if(currency == "Iran"){
-                    finalPrice = [{
-                        price: price,
-                        country: currency,
-                        persian: countryCodes[currency].persian
-                    }]
+                    finalPrice = {
+                        "subs": {
+                            [countryCodes[currency].persian]: [{
+                                    "name": title,
+                                    "price": price
+                                }]
+                        },
+                        "initial": price
+                    }
                 }else{
-                    finalPrice = [{
-                        price: price * exchangeRates[countryCodes[currency].tag],
-                        country: currency,
-                        persian: countryCodes[currency].persian
-                    }]
+                    finalPrice = finalPrice = {
+                        "subs": {
+                            [countryCodes[currency].persian]: [{
+                                "name": title,
+                                "price": price * exchangeRates[countryCodes[currency].tag]
+                            }]
+                        },
+                        "initial": price * exchangeRates[countryCodes[currency].tag]
+                    }
                 }
             }
 
@@ -188,7 +196,7 @@ router.post(
                 image,
                 banner,
                 JSON.stringify(finalPrice),
-                null,
+                discount,
                 info,
                 null,
                 null,
