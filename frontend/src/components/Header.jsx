@@ -1,249 +1,453 @@
-import React, { useContext, useState } from "react";
-import { Link } from "react-router";
+import React, { useContext, useState, useEffect, useRef } from "react";
+import { Link, useLocation } from "react-router";
 import logo from "../assets/logo.png";
-import { IoMdClose } from "react-icons/io";
+import { IoMdClose, IoMdArrowForward } from "react-icons/io";
 import { GiHamburgerMenu } from "react-icons/gi";
-import { FaMoon, FaSearch } from "react-icons/fa";
+import { FaMoon, FaSearch, FaUser } from "react-icons/fa";
 import { MdSunny } from "react-icons/md";
 import { UserContext } from "../App";
 import Search from "./search.jsx";
 import { AnimatePresence, motion } from "framer-motion";
 
-const Glow = ({ children }) => (
-    <div className="text-text-primary drop-shadow-[0_0_6px_var(--color-accent-primary)]">
-        {children}
-    </div>
-);
-
 const Header = ({ theme, setTheme }) => {
-    const [sideMenu, setSideMenu] = useState(false);
-    const [search, setSearch] = useState(false);
-    const { token } = useContext(UserContext);
+  const [sideMenu, setSideMenu] = useState(false);
+  const [search, setSearch] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const { token, user } = useContext(UserContext);
+  const location = useLocation();
+  const dropdownTimeout = useRef(null);
+  const headerRef = useRef(null);
 
-    const pathsMap = [
-        { name: "وارکرفت", path: "/Products?c=WoW" },
-        { name: "دیسکورد", path: "/Products?c=Discord" },
-        { name: "تلگرام", path: "/Products?c=Telegram" },
-        { name: "کیک", path: "/Products?c=Kick" },
-        { name: "اپیک گیمز", path: "/Products?c=EpicGames" },
-        { name: "توییچ", path: "/Products?c=Twitch" },
-        { name: "اسپاتیفای", path: "/Products?c=Spotify" },
-        { name: "پلی استیشین", path: "/Products?c=PlayStation" },
-        { name: "خدمات کاهش پینگ", path: "/Products?c=PingReduction" },
-        { name: "اشتراک هوش مصنوعی", path: "/Products?c=AI" },
-        { name: "گوگل پلی", path: "/Products?c=GooglePlay" },
-        { name: "رایت گیمز", path: "/Products?c=RiotGames" },
-        { name: "بتل نت", path: "/Products?c=BattleNet" },
-        { name: "فری فایر", path: "/Products?c=FreeFire" },
-        { name: "اپل", path: "/Products?c=Apple" },
-        { name: "پابجی", path: "/Products?c=Pubg" },
-        { name: "پلاتو", path: "/Products?c=Plato" },
-        { name: "سوپرسل", path: "/Products?c=Supercell" },
-        { name: "روبلاکس", path: "/Products?c=Roblox" },
-    ];
+  const pathsMap = [
+    { name: "وارکرفت", path: "/Products?c=WoW" },
+    { name: "دیسکورد", path: "/Products?c=Discord" },
+    { name: "تلگرام", path: "/Products?c=Telegram" },
+    { name: "کیک", path: "/Products?c=Kick" },
+    { name: "اپیک گیمز", path: "/Products?c=EpicGames" },
+    { name: "توییچ", path: "/Products?c=Twitch" },
+    { name: "اسپاتیفای", path: "/Products?c=Spotify" },
+    { name: "پلی استیشین", path: "/Products?c=PlayStation" },
+    { name: "خدمات کاهش پینگ", path: "/Products?c=PingReduction" },
+    { name: "اشتراک هوش مصنوعی", path: "/Products?c=AI" },
+    { name: "گوگل پلی", path: "/Products?c=GooglePlay" },
+    { name: "رایت گیمز", path: "/Products?c=RiotGames" },
+    { name: "بتل نت", path: "/Products?c=BattleNet" },
+    { name: "فری فایر", path: "/Products?c=FreeFire" },
+    { name: "اپل", path: "/Products?c=Apple" },
+    { name: "پابجی", path: "/Products?c=Pubg" },
+    { name: "پلاتو", path: "/Products?c=Plato" },
+    { name: "سوپرسل", path: "/Products?c=Supercell" },
+    { name: "روبلاکس", path: "/Products?c=Roblox" },
+  ];
 
-    const toggleTheme = () => {
-        setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  const mainNavItems = [
+    { name: "خدمات استیم", path: "/Products?c=Steam" },
+    { name: "خدمات ماینکرفت", path: "/Products?c=MineCraft" },
+    { name: "خدمات کالاف دیوتی", path: "/Products?c=CallOfDuty" },
+  ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const shouldShow = window.scrollY > 20;
+      if (shouldShow !== scrolled) {
+        setScrolled(shouldShow);
+      }
     };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [scrolled]);
 
-    const toggleSearch = () => setSearch(!search);
+  useEffect(() => {
+    setSideMenu(false);
+  }, [location.pathname]);
 
-    return (
-        <motion.div
-            key={theme}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="flex items-center justify-around h-20 fixed top-0 left-0 right-0 z-100
-      bg-bg-secondary/60 backdrop-blur-xl border-b border-accent-primary"
-        >
-            <AnimatePresence>
-                {search && <Search toggleSearch={toggleSearch} />}
-            </AnimatePresence>
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
 
-            <motion.div
-                whileHover={{ rotateY: 15, rotateX: 8, scale: 1.1 }}
-                transition={{ type: "spring", stiffness: 200, damping: 12 }}
+  const toggleSearch = () => setSearch(!search);
+
+  const handleDropdownEnter = (name) => {
+    clearTimeout(dropdownTimeout.current);
+    setActiveDropdown(name);
+  };
+
+  const handleDropdownLeave = () => {
+    dropdownTimeout.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 150);
+  };
+
+  const isActive = (path) => {
+    if (path === "/") return location.pathname === "/";
+    const category = new URLSearchParams(path.split("?")[1]).get("c");
+    const currentCategory = new URLSearchParams(location.search).get("c");
+    if (category && currentCategory) {
+      return category === currentCategory;
+    }
+    return location.pathname.startsWith(path.split("?")[0]);
+  };
+
+  const isLight = theme === "light";
+
+  const getHeaderStyles = () => {
+    if (isLight) {
+      return {
+        backgroundColor: scrolled ? "bg-bg-primary" : "bg-bg-primary/30",
+        borderColor: scrolled ? "rgba(0,0,0,0.08)" : "rgba(0,0,0,0)",
+        boxShadow: scrolled ? "0 4px 30px rgba(0,0,0,0.06)" : "none",
+        backdropFilter: scrolled ? "blur(20px)" : "none",
+        WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+      };
+    } else {
+      return {
+        backgroundColor: scrolled ? "bg-bg-primary" : "bg-bg-primary/100",
+        borderColor: scrolled ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0)",
+        boxShadow: scrolled ? "0 4px 30px rgba(0,0,0,0.4)" : "none",
+        backdropFilter: scrolled ? "blur(20px)" : "none",
+        WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+      };
+    }
+  };
+
+  const headerStyles = getHeaderStyles();
+
+  return (
+    <>
+      <AnimatePresence>{search && <Search toggleSearch={toggleSearch} />}</AnimatePresence>
+
+      <header
+        ref={headerRef}
+        className="fixed top-3 left-1/2 -translate-x-1/2 z-[100] w-[94%] max-w-5xl rounded-2xl transition-all duration-300 ease-out"
+        style={{
+          padding: scrolled ? "6px 16px" : "8px 20px",
+          backgroundColor: headerStyles.backgroundColor,
+          border: `1px solid ${headerStyles.borderColor}`,
+          boxShadow: headerStyles.boxShadow,
+          backdropFilter: headerStyles.backdropFilter,
+          WebkitBackdropFilter: headerStyles.WebkitBackdropFilter,
+        }}
+      >
+        <div className="flex items-center justify-between gap-2">
+          <Link to="/" className="flex items-center gap-2 shrink-0">
+            <img
+              src={logo}
+              alt="Lilith"
+              className="h-8 md:h-10 transition-all duration-300"
+              style={{
+                filter: scrolled ? "none" : "drop-shadow(0 0 20px rgba(255,91,170,0.15))",
+              }}
+            />
+          </Link>
+
+          <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1">
+            {mainNavItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`px-3 py-1.5 text-sm rounded-lg transition-all duration-200 ${
+                  isActive(item.path)
+                    ? "bg-accent-primary/10 text-accent-primary"
+                    : isLight
+                    ? scrolled
+                      ? "text-gray-700 hover:text-gray-900 hover:bg-black/5"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-black/5"
+                    : scrolled
+                    ? "text-text-secondary hover:text-text-primary hover:bg-white/5"
+                    : "text-text-secondary/70 hover:text-text-primary hover:bg-white/5"
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+
+            <div
+              className="relative"
+              onMouseEnter={() => handleDropdownEnter("services")}
+              onMouseLeave={handleDropdownLeave}
             >
-                <Link to="/">
-                    <img
-                        src={logo}
-                        alt="Lilith"
-                        className="h-20 drop-shadow-[0_0_10px_var(--color-accent-primary)]"
-                    />
-                </Link>
-            </motion.div>
+              <Link
+                to="/Products?c=All"
+                className={`px-3 py-1.5 text-sm rounded-lg transition-all duration-200 ${
+                  isActive("/Products?c=All") && !mainNavItems.some((i) => isActive(i.path))
+                    ? "bg-accent-primary/10 text-accent-primary"
+                    : isLight
+                    ? scrolled
+                      ? "text-gray-700 hover:text-gray-900 hover:bg-black/5"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-black/5"
+                    : scrolled
+                    ? "text-text-secondary hover:text-text-primary hover:bg-white/5"
+                    : "text-text-secondary/70 hover:text-text-primary hover:bg-white/5"
+                }`}
+              >
+                سایر خدمات
+                <span className="mr-1 text-[10px] opacity-50">▾</span>
+              </Link>
 
-            <div className="flex gap-10 text-xl xl:text-2xl max-lg:hidden">
-                {[
-                    { name: "خدمات استیم", path: "/Products?c=Steam" },
-                    { name: "خدمات ماینکرفت", path: "/Products?c=MineCraft" },
-                    { name: "خدمات کالاف دیوتی", path: "/Products?c=CallOfDuty" },
-                ].map((item) => (
-                    <motion.div
-                        className="relative before:content-[''] before:absolute before:right-0 before:bottom-0 before:h-[2px] before:w-0 before:bg-accent-primary/60 before:transition-all before:duration-300 hover:before:w-full hover:before:animate-[hoverAnimation_300ms]"
-                        key={item.path}
-                    >
-                        <Link to={item.path}>{item.name}</Link>
-                    </motion.div>
+              <AnimatePresence>
+                {activeDropdown === "services" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 4, scale: 0.98 }}
+                    transition={{ duration: 0.12 }}
+                    className="absolute top-full right-0 mt-1 rounded-xl p-1.5 w-70 overflow-y-auto shadow-xl"
+                    style={{
+                      backgroundColor: isLight 
+                        ? "rgba(255,255,255,0.95)"
+                        : "rgba(11,8,24,0.95)",
+                      backdropFilter: "blur(20px)",
+                      WebkitBackdropFilter: "blur(20px)",
+                      border: isLight 
+                        ? "1px solid rgba(0,0,0,0.06)"
+                        : "1px solid rgba(255,255,255,0.06)",
+                    }}
+                  >
+                    <div className="grid grid-cols-2 gap-0.5">
+                      {pathsMap.map((path) => (
+                        <Link
+                          key={path.path}
+                          to={path.path}
+                          className={`px-3 py-1.5 text-sm rounded-lg transition-colors duration-150 ${
+                            isActive(path.path)
+                              ? "bg-accent-primary/10 text-accent-primary"
+                              : isLight
+                              ? "text-gray-700 hover:text-gray-900 hover:bg-black/5"
+                              : "text-text-secondary hover:text-text-primary hover:bg-white/5"
+                          }`}
+                        >
+                          {path.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <Link
+              to="/Discounts"
+              className={`px-3 py-1.5 text-sm rounded-lg transition-all duration-200 ${
+                isActive("/Discounts")
+                  ? "bg-accent-primary/10 text-accent-primary"
+                  : isLight
+                  ? scrolled
+                    ? "text-gray-700 hover:text-gray-900 hover:bg-black/5"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-black/5"
+                  : scrolled
+                  ? "text-text-secondary hover:text-text-primary hover:bg-white/5"
+                  : "text-text-secondary/70 hover:text-text-primary hover:bg-white/5"
+              }`}
+            >
+              تخفیفات
+            </Link>
+          </nav>
+
+          <div className="flex items-center gap-1 md:gap-2">
+            <button
+              onClick={toggleSearch}
+              className={`p-2 rounded-lg transition-colors duration-200 ${
+                isLight
+                  ? scrolled
+                    ? "text-gray-600 hover:text-gray-900 hover:bg-black/5"
+                    : "text-gray-500 hover:text-gray-900 hover:bg-black/5"
+                  : scrolled
+                  ? "text-text-secondary hover:text-text-primary hover:bg-white/5"
+                  : "text-text-secondary/70 hover:text-text-primary hover:bg-white/5"
+              }`}
+              aria-label="جستجو"
+            >
+              <FaSearch size={16} />
+            </button>
+
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg transition-colors duration-200 ${
+                isLight
+                  ? scrolled
+                    ? "text-gray-600 hover:text-gray-900 hover:bg-black/5"
+                    : "text-gray-500 hover:text-gray-900 hover:bg-black/5"
+                  : scrolled
+                  ? "text-text-secondary hover:text-text-primary hover:bg-white/5"
+                  : "text-text-secondary/70 hover:text-text-primary hover:bg-white/5"
+              }`}
+              aria-label="تغییر تم"
+            >
+              {isLight ? <MdSunny size={17} className="text-amber-500" /> : <FaMoon size={16} />}
+            </button>
+
+            <Link
+              to={token ? "/Dashboard" : "/Login"}
+              className={`hidden sm:block px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-300 ${
+                token
+                  ? "bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/20"
+                  : "bg-accent-primary text-white hover:bg-accent-primary/90"
+              }`}
+            >
+              {token ? (
+                <span className="flex items-center gap-2">
+                  <FaUser size={12} />
+                  {user?.firstname || "داشبورد"}
+                </span>
+              ) : (
+                "ورود | ثبت نام"
+              )}
+            </Link>
+
+            <button
+              onClick={() => setSideMenu(true)}
+              className={`lg:hidden p-2 rounded-lg transition-colors duration-200 ${
+                isLight
+                  ? scrolled
+                    ? "text-gray-600 hover:text-gray-900 hover:bg-black/5"
+                    : "text-gray-500 hover:text-gray-900 hover:bg-black/5"
+                  : scrolled
+                  ? "text-text-secondary hover:text-text-primary hover:bg-white/5"
+                  : "text-text-secondary/70 hover:text-text-primary hover:bg-white/5"
+              }`}
+              aria-label="منو"
+            >
+              <GiHamburgerMenu size={20} />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <AnimatePresence>
+        {sideMenu && (
+          <>
+            <motion.aside
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.25, ease: [0.2, 0, 0, 1] }}
+              className="lg:hidden fixed top-0 right-0 h-screen w-[85%] max-w-sm p-5 overflow-y-auto z-[999]"
+              style={{
+                backgroundColor: isLight 
+                  ? "rgba(255,255,255,0.97)"
+                  : "rgba(11,8,24,0.97)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                borderLeft: isLight 
+                  ? "1px solid rgba(0,0,0,0.06)"
+                  : "1px solid rgba(255,255,255,0.06)",
+              }}
+            >
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-2">
+                  <img src={logo} alt="Lilith" className="h-8" />
+                  <span className="text-lg font-bold gradient-text">Lilith</span>
+                </div>
+                <button
+                  onClick={() => setSideMenu(false)}
+                  className="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors"
+                  aria-label="بستن"
+                >
+                  <IoMdClose size={22} />
+                </button>
+              </div>
+
+              {token && user && (
+                <div className="rounded-xl p-3 mb-5 flex items-center gap-3" style={{
+                  backgroundColor: isLight ? "rgba(0,0,0,0.04)" : "rgba(255,255,255,0.04)",
+                  border: isLight ? "1px solid rgba(0,0,0,0.06)" : "1px solid rgba(255,255,255,0.06)",
+                }}>
+                  <div className="w-9 h-9 rounded-full bg-accent-primary/20 flex items-center justify-center">
+                    <FaUser className="text-accent-primary" size={14} />
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm text-text-primary">{user.firstname} {user.lastname}</p>
+                    <p className="text-xs text-text-secondary">{user.phone}</p>
+                  </div>
+                </div>
+              )}
+
+              <nav className="flex flex-col gap-1">
+                <Link
+                  to="/"
+                  onClick={() => setSideMenu(false)}
+                  className="px-3 py-2.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors flex items-center justify-between text-sm"
+                >
+                  خانه
+                  <IoMdArrowForward className="text-xs opacity-40" />
+                </Link>
+
+                <Link
+                  to="/Discounts"
+                  onClick={() => setSideMenu(false)}
+                  className="px-3 py-2.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors flex items-center justify-between text-sm"
+                >
+                  تخفیفات
+                  <IoMdArrowForward className="text-xs opacity-40" />
+                </Link>
+
+                <div className="h-px my-2" style={{
+                  backgroundColor: isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)",
+                }} />
+
+                <p className="px-3 py-1 text-xs font-medium text-text-secondary/50">خدمات</p>
+
+                {[...mainNavItems, ...pathsMap].map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setSideMenu(false)}
+                    className={`px-3 py-2 text-sm rounded-lg transition-colors duration-200 ${
+                      isActive(item.path)
+                        ? "bg-accent-primary/10 text-accent-primary"
+                        : "text-text-secondary hover:text-text-primary hover:bg-white/5"
+                    }`}
+                  >
+                    {item.name}
+                  </Link>
                 ))}
 
-                <motion.div className="relative group pb-1" whileHover={{ scale: 1.03 }}>
-                    <Link to="/Products?c=All">سایر خدمات</Link>
-                    <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.25 }}
-                        className="absolute top-full left-0 invisible opacity-0 group-hover:visible group-hover:opacity-100
-            bg-bg-secondary/95 backdrop-blur-xl p-5 rounded-2xl
-            grid grid-cols-3 gap-3 w-200"
-                    >
-                        {pathsMap.map((path) => (
-                            <motion.div key={path.path} whileHover={{ scale: 1.08 }}>
-                                <Link to={path.path}>{path.name}</Link>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </motion.div>
-            </div>
-            <Link to="/Discounts" className="hidden lg:block text-xl xl:text-1xl">تخفیفات</Link>
+                <div className="h-px my-2" style={{
+                  backgroundColor: isLight ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)",
+                }} />
+
+                <Link
+                  to={token ? "/Dashboard" : "/Login"}
+                  onClick={() => setSideMenu(false)}
+                  className={`px-3 py-2.5 text-center font-medium rounded-lg transition-all duration-300 text-sm ${
+                    token
+                      ? isLight
+                        ? "bg-black/5 text-text-primary hover:bg-black/10"
+                        : "bg-white/5 text-text-primary hover:bg-white/10"
+                      : "bg-accent-primary text-white hover:bg-accent-primary/90"
+                  }`}
+                >
+                  {token ? "داشبورد" : "ورود | ثبت نام"}
+                </Link>
+
+                {token && (
+                  <button
+                    onClick={() => {
+                      localStorage.removeItem("token");
+                      window.location.reload();
+                    }}
+                    className="px-3 py-2.5 text-center text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors text-sm"
+                  >
+                    خروج
+                  </button>
+                )}
+              </nav>
+            </motion.aside>
 
             <motion.div
-                whileHover={{ scale: 1.12 }}
-                className="bg-bg-secondary hover:bg-accent-primary/20 duration-300 px-6 py-2 rounded-3xl
-        border border-accent-primary cursor-pointer hidden lg:block"
-            >
-                {token ? (
-                    <Link to="/Dashboard" className="text-xl xl:text-1xl">
-                        داشبورد
-                    </Link>
-                ) : (
-                    <Link to="/Login" className="text-xl xl:text-1xl">
-                        ورود | ثبت نام
-                    </Link>
-                )}
-            </motion.div>
-
-            <div className="flex items-center gap-10">
-                <FaSearch
-                    size={30}
-                    onClick={toggleSearch}
-                    className="cursor-pointer hidden lg:block text-text-primary"
-                />
-
-                <motion.div
-                    initial={{ rotate: 0 }}
-                    animate={{ rotate: theme === "light" ? 180 : 0 }}
-                    transition={{ duration: 0.4 }}
-                >
-                    {theme === "light" ? (
-                        <MdSunny
-                            className="size-8 cursor-pointer hidden lg:block text-accent-primary"
-                            onClick={toggleTheme}
-                        />
-                    ) : (
-                        <FaMoon
-                            className="size-8 cursor-pointer hidden lg:block text-accent-primary"
-                            onClick={toggleTheme}
-                        />
-                    )}
-                </motion.div>
-            </div>
-
-            <GiHamburgerMenu
-                className="lg:hidden size-10 cursor-pointer text-text-primary"
-                onClick={() => setSideMenu(true)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 z-[998] bg-black/40 backdrop-blur-sm"
+              onClick={() => setSideMenu(false)}
             />
-
-            <AnimatePresence>
-                {sideMenu && (
-                    <>
-                        <motion.div
-                            initial={{ x: "-100%" }}
-                            animate={{ x: 0 }}
-                            exit={{ x: "-100%" }}
-                            transition={{ duration: 0.3 }}
-                            className="lg:hidden flex flex-col absolute bg-bg-secondary/70 backdrop-blur-xl p-10 left-0 top-0 h-screen gap-4 items-center w-70 z-999 border-r border-accent-primary/20">
-                            <div className="flex items-center justify-center gap-10 mb-8">
-                                <FaSearch
-                                    onClick={() => {
-                                        toggleSearch();
-                                        setSideMenu(false);
-                                    }}
-                                    className="size-6 cursor-pointer text-accent-primary"
-                                />
-                                <IoMdClose
-                                    className="size-10 cursor-pointer text-text-primary"
-                                    onClick={() => setSideMenu(false)}
-                                />
-                                {theme === "light" ? (
-                                    <MdSunny
-                                        className="size-8 cursor-pointer text-accent-primary"
-                                        onClick={toggleTheme}
-                                    />
-                                ) : (
-                                    <FaMoon
-                                        className="size-8 cursor-pointer text-accent-primary"
-                                        onClick={toggleTheme}
-                                    />
-                                )}
-                            </div>
-
-                            <motion.div initial={{opacity: 0, y: -20}} animate={{opacity: 1, y: 0 }} transition={{ duration: 0.2, delay: 0.2 }}>
-                                {token ? (
-                                    <Link
-                                        onClick={() => setSideMenu(false)}
-                                        to="/Dashboard"
-                                        className="text-3xl mb-4"
-                                    >
-                                        داشبورد
-                                    </Link>
-                                ) : (
-                                    <Link
-                                        onClick={() => setSideMenu(false)}
-                                        to="/Login"
-                                        className="text-3xl mb-4 flex items-center gap-5"
-                                    >
-                                        <p>ورود</p>
-                                        <p>|</p>
-                                        <p>ثبت نام</p>
-                                    </Link>
-                                )}
-                            </motion.div>
-
-                            <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0 }} transition={{ duration: 0.2, delay: 0.2 }} ><Link className="text-xl" to="/Discounts">تخفیفات</Link></motion.div>
-                            {[
-                                { name: "خدمات استیم", path: "/Products?c=Steam" },
-                                { name: "خدمات ماینکرفت", path: "/Products?c=MineCraft" },
-                                { name: "خدمات کالاف دیوتی", path: "/Products?c=CallOfDuty" },
-                                ...pathsMap,
-                            ].map((item) => (
-                                <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0 }} transition={{ duration: 0.2, delay: 0.2 }} key={item.path}>
-                                    <Link
-                                        to={item.path}
-                                        onClick={() => setSideMenu(false)}
-                                        className="text-xl"
-                                    >
-                                        {item.name}
-                                    </Link>
-                                </motion.div>
-                            ))}
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 0.7 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="fixed inset-0 bg-black/70 h-screen w-screen z-998"
-                            onClick={() => setSideMenu(false)}
-                        />
-                    </>
-                )}
-            </AnimatePresence>
-        </motion.div>
-    );
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
 };
 
 export default Header;

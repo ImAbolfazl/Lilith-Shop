@@ -3,6 +3,7 @@ import { createProduct, updateGamePrice } from "../src/db.js";
 import { countryCodes, exchangeRates } from "../services/exchangePrice.js";
 import { HTMLTranslator } from "./htmlTranslator.js";
 import { downloadImage } from "./generalUtils.js";
+import * as cheerio from "cheerio";
 
 export async function addSteamGameToDB(steamId) {
     const steamExchangeRates = {...exchangeRates, tr: exchangeRates.us, ar: exchangeRates.us};
@@ -58,7 +59,6 @@ export async function addSteamGameToDB(steamId) {
         price = {
             subs: sortedSubs,
             initial: cheapest === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.price_overview.discount_percent / 100)),
-            final: cheapest,
             discount: gameData.price_overview.discount_percent
         };
         discount = gameData.price_overview.discount_percent
@@ -66,10 +66,36 @@ export async function addSteamGameToDB(steamId) {
         price = {
             subs: sortedSubs,
             initial: cheapest === 0 ? cheapest : Math.floor(gameData.package_groups[0].subs[0].percent_savings / (1 - 0 / 100)),
-            final: cheapest,
             discount: gameData.package_groups[0].subs[0].percent_savings
         };
         discount = gameData.package_groups[0].subs[0].percent_savings
+    }
+
+    if(discount > 0){
+        try{
+            const shopIdResponse = await axios.get(`https://api.isthereanydeal.com/games/lookup/v1?appid=${steamId}`, {headers: {"ITAD-API-Key": process.env.ITAD_API_KEY}})
+            if(shopIdResponse.data.game.id){
+                const dealResponse = await axios.post("https://api.isthereanydeal.com/games/prices/v3", [shopIdResponse.data.game.id], {headers: {"ITAD-API-Key": process.env.ITAD_API_KEY}})
+                for(const deal of dealResponse.data[0].deals){
+                    if(deal.shop.name.toLowerCase() == "steam"){
+                        const expiry = new Date(deal.expiry)
+
+                        discount = {
+                            percent: discount,
+                            expires: expiry
+                        }
+                    }
+                }
+            }
+            
+            
+        }catch(err){
+            console.log(err);
+        }
+    }else{
+        discount = {
+            percent: discount
+        }
     }
 
     const gameDesc = HTMLTranslator(
@@ -102,7 +128,7 @@ export async function addSteamGameToDB(steamId) {
         headerPath,
         backgroundPath,
         JSON.stringify(price),
-        discount,
+        JSON.stringify(discount),
         gameDesc,
         steamId,
         recommendedSys,
@@ -166,5 +192,32 @@ export async function updateGmaePriceInDB(steamId) {
         discount = gameData.package_groups[0].subs[0].percent_savings
     }
 
-    updateGamePrice(JSON.stringify(price), discount, steamId)
+    if(discount > 0){
+        try{
+            const shopIdResponse = await axios.get(`https://api.isthereanydeal.com/games/lookup/v1?appid=${steamId}`, {headers: {"ITAD-API-Key": process.env.ITAD_API_KEY}})
+            if(shopIdResponse.data.game.id){
+                const dealResponse = await axios.post("https://api.isthereanydeal.com/games/prices/v3", [shopIdResponse.data.game.id], {headers: {"ITAD-API-Key": process.env.ITAD_API_KEY}})
+                for(const deal of dealResponse.data[0].deals){
+                    if(deal.shop.name.toLowerCase() == "steam"){
+                        const expiry = new Date(deal.expiry)
+
+                        discount = {
+                            percent: discount,
+                            expires: expiry
+                        }
+                    }
+                }
+            }
+            
+            
+        }catch(err){
+            console.log(err);
+        }
+    }else{
+        discount = {
+            percent: discount
+        }
+    }
+
+    updateGamePrice(JSON.stringify(price), JSON.stringify(discount), steamId)
 }

@@ -7,7 +7,6 @@ import ScrollContainer from "react-indiana-drag-scroll"
 import "react-indiana-drag-scroll/dist/style.css"
 import { Link, useLocation } from 'react-router'
 import { CgPlayTrackPrevR } from "react-icons/cg"
-import MaskRevealText from "../components/Maskrevealtext.jsx";
 
 const sectionVariants = {
     hidden: { opacity: 0, y: 40 },
@@ -57,19 +56,21 @@ const Main = () => {
     }, [pathname])
 
     return (
-        <div className='relative overflow-hidden'>
+        <div className='relative overflow-hidden'
+        >
             <section className='relative flex flex-col items-center justify-center text-center px-6 pt-40 pb-28'>
                 <ParticleField className='absolute inset-0 -z-10 h-full w-full opacity-70' />
-                <div className='absolute inset-0 -z-10 bg-gradient-to-b from-bg-primary via-bg-primary/95 to-bg-primary' />
-                <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[36rem] rounded-full bg-accent-primary/20 blur-[140px] -z-10' />
-
+                <ParticleField className='absolute inset-0 z-10 h-full w-full right-100 top-100'/>
+                <ParticleField className='absolute inset-0 z-10 h-full w-full right-100 top-100'/>
+                <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[36rem] rounded-full bg-accent-primary/40 blur-[140px] -z-10' />
+                <div className='absolute top-[0%] left-[0%] -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[36rem] rounded-full bg-accent-secondary/40 blur-[140px] -z-10' />
                 <motion.h1
                     initial={reduceMotion ? false : { opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, delay: 0.1 }}
                     className='text-5xl md:text-7xl font-bold text-text-primary leading-[1.2]'
                 >
-                    دنیای گیمینگ، <MaskRevealText baseText="یک کلیک" revealText="لیلیث" radius={80} /> با تو فاصله داره
+                    دنیای گیمینگ<p className='text-accent-primary'> با لیلیث</p>
                 </motion.h1>
 
                 <motion.p
@@ -119,7 +120,7 @@ const Main = () => {
                                 >
                                     <Card
                                         category={product.category}
-                                        discount={product.discount}
+                                        discount={JSON.parse(product.discount)}
                                         realDiscount={product.realDiscount}
                                         id={product.id}
                                         image={product.image}

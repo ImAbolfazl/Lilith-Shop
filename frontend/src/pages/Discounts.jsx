@@ -47,7 +47,7 @@ const Discounts = () => {
                 <motion.h1 initial={{opacity: 0, y: 20}} animate={{scale: 1, opacity: 1, y: 0}} transition={{duration: 0.6}} className='text-4xl font-bold'>تخفیفات</motion.h1>
                 <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{ duration: 0.6 }} className='grid gap-8 grid-cols-1 xl:grid-cols-4 md:grid-cols-2'>
                     {data.map((product) => (
-                        <Card key={product.id} banner={product.banner} category={product.category} discount={product.discount} realDiscount={product.realDiscount} id={product.id} image={product.image} info={product.info} price={product.price} steamId={product.steamId} title={product.title}/>
+                        <Card key={product.id} banner={product.banner} category={product.category} discount={JSON.parse(product.discount)} realDiscount={product.realDiscount} id={product.id} image={product.image} info={product.info} price={product.price} steamId={product.steamId} title={product.title}/>
                     ))}
                 </motion.div>
             </div>

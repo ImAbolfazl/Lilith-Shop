@@ -7,11 +7,10 @@
 @theme {
   --color-bg-primary: var(--color-bg-primary);
   --color-bg-secondary: var(--color-bg-secondary);
-  --color-accent-primary: var(--color-accent-primary);
-  --color-accent-secondary: var(--color-accent-secondary);
+  --color-accent-primary: #FF00F5;
+  --color-accent-secondary: #9E00FF;
   --color-text-primary: var(--color-text-primary);
   --color-text-secondary: var(--color-text-secondary);
-  --color-card-primary: var(--color-card-primary);
 }
 
 * {
@@ -21,6 +20,34 @@
 
 *::-webkit-scrollbar {
   display: none;
+}
+
+.show-scrollbar {
+  -ms-overflow-style: auto;
+  scrollbar-width: thin;
+}
+
+.show-scrollbar::-webkit-scrollbar {
+  display: block;
+  width: 6px;
+}
+
+.show-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-accent-primary);
+  border-radius: 999px;
+}
+
+.show-scrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.show-scrollbar {
+  -ms-overflow-style: auto;
+  scrollbar-width: auto;
+}
+
+.show-scrollbar::-webkit-scrollbar {
+  display: initial;
 }
 
 body {

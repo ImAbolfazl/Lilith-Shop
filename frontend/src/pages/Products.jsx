@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router'
 import axios from "axios"
 import Card from '../components/Card'
 import { motion } from 'framer-motion'
+import ParticleField from '../components/ParticleField'
 
 const Products = () => {
   const [searchParams] = useSearchParams()
@@ -31,14 +32,30 @@ const Products = () => {
     visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
   }
 
+  if(data < 1){
+    return (
+      <motion.div className='h-screen flex items-center justify-center text-1xl md:text-2xl'>
+        <div className='absolute bottom-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[36rem] rounded-full bg-accent-primary/40 blur-[140px] -z-10' />
+        <div className='absolute top-[0%] -right-[25%] -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[36rem] rounded-full bg-accent-secondary/40 blur-[140px] -z-10' />
+        <ParticleField className='absolute inset-0 z-10 h-full w-full right-100 top-100'/>
+        <ParticleField className='absolute inset-0 z-10 h-full w-full right-100 top-0'/>
+          هیچ محصولی در دسته بندی {category} وجود ندارد.
+        </motion.div>
+    )
+  }
+
   return (
-    <div className='flex justify-center flex-col items-center gap-20 mt-30'>
+    <div className='flex flex-col items-center gap-20 mt-30 min-h-screen relative'>
+      <div className='absolute bottom-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[36rem] rounded-full bg-accent-primary/40 blur-[140px] -z-10' />
+      <div className='absolute top-[0%] -right-[25%] -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[36rem] rounded-full bg-accent-secondary/40 blur-[140px] -z-10' />
+      <ParticleField className='absolute inset-0 z-10 h-full w-full right-100 top-100'/>
+      <ParticleField className='absolute inset-0 z-10 h-full w-full right-100 top-0'/>
       {category.toLocaleLowerCase() == "all" ?
       <motion.h1 initial={{opacity: 0, y: 20}} animate={{scale: 1, opacity: 1, y: 0}} transition={{duration: 0.6}} className='text-4xl font-bold'>تمام محصولات</motion.h1> :
       <motion.h1 initial={{opacity: 0, y: 20}} animate={{scale: 1, opacity: 1, y: 0}} transition={{duration: 0.6}} className='text-4xl font-bold'>محصولات  {category}</motion.h1>}
       <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{ duration: 0.6 }} className='grid gap-8 grid-cols-1 xl:grid-cols-4 md:grid-cols-2'>
         {data.map((product) => (
-          <Card key={product.id} category={product.category} discount={product.discount} realDiscount={product.realDiscount} id={product.id} image={product.image} price={product.price} title={product.title}/>
+          <Card key={product.id} category={product.category} discount={JSON.parse(product.discount)} realDiscount={product.realDiscount} id={product.id} image={product.image} price={product.price} title={product.title}/>
         ))}
       </motion.div>
     </div>

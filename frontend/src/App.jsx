@@ -27,16 +27,38 @@ const App = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    localStorage.setItem("theme", theme);
+  localStorage.setItem("theme", theme);
 
-    document.documentElement.style.setProperty("--color-bg-primary", theme === "dark" ? "#18161F" : "#F4F0F8");
-    document.documentElement.style.setProperty("--color-bg-secondary", theme === "dark" ? "#24212C" : "#EEE7F7");
-    document.documentElement.style.setProperty("--color-card-primary", theme === "dark" ? "#302C39" : "#FFFFFF");
-    document.documentElement.style.setProperty("--color-text-primary", theme === "dark" ? "#F7F5FA" : "#272332");
-    document.documentElement.style.setProperty("--color-text-secondary", theme === "dark" ? "#B3ADBF" : "#6D667C");
-    document.documentElement.style.setProperty("--color-accent-primary", theme === "dark" ? "#FF5BAA" : "#E93F95");
-    document.documentElement.style.setProperty("--color-accent-secondary", theme === "dark" ? "#B86BFF" : "#9A5CF8");
-  }, [theme]);
+  document.documentElement.style.setProperty(
+    "--color-bg-primary",
+    theme === "dark" ? "#0B0818" : "#CECECE"
+  );
+
+  document.documentElement.style.setProperty(
+    "--color-bg-secondary",
+    theme === "dark" ? "#161124" : "#F1F1F1"
+  );
+
+  document.documentElement.style.setProperty(
+    "--color-text-primary",
+    theme === "dark" ? "#F7F5FA" : "#1F1A2E"
+  );
+
+  document.documentElement.style.setProperty(
+    "--color-text-secondary",
+    theme === "dark" ? "#B3ADBF" : "#6C6880"
+  );
+
+  document.documentElement.style.setProperty(
+    "--color-accent-primary",
+    theme === "dark" ? "#FF5BAA" : "#E93F95"
+  );
+
+  document.documentElement.style.setProperty(
+    "--color-accent-secondary",
+    theme === "dark" ? "#B86BFF" : "#9A5CF8"
+  );
+}, [theme]);
 
   useEffect(() => {
     if(token){
