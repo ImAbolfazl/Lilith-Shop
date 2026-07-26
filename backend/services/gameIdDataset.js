@@ -1,10 +1,10 @@
 export const gamesDataSet = [
     // 1808500, // ARC Raiders
     1245620, // ELDEN RING
-    // 3764200, // Resident Evil Requiem
-    // 883710, // Resident Evil 2
+    3764200, // Resident Evil Requiem
+    883710, // Resident Evil 2
+    4080220, // EA SPORTS FC™ 27
     // 3357650, // PRAGMATA
-    // 4080220, // EA SPORTS FC™ 27
     // 319630, // Life is Strange
     // 1938090, // Call of Duty: Modern Warfare II
     // 209660, // Call of Duty: Advanced Warfare

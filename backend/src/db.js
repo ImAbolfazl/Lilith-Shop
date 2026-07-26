@@ -1,135 +1,175 @@
-import mysql from "mysql2"
+import { DatabaseSync } from "node:sqlite";
 
-const pool = mysql.createPool({
-    host: process.env.MYSQL_HOST,
-    port: process.env.MYSQL_PORT,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
-}).promise()
+const db = new DatabaseSync(process.env.SQLITE_PATH || "./data.db");
 
-export async function connectDatabase() {
+export function connectDatabase() {
     try {
-        const connection = await pool.getConnection();
+        db.prepare("SELECT 1").get();
         console.log("connected to database");
-        connection.release();
     } catch (err) {
         console.error(err);
     }
 }
 
-export async function createUser(firstname, lastname, email, phone, password){
-    const [result] = await pool.query(
-        "INSERT INTO users (firstname, lastname, email, phone, password) VALUES (?, ?, ?, ?, ?)",
-        [firstname, lastname, email, phone, password]
-    )
-    return result
+db.exec(`
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    firstname TEXT,
+    lastname TEXT,
+    email TEXT,
+    phone TEXT,
+    password TEXT,
+    score INTEGER,
+    role TEXT
+)
+`);
+
+db.exec(`
+CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    category TEXT,
+    image TEXT,
+    banner TEXT,
+    price TEXT,
+    discount INTEGER,
+    realDiscount INTEGER,
+    info TEXT,
+    steamId TEXT,
+    recommended TEXT,
+    minimum TEXT,
+    publisher TEXT,
+    dlc TEXT
+)
+`);
+
+db.exec(`
+CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    quantity INTEGER,
+    info TEXT,
+    userId INTEGER,
+    productId INTEGER,
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (productId) REFERENCES products(id)
+)
+`);
+
+function parseProduct(row) {
+    if (!row) return row;
+    return { ...row, price: row.price ? JSON.parse(row.price) : row.price };
 }
 
-export async function getUserById(id) {
-    const [result] = await pool.query("SELECT * FROM users WHERE id = ?", [id])
-    return result[0]
+function parseOrder(row) {
+    if (!row) return row;
+    return { ...row, info: row.info ? JSON.parse(row.info) : row.info };
 }
 
-export async function getUserByNumber(phone) {
-    const [result] = await pool.query("SELECT * FROM users WHERE phone = ?", [phone])
-    return result[0]
+export function createUser(firstname, lastname, email, phone, password) {
+    const result = db.prepare(
+        "INSERT INTO users (firstname, lastname, email, phone, password) VALUES (?, ?, ?, ?, ?)"
+    ).run(firstname, lastname, email, phone, password);
+    return result;
 }
 
-export async function updateUserById(id, firstname, lastname, phone, email, password) {
-    const [result] = await pool.query(
-        "UPDATE users SET firstname = ?, lastname = ?, phone = ?, email = ?, password = ? WHERE id = ?",
-        [firstname, lastname, phone, email, password, id]
-    )
-    return result
+export function getUserById(id) {
+    return db.prepare("SELECT * FROM users WHERE id = ?").get(id);
 }
 
-export async function getProductsByCategory(category) {
-    const [result] = await pool.query("SELECT * FROM products WHERE category = ?", [category])
-    return result
+export function getUserByNumber(phone) {
+    return db.prepare("SELECT * FROM users WHERE phone = ?").get(phone);
 }
 
-export async function getAllProducts() {
-    const [result] = await pool.query("SELECT * FROM products ORDER BY id DESC")
-    return result
+export function updateUserById(id, firstname, lastname, phone, email, password) {
+    const result = db.prepare(
+        "UPDATE users SET firstname = ?, lastname = ?, phone = ?, email = ?, password = ? WHERE id = ?"
+    ).run(firstname, lastname, phone, email, password, id);
+    return result;
 }
 
-export async function createProduct(title, category, image, banner, price, discount, info, steamId, recommended, minimum, publisher, dlc) {
-    const [result] = await pool.query(
-        "INSERT INTO products (title, category, image, banner, price, discount, info, steamId, recommended, minimum, publisher, dlc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [title, category, image, banner, price, discount, info, steamId, recommended, minimum, publisher, dlc]
-    )
-    return result
+export function getProductsByCategory(category) {
+    const result = db.prepare("SELECT * FROM products WHERE category = ?").all(category);
+    return result.map(parseProduct);
 }
 
-export async function deleteProductById(id) {
-    const [result] = await pool.query("DELETE FROM products WHERE id = ?", [id])
+export function getAllProducts() {
+    const result = db.prepare("SELECT * FROM products ORDER BY id DESC").all();
+    return result.map(parseProduct);
 }
 
-export async function updateGamePrice(price, discount, steamId) {
-    const [result] = await pool.query(
-        "UPDATE products SET price = ?, discount = ? WHERE steamId = ?",
-        [price, discount, steamId]
-    )
+export function createProduct(title, category, image, banner, price, discount, info, steamId, recommended, minimum, publisher, dlc) {
+    const result = db.prepare(
+        "INSERT INTO products (title, category, image, banner, price, discount, info, steamId, recommended, minimum, publisher, dlc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    ).run(title, category, image, banner, JSON.stringify(price), discount, info, steamId, recommended, minimum, publisher, dlc);
+    return result;
 }
 
-export async function updatePriceById(price, discount, id) {
-    const [result] = await pool.query(
+export function deleteProductById(id) {
+    const result = db.prepare("DELETE FROM products WHERE id = ?").run(id);
+    return result;
+}
+
+export function updateGamePrice(price, discount, steamId) {
+    const result = db.prepare(
         "UPDATE products SET price = ?, discount = ? WHERE steamId = ?"
-    )
+    ).run(JSON.stringify(price), discount, steamId);
+    return result;
 }
 
-export async function getProductBySteamId(steamId){
-    const [result] = await pool.query("SELECT * FROM products WHERE steamId = ?", [steamId])
-    return result
+export function updatePriceById(price, discount, id) {
+    const result = db.prepare(
+        "UPDATE products SET price = ?, discount = ? WHERE id = ?"
+    ).run(JSON.stringify(price), discount, id);
+    return result;
 }
 
-export async function getProductById(id) {
-    const [result] = await pool.query("SELECT * FROM products WHERE id = ?", [id])
-    return result
+export function getProductBySteamId(steamId) {
+    const result = db.prepare("SELECT * FROM products WHERE steamId = ?").all(steamId);
+    return result.map(parseProduct);
 }
 
-export async function updateProductById(id, title, category, image, banner, price, discount, info, recommended, minimum, publisher, dlc){
-    const [result] = await pool.query(
-        "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discount = ?, info = ?, recommended = ?, minimum = ?, publisher = ?, dlc = ? WHERE id = ?",
-        [title, category, image, banner, price, discount, info, recommended, minimum, publisher, dlc, id]
-    )
+export function getProductById(id) {
+    const result = db.prepare("SELECT * FROM products WHERE id = ?").all(id);
+    return result.map(parseProduct);
 }
 
-export async function getAllCategories() {
-    const [result] = await pool.query(
-        "SELECT DISTINCT category FROM products"
-    );
+export function updateProductById(id, title, category, image, banner, price, discount, info, recommended, minimum, publisher, dlc) {
+    const result = db.prepare(
+        "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discount = ?, info = ?, recommended = ?, minimum = ?, publisher = ?, dlc = ? WHERE id = ?"
+    ).run(title, category, image, banner, JSON.stringify(price), discount, info, recommended, minimum, publisher, dlc, id);
+    return result;
+}
+
+export function getAllCategories() {
+    const result = db.prepare("SELECT DISTINCT category FROM products").all();
     return result.map(row => row.category);
 }
 
-export async function createOrder(userId, productId, quantity, info) {
-    const [result] = await pool.query(
-        "INSERT INTO orders (userId, productId, quantity, info) VALUES (?, ?, ?, ?)",
-        [userId, productId, quantity, info]
-    )
-    return result
+export function createOrder(userId, productId, quantity, info) {
+    const result = db.prepare(
+        "INSERT INTO orders (userId, productId, quantity, info) VALUES (?, ?, ?, ?)"
+    ).run(userId, productId, quantity, JSON.stringify(info));
+    return result;
 }
 
-export async function getOrdersByUserID(id) {
-    const [result] = await pool.query("SELECT * FROM orders WHERE userId = ?", [id])
-    return result
+export function getOrdersByUserID(id) {
+    const result = db.prepare("SELECT * FROM orders WHERE userId = ?").all(id);
+    return result.map(parseOrder);
 }
 
-export async function updateOrderByID(id, quantity, info) {
-    const [result] = await pool.query(
-        "UPDATE orders SET quantity = ?, info = ? WHERE id = ?",
-        [quantity, info, id]
-    )
-    return result
+export function updateOrderByID(id, quantity, info) {
+    const result = db.prepare(
+        "UPDATE orders SET quantity = ?, info = ? WHERE id = ?"
+    ).run(quantity, JSON.stringify(info), id);
+    return result;
 }
 
-export async function deleteOrderByID(id) {
-    const [result] = await pool.query("DELETE FROM orders WHERE id = ?", [id])
-    return result
+export function deleteOrderByID(id) {
+    const result = db.prepare("DELETE FROM orders WHERE id = ?").run(id);
+    return result;
 }
 
-export async function getDiscountProducts(){
-    const [result] = await pool.query("SELECT * FROM products WHERE discount > 0 OR realDiscount > 0")
-    return result
+export function getDiscountProducts() {
+    const result = db.prepare("SELECT * FROM products WHERE discount > 0 OR realDiscount > 0").all();
+    return result.map(parseProduct);
 }
