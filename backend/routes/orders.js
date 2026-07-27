@@ -2,6 +2,7 @@ import express from "express"
 import {createOrder, deleteOrderByID, getOrdersByUserID, getProductById, updateOrderByID} from "../src/db.js"
 import axios from "axios";
 import {applyProfit} from "./products.js";
+import { log } from "console";
 
 const router = express.Router()
 
@@ -11,7 +12,7 @@ router.post("/", async (req, res) => {
 
         if(!userId || !productId){return res.status(400).json({status: "fail", data: "please provide the credentials"})}
 
-        await createOrder(userId, productId, quantity, JSON.stringify(info))
+        await createOrder(Number(userId), (Number)(productId), Number(quantity), JSON.stringify(info))
 
         res.status(200).json({status: "success"})
     }catch(err){
@@ -26,13 +27,20 @@ router.get("/", async (req, res) => {
         const finalResult = await Promise.all(
             result.map(async (order) => {
                 const product = await applyProfit(await getProductById(order.productId))
-                const selectedPrice = product[0]?.price.find(p => p.country[0] === order.info.region[0])
+                let selectedPrice
+                console.log(order.info);
+                for(const sub of product[0].price.subs[order.info.region]){
+                    if(sub.name == order.info.name){
+                        selectedPrice = sub.price
+                    }
+                }
                 return {
                     ...order,
                     info: {
                         ...order.info,
-                        price: selectedPrice?.price ?? null,
-                        discount: product[0].discount + product[0].realDiscount,
+                        price: selectedPrice,
+                        discount: JSON.parse(product[0].discount),
+                        realDiscount: product[0].realDiscount
                     }
                 }
             })

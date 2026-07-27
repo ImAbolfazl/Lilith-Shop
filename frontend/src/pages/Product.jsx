@@ -20,6 +20,11 @@ const Product = () => {
     const [discountTimeLeft, setDiscountTimeLeft] = useState()
     const {token, user} = useContext(UserContext)
 
+    const passwordRequiredCategories = [
+        "Steam",
+        "Discord"
+    ]
+
     const getDiscountTimeLeft = () => {
         if (!data?.discount) return ""
 
@@ -78,6 +83,7 @@ const Product = () => {
                 if(response.data){
                     setData(response.data.data)
                     setLoading(false)
+                    orderProduct()
                 }
             }catch(err){
                 console.log(err)
@@ -100,13 +106,22 @@ const Product = () => {
 
     const checkAction = (item) => {
         if(token && user){
-            setPanel("Order")
-            setOrderBody({
-                userId: user.id,
-                productId: id,
-                region: region,
-                name: item.name
-            })
+            if(passwordRequiredCategories.includes(data.category)){
+                setPanel("Order")
+                setOrderBody({
+                    userId: user.id,
+                    productId: id,
+                    name: item.name
+                })
+            }else{
+                console.log();
+                
+                setOrderBody({
+                    userId: user.id,
+                    productId: id,
+                    name: item.name
+                })
+            }
         }else{
             setPanel("Login")
         }
@@ -115,7 +130,23 @@ const Product = () => {
 
     const orderProduct = async () => {
         try{
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/orders`, orderBody, {headers: {authorization: token}})
+            console.log(orderBody)
+            await axios({
+                method: "post",
+                url: `${import.meta.env.VITE_BACKEND_URL}/api/orders`,
+                data: {
+                    userId: user.id,
+                    productId: id,
+                    quantity: 1,
+                    info: {
+                        region: region,
+                        name: orderBody.name,
+                        username: orderBody.username,
+                        password: orderBody.password
+                    }
+                },
+                headers: {authorization: token}
+            })
         }catch(err){
             console.log(err)
         }
@@ -247,9 +278,9 @@ const Product = () => {
                             className="md:w-[70vw] relative"
                         >
                             {discount > 0 && <p className='absolute -top-6 -left-6 text-xl bg-bg-secondary text-accent-primary p-3 rounded-full -rotate-27 z-10'>{discount}%</p>}
-                            <p className='bg-bg-secondary absolute px-5 py-3 rounded-2xl text-accent-secondary font-bold text-sm z-10 -top-7 left-12'>
+                            {discount > 0 && <p className='bg-bg-secondary absolute px-5 py-3 rounded-2xl text-accent-secondary font-bold text-sm z-10 -top-7 left-12'>
                                 {getDiscountTimeLeft()}
-                            </p>
+                            </p>}
                             <div
                                 data-lenis-prevent
                                 className="show-scrollbar bg-bg-secondary p-2 rounded-xl flex flex-col gap-2 max-h-[25rem] overflow-y-auto"
@@ -297,7 +328,8 @@ const Product = () => {
                                 dangerouslySetInnerHTML={{ __html: data.info }}
                             />
                         </div>
-                        <div className='flex flex-col gap-3 scroll-mt-40' id='requiredSys'>
+                        {data.minimum && <>
+                            <div className='flex flex-col gap-3 scroll-mt-40' id='requiredSys'>
                             <p className='flex items-center gap-2'><FaMicrochip/> حداقل سیستم مورد نیاز:</p>
                             <div
                                 dir='ltr'
@@ -313,6 +345,7 @@ const Product = () => {
                                 dangerouslySetInnerHTML={{ __html: data.recommended }}
                             />
                         </div>
+                        </>}
                         </div>
                 </motion.div>
     </>);

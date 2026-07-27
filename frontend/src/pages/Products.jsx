@@ -34,7 +34,7 @@ const Products = () => {
 
   if(data < 1){
     return (
-      <motion.div className='h-screen flex items-center justify-center text-1xl md:text-2xl'>
+      <motion.div className='h-screen flex items-center justify-center text-1xl md:text-2xl text-text-secondary'>
         <div className='absolute bottom-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[36rem] rounded-full bg-accent-primary/40 blur-[140px] -z-10' />
         <div className='absolute top-[0%] -right-[25%] -translate-x-1/2 -translate-y-1/2 w-[36rem] h-[36rem] rounded-full bg-accent-secondary/40 blur-[140px] -z-10' />
         <ParticleField className='absolute inset-0 z-10 h-full w-full right-100 top-100'/>

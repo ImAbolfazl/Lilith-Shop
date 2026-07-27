@@ -211,7 +211,7 @@ const Dashboard = () => {
                                 </div>
                                 {order.info?.price && (
                                     <div className="flex items-center gap-2 font-bold">
-                                        <span>{order.info?.discount > 0 ? Math.round(order.info?.price * (1 - order.info?.discount / 100)).toLocaleString("fa-IR"): order.info?.price.toLocaleString("fa-IR")}</span>
+                                        <span>{new Date() < new Date(order.info.discount.expires) ? order.info.price.toLocaleString("fa-IR") : (order.info.price * (1 - (order.info.discount.percent + order.info.realDiscount) / 100)).toLocaleString("fa-IR")}</span>
                                         <PriceSVG />
                                     </div>
                                 )}
