@@ -10,7 +10,7 @@ const authLimit = rateLimit({
 
 const ordersLimit = rateLimit({
     windowMs: 60 * 1000,
-    max: 25,
+    max: 50,
     standardHeaders: true,
     legacyHeaders: false,
     message: {status: "fail", data: "تعداد درخواست بیش از حد مجاز است. لطفا بعدا تلاش کنید."}

@@ -20,6 +20,10 @@ const Dashboard = () => {
     const [editForm, setEditForm] = useState({ firstname: "", lastname: "", email: "", number: "", password: "" })
     const [editLoading, setEditLoading] = useState(false)
     const [editError, setEditError] = useState(null)
+    const ORDERS_PAGE_SIZE = 5
+    const [currentPage, setCurrentPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(1)
+    const [totalOrders, setTotalOrders] = useState(0)
 
     useEffect(() => {
         if (!token) {
@@ -27,17 +31,32 @@ const Dashboard = () => {
         }
     }, [token])
 
-    const fetchOrders = async () => {
+    const fetchOrders = async (page = currentPage) => {
         setOrdersLoading(true)
         setOrdersError(null)
         try {
             const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/orders`, {
-                headers: { authorization: token }
+                headers: { authorization: token },
+                params: { page, limit: ORDERS_PAGE_SIZE }
             });
 
-            const rawOrders = res.data.data || [];
+            const payload = res.data;
+            const rawOrders = Array.isArray(payload?.data)
+                ? payload.data
+                : Array.isArray(payload?.orders)
+                    ? payload.orders
+                    : Array.isArray(payload)
+                        ? payload
+                        : [];
 
-            console.log(rawOrders);
+            const pagination = payload?.pagination || payload?.meta || {};
+            const resolvedPage = Number(pagination.page ?? payload?.page ?? page ?? 1) || 1;
+            const totalCount = Number(
+                pagination.totalItems ?? pagination.total ?? payload?.totalItems ?? payload?.total ?? rawOrders.length
+            ) || rawOrders.length;
+            const resolvedTotalPages = Number(
+                pagination.totalPages ?? payload?.totalPages ?? payload?.pages ?? (totalCount > 0 ? Math.ceil(totalCount / ORDERS_PAGE_SIZE) : 1)
+            ) || 1;
 
             const enriched = await Promise.all(
                 rawOrders.map(async (order) => {
@@ -63,6 +82,9 @@ const Dashboard = () => {
             );
 
             setOrders(enriched);
+            setCurrentPage(resolvedPage);
+            setTotalPages(resolvedTotalPages);
+            setTotalOrders(totalCount);
         } catch (err) {
             console.error(err);
             setOrdersError("خطا در دریافت سفارش‌ها");
@@ -78,6 +100,7 @@ const Dashboard = () => {
                 data: { id }
             });
             setOrders(prev => prev.filter(o => o.id !== id));
+            fetchOrders(currentPage);
         } catch (err) {
             console.error(err);
             alert("حذف سفارش با خطا مواجه شد");
@@ -86,9 +109,9 @@ const Dashboard = () => {
 
     useEffect(() => {
         if (selected === "سبد خرید" && token) {
-            fetchOrders();
+            fetchOrders(currentPage);
         }
-    }, [selected, token]);
+    }, [selected, token, currentPage]);
 
     const startEdit = () => {
         setEditForm({
@@ -211,7 +234,7 @@ const Dashboard = () => {
                                 </div>
                                 {order.info?.price && (
                                     <div className="flex items-center gap-2 font-bold">
-                                        <span>{new Date() < new Date(order.info.discount.expires) ? order.info.price.toLocaleString("fa-IR") : (order.info.price * (1 - (order.info.discount.percent + order.info.realDiscount) / 100)).toLocaleString("fa-IR")}</span>
+                                        <span>{order.info.discount.expires ? new Date() < new Date(order.info.discount.expires) ? order.info.price.toLocaleString("fa-IR") : (order.info.price * (1 - (order.info.discount.percent + order.info.realDiscount) / 100)).toLocaleString("fa-IR") : order.info.price.toLocaleString("fa-IR")}</span>
                                         <PriceSVG />
                                     </div>
                                 )}
@@ -225,6 +248,42 @@ const Dashboard = () => {
                             </div>
                         ))}
                     </div>
+
+                    {!ordersLoading && !ordersError && totalPages > 1 && (
+                        <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                            <p className="text-sm text-text-secondary">
+                                مجموع: {totalOrders} سفارش
+                            </p>
+
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="rounded-xl bg-bg-primary px-3 py-2 text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                    قبلی
+                                </button>
+
+                                {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                                    <button
+                                        key={page}
+                                        onClick={() => setCurrentPage(page)}
+                                        className={`min-w-10 rounded-xl px-3 py-2 text-sm font-bold transition ${page === currentPage ? "bg-accent-secondary text-white" : "bg-bg-primary text-text-secondary"}`}
+                                    >
+                                        {page}
+                                    </button>
+                                ))}
+
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="rounded-xl bg-bg-primary px-3 py-2 text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                    بعدی
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             }
             {selected == "اطلاعات کاربر" &&

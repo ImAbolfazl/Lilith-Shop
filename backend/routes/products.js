@@ -6,6 +6,7 @@ import {
     getAllProducts, getDiscountProducts,
     getProductById,
     getProductsByCategory,
+    searchProducts,
     updateProductById
 } from "../src/db.js";
 import { addSteamGameToDB } from "../utils/steamUtils.js";
@@ -60,18 +61,20 @@ export const applyProfit = async (products) => {
 router.get("/category/:category", async (req, res) => {
     try {
         const { category } = req.params;
+        const page = Math.max(1, Number(req.query.page) || 1);
+        const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
 
         let result;
 
         if (category.toLowerCase() === "all") {
-            result = await getAllProducts();
+            result = await getAllProducts(page, limit);
         } else {
-            result = await getProductsByCategory(category);
+            result = await getProductsByCategory(category, page, limit);
         }
 
-        result = await applyProfit(result);
+        result.data = await applyProfit(result.data);
 
-        if (result.length === 0) {
+        if (result.data.length === 0) {
             return res.status(400).json({
                 status: "fail"
             });
@@ -79,7 +82,12 @@ router.get("/category/:category", async (req, res) => {
 
         res.status(200).json({
             status: "success",
-            data: result
+            data: result.data,
+            pagination: {
+                page: result.page,
+                totalPages: result.totalPages,
+                total: result.total
+            }
         });
 
     } catch (err) {
@@ -273,13 +281,18 @@ router.get("/categories", async (req, res) => {
 
         const result = await Promise.all(
             categories.map(async category => {
-                let categoryData = await getProductsByCategory(category);
+                let categoryData = await getProductsByCategory(category, 1, 20);
 
-                categoryData = await applyProfit(categoryData);
+                categoryData.data = await applyProfit(categoryData.data);
 
                 return {
                     name: category,
-                    data: categoryData
+                    data: categoryData.data,
+                    pagination: {
+                        page: categoryData.page,
+                        totalPages: categoryData.totalPages,
+                        total: categoryData.total
+                    }
                 };
             })
         );
@@ -317,9 +330,39 @@ router.delete("/:id", authMiddleware, roleMiddleware, async (req, res) => {
 
 router.get("/discounts", async (req, res) => {
     try{
-        const result = await getDiscountProducts()
+        const page = Math.max(1, Number(req.query.page) || 1);
+        const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
 
-        res.status(200).json({status: "success", data: result})
+        const result = await getDiscountProducts(page, limit)
+        result.data = await applyProfit(result.data);
+
+        res.status(200).json({
+            status: "success",
+            data: result.data,
+            pagination: {
+                page: result.page,
+                totalPages: result.totalPages,
+                total: result.total
+            }
+        })
+    }catch(err){
+        console.error(err);
+        res.status(500).json({status: "error"});
+    }
+})
+
+router.get("/search", async (req, res) => {
+    try{
+        const q = (req.query.q || "").trim();
+
+        if (q.length < 2) {
+            return res.status(200).json({ status: "success", data: [] });
+        }
+
+        const result = await searchProducts(q, 20);
+        const data = await applyProfit(result);
+
+        res.status(200).json({ status: "success", data });
     }catch(err){
         console.error(err);
         res.status(500).json({status: "error"});

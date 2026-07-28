@@ -52,7 +52,9 @@ const Main = () => {
     }, [])
     
     useEffect(() => {
-        window.scrollTo(0, 0)
+        window.lenis?.scrollTo(0, {
+            immediate: true,
+        });
     }, [pathname])
 
     return (

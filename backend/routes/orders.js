@@ -23,12 +23,15 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
     try {
-        const result = await getOrdersByUserID(req.userId)
+        const page = Math.max(1, Number(req.query.page) || 1);
+        const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
+
+        const result = await getOrdersByUserID(req.userId, page, limit)
+
         const finalResult = await Promise.all(
-            result.map(async (order) => {
+            result.data.map(async (order) => {
                 const product = await applyProfit(await getProductById(order.productId))
                 let selectedPrice
-                console.log(order.info);
                 for(const sub of product[0].price.subs[order.info.region]){
                     if(sub.name == order.info.name){
                         selectedPrice = sub.price
@@ -46,7 +49,15 @@ router.get("/", async (req, res) => {
             })
         );
 
-        res.status(200).json({ status: "success", data: finalResult});
+        res.status(200).json({
+            status: "success",
+            data: finalResult,
+            pagination: {
+                page: result.page,
+                totalPages: result.totalPages,
+                total: result.total
+            }
+        });
     } catch (err) {
         console.log(err);
         return res.status(500).json({status: "fail"});

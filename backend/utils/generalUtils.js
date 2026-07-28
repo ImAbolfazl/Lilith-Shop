@@ -27,6 +27,11 @@ export async function sendSMSValidation(number, code) {
 }
 
 export async function downloadImage(url, outputPath) {
+    try {
+        await fs.promises.access(outputPath, fs.constants.F_OK);
+        return outputPath;
+    } catch {}
+
     const response = await axios({
         url,
         method: "GET",
@@ -42,7 +47,7 @@ export async function downloadImage(url, outputPath) {
 
         response.data.pipe(writer);
 
-        writer.on("finish", resolve);
+        writer.on("finish", () => resolve(outputPath));
         writer.on("error", reject);
     });
 }

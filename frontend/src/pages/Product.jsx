@@ -71,11 +71,15 @@ const Product = () => {
     }, [data])
 
     useEffect(() => {
-        window.scrollTo(0, 0)
+        window.lenis?.scrollTo(0, {
+            immediate: true,
+        });
     }, [pathname])
 
     useEffect(() => {
-        window.scrollTo(0, 0);
+        window.lenis?.scrollTo(0, {
+            immediate: true,
+        });
         const fetchData = async () => {
             try{
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/product/${id}`)
@@ -83,7 +87,6 @@ const Product = () => {
                 if(response.data){
                     setData(response.data.data)
                     setLoading(false)
-                    orderProduct()
                 }
             }catch(err){
                 console.log(err)
@@ -114,23 +117,21 @@ const Product = () => {
                     name: item.name
                 })
             }else{
-                console.log();
-                
                 setOrderBody({
                     userId: user.id,
                     productId: id,
                     name: item.name
                 })
+                orderProduct()
             }
         }else{
             setPanel("Login")
         }
         window.scrollTo(0, 0)
     }
-
+    
     const orderProduct = async () => {
         try{
-            console.log(orderBody)
             await axios({
                 method: "post",
                 url: `${import.meta.env.VITE_BACKEND_URL}/api/orders`,

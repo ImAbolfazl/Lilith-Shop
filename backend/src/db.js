@@ -156,31 +156,53 @@ export function updateUserById(id, firstname, lastname, phone, email, password) 
     }
 }
 
-const getProductsByCategoryStmt = db.prepare("SELECT * FROM products WHERE category = ? ORDER BY id DESC");
+const getProductsByCategoryStmt = db.prepare(
+    "SELECT * FROM products WHERE category = ? ORDER BY id DESC LIMIT ? OFFSET ?"
+);
+const countProductsByCategoryStmt = db.prepare(
+    "SELECT COUNT(*) as count FROM products WHERE category = ?"
+);
 
-export function getProductsByCategory(category) {
+export function getProductsByCategory(category, page = 1, limit = 20) {
     if (!category || typeof category !== 'string') {
         console.error('Invalid category provided:', category);
-        return [];
+        return { data: [], total: 0, page, totalPages: 0 };
     }
     try {
-        const rows = getProductsByCategoryStmt.all(category);
-        return rows.map(parseProduct);
+        const offset = (page - 1) * limit;
+        const rows = getProductsByCategoryStmt.all(category, limit, offset);
+        const total = countProductsByCategoryStmt.get(category).count;
+        return {
+            data: rows.map(parseProduct),
+            total,
+            page,
+            totalPages: Math.ceil(total / limit)
+        };
     } catch (err) {
         console.error('Error getting products by category:', err);
-        return [];
+        return { data: [], total: 0, page, totalPages: 0 };
     }
 }
 
-const getAllProductsStmt = db.prepare("SELECT * FROM products ORDER BY id DESC");
+const getAllProductsStmt = db.prepare(
+    "SELECT * FROM products ORDER BY id DESC LIMIT ? OFFSET ?"
+);
+const countAllProductsStmt = db.prepare("SELECT COUNT(*) as count FROM products");
 
-export function getAllProducts() {
+export function getAllProducts(page = 1, limit = 20) {
     try {
-        const rows = getAllProductsStmt.all();
-        return rows.map(parseProduct);
+        const offset = (page - 1) * limit;
+        const rows = getAllProductsStmt.all(limit, offset);
+        const total = countAllProductsStmt.get().count;
+        return {
+            data: rows.map(parseProduct),
+            total,
+            page,
+            totalPages: Math.ceil(total / limit)
+        };
     } catch (err) {
         console.error('Error getting all products:', err);
-        return [];
+        return { data: [], total: 0, page, totalPages: 0 };
     }
 }
 
@@ -192,17 +214,17 @@ export function createProduct(title, category, image, banner, price, discount, i
     try {
         const priceStr = typeof price === 'string' ? price : JSON.stringify(price);
         const result = createProductStmt.run(
-            title, 
-            category, 
-            image, 
-            banner, 
-            priceStr, 
-            discount || 0, 
-            info, 
-            steamId || null, 
-            recommended || null, 
-            minimum || null, 
-            publisher || null, 
+            title,
+            category,
+            image,
+            banner,
+            priceStr,
+            discount || 0,
+            info,
+            steamId || null,
+            recommended || null,
+            minimum || null,
+            publisher || null,
             dlc || null
         );
         return { insertId: result.lastInsertRowid, changes: result.changes };
@@ -312,17 +334,17 @@ export function updateProductById(id, title, category, image, banner, price, dis
     try {
         const priceStr = typeof price === 'string' ? price : JSON.stringify(price);
         const result = updateProductByIdStmt.run(
-            title, 
-            category, 
-            image, 
-            banner, 
-            priceStr, 
-            discount || 0, 
-            info, 
-            recommended || null, 
-            minimum || null, 
-            publisher || null, 
-            dlc || null, 
+            title,
+            category,
+            image,
+            banner,
+            priceStr,
+            discount || 0,
+            info,
+            recommended || null,
+            minimum || null,
+            publisher || null,
+            dlc || null,
             id
         );
         return { changes: result.changes };
@@ -332,7 +354,7 @@ export function updateProductById(id, title, category, image, banner, price, dis
     }
 }
 
-const getAllCategoriesStmt = db.prepare("SELECT DISTINCT category FROM products WHERE category IS NOT NULL AND category != ''");
+const getAllCategoriesStmt = db.prepare("SELECT DISTINCT category FROM products WHERE category IS NOT NULL AND category != '' GROUP BY category ORDER BY MIN(id);");
 
 export function getAllCategories() {
     try {
@@ -367,19 +389,27 @@ export function createOrder(userId, productId, quantity, info) {
     }
 }
 
-const getOrdersByUserIDStmt = db.prepare("SELECT * FROM orders WHERE userId = ? ORDER BY id DESC");
+const getOrdersByUserIDStmt = db.prepare("SELECT * FROM orders WHERE userId = ? ORDER BY id DESC LIMIT ? OFFSET ?");
+const countOrdersByUserIDStmt = db.prepare("SELECT COUNT(*) as count FROM orders WHERE userId = ?");
 
-export function getOrdersByUserID(id) {
+export function getOrdersByUserID(id, page = 1, limit = 20) {
     if (!id || typeof id !== 'number') {
         console.error('Invalid user ID for orders:', id);
-        return [];
+        return { data: [], total: 0, page, totalPages: 0 };
     }
     try {
-        const rows = getOrdersByUserIDStmt.all(id);
-        return rows.map(parseOrder);
+        const offset = (page - 1) * limit;
+        const rows = getOrdersByUserIDStmt.all(id, limit, offset);
+        const total = countOrdersByUserIDStmt.get(id).count;
+        return {
+            data: rows.map(parseOrder),
+            total,
+            page,
+            totalPages: Math.ceil(total / limit)
+        };
     } catch (err) {
         console.error('Error getting orders by user ID:', err);
-        return [];
+        return { data: [], total: 0, page, totalPages: 0 };
     }
 }
 
@@ -418,14 +448,47 @@ export function deleteOrderByID(id) {
     }
 }
 
-const getDiscountProductsStmt = db.prepare("SELECT * FROM products WHERE discount > 0 OR realDiscount > 0 ORDER BY id DESC");
+const getDiscountProductsStmt = db.prepare(`
+    SELECT * FROM products
+    WHERE json_extract(discount, '$.percent') > 0 OR realDiscount > 0
+    ORDER BY
+        CASE WHEN json_extract(discount, '$.expires') IS NULL THEN 1 ELSE 0 END,
+        json_extract(discount, '$.expires') ASC,
+        id DESC
+    LIMIT ? OFFSET ?
+`);
+const countDiscountProductsStmt = db.prepare("SELECT COUNT(*) as count FROM products WHERE json_extract(discount, '$.percent') > 0 OR realDiscount > 0");
 
-export function getDiscountProducts() {
+export function getDiscountProducts(page = 1, limit = 20) {
     try {
-        const rows = getDiscountProductsStmt.all();
-        return rows.map(parseProduct);
+        const offset = (page - 1) * limit;
+        const rows = getDiscountProductsStmt.all(limit, offset);
+        const total = countDiscountProductsStmt.get().count;
+        return {
+            data: rows.map(parseProduct),
+            total,
+            page,
+            totalPages: Math.ceil(total / limit)
+        };
     } catch (err) {
         console.error('Error getting discount products:', err);
+        return { data: [], total: 0, page, totalPages: 0 };
+    }
+}
+
+const searchProductsStmt = db.prepare(
+    "SELECT * FROM products WHERE title LIKE ? ORDER BY id DESC LIMIT ?"
+);
+
+export function searchProducts(query, limit = 20) {
+    if (!query || typeof query !== 'string') {
+        return [];
+    }
+    try {
+        const rows = searchProductsStmt.all(`%${query}%`, limit);
+        return rows.map(parseProduct);
+    } catch (err) {
+        console.error('Error searching products:', err);
         return [];
     }
 }

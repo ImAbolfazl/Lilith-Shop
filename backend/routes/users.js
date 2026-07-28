@@ -12,7 +12,7 @@ router.put("/", async (req, res) => {
         if (!/^09\d{9}$/.test(number)){return res.status(400).json({status: "fail", data: "شماره اشتباه اشت"})}
         if (password.length > 12 || password.length < 6){return res.status(400).json({status: "fail", data: "رمز عبود باید کمتر از 12 حرف و بیشتر از 6 حرف باشد"})}
 
-        const user = await updateUserById(req.userId, firstname, lastname, email, number, password)
+        const user = await updateUserById(req.userId, firstname, lastname, number, email, password)
         res.status(200).json({status: "success", data: user})
     }catch(err){
         console.log(err)
