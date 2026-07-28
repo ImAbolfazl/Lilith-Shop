@@ -7,6 +7,7 @@ import { FaMicrochip, FaCircleInfo } from "react-icons/fa6";
 import { useContext } from 'react';
 import { UserContext } from '../App.jsx';
 import { IoIosArrowBack } from "react-icons/io";
+import toast from "react-hot-toast";
 
 const Product = () => {
     const [loading, setLoading] = useState(true)
@@ -94,7 +95,7 @@ const Product = () => {
         }
 
         fetchData()
-    }, []);
+    }, [pathname]);
 
     useEffect(() => {
         if(data){
@@ -148,8 +149,10 @@ const Product = () => {
                 },
                 headers: {authorization: token}
             })
+            toast.success("سفارش شما با موفقیت ثبت شد!");
         }catch(err){
             console.log(err)
+            toast.success("ثبت سفارش با خطا مواجه شد.");
         }
     }
 
@@ -268,7 +271,7 @@ const Product = () => {
                             <p>لطفا ریجن مورد نظر خود را وارد کنید:</p>
                             <div className="md:flex gap-3 grid grid-cols-2">
                                 {Object.keys(data.price.subs).map((item) => (
-                                    <p key={Math.random()} onClick={() => setRegion(item)} className={`bg-bg-secondary hover:bg-bg-secondary/70 duration-200 px-6 py-2 rounded-2xl cursor-pointer flex items-center gap-3 justify-center ${region === item ? "border border-text-primary" : "border border-bg-secondary"}`} ><img className='w-6 rounded-2xl' src={`https://flagsapi.com/${data.price.subs[item][0].tag}/flat/32.png`} alt={item} />{item}</p>
+                                    <p key={Math.random()} onClick={() => setRegion(item)} className={`bg-bg-secondary hover:bg-bg-secondary/70 duration-200 px-6 py-2 rounded-2xl cursor-pointer flex items-center gap-3 justify-center ${region === item ? "border border-accent-primary" : "border border-accent-secondary"}`} ><img className='w-6 rounded-2xl' src={`https://flagsapi.com/${data.price.subs[item][0].tag}/flat/32.png`} alt={item} />{item}</p>
                                 ))}
                             </div>
                         </motion.div>
@@ -329,24 +332,22 @@ const Product = () => {
                                 dangerouslySetInnerHTML={{ __html: data.info }}
                             />
                         </div>
-                        {data.minimum && <>
-                            <div className='flex flex-col gap-3 scroll-mt-40' id='requiredSys'>
+                        {data.minimum && <div className='flex flex-col gap-3 scroll-mt-40' id='requiredSys'>
                             <p className='flex items-center gap-2'><FaMicrochip/> حداقل سیستم مورد نیاز:</p>
                             <div
                                 dir='ltr'
                                 className="bg-bg-secondary rounded-xl p-5 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-3 [&_li]:flex [&_li]:flex-col [&_li]:items-start [&_li]:gap-1 md:[&_li]:flex-row md:[&_li]:justify-between md:[&_li]:items-center [&_li]:text-sm md:[&_li]:text-base [&_li]:text-text-secondary [&_li]:border-b [&_li]:border-bg-primary/40 [&_li]:pb-2 [&_li]:last:border-none [&_strong]:text-text-primary [&_strong]:font-medium md:[&_strong]:min-w-24"
                                 dangerouslySetInnerHTML={{ __html: data.minimum }}
                             />
-                        </div>
-                        <div className='flex flex-col gap-3'>
+                        </div>}
+                        {data.recommended && <div className='flex flex-col gap-3'>
                             <p className='flex items-center gap-2'><FaMicrochip/> سیستم پیشنهادی:</p>
                             <div
                                 dir='ltr'
                                 className="bg-bg-secondary rounded-xl p-5 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-3 [&_li]:flex [&_li]:flex-col [&_li]:items-start [&_li]:gap-1 md:[&_li]:flex-row md:[&_li]:justify-between md:[&_li]:items-center [&_li]:text-sm md:[&_li]:text-base [&_li]:text-text-secondary [&_li]:border-b [&_li]:border-bg-primary/40 [&_li]:pb-2 [&_li]:last:border-none [&_strong]:text-text-primary [&_strong]:font-medium md:[&_strong]:min-w-24"
                                 dangerouslySetInnerHTML={{ __html: data.recommended }}
                             />
-                        </div>
-                        </>}
+                        </div>}
                         </div>
                 </motion.div>
     </>);

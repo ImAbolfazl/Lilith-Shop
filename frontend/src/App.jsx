@@ -15,6 +15,7 @@ import MainLayout from './pages/MainLayout'
 import BlankLayout from './pages/BlankLayout'
 import Discounts from "./pages/Discounts.jsx";
 import Lenis from "lenis"
+import { Toaster } from 'react-hot-toast'
 
 export const UserContext = createContext();
 
@@ -120,6 +121,33 @@ const App = () => {
 
   return (
     <UserContext.Provider value={{user, token, setToken }}>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 2000,
+          style: {
+            background: "var(--color-bg-secondary)",
+            color: "var(--color-text-primary)",
+            border: "1px solid var(--color-border)",
+            borderRadius: "18px",
+            padding: "16px",
+            boxShadow: "0 12px 40px var(--color-shadow)",
+            fontSize: "15px",
+          },
+          success: {
+            iconTheme: {
+              primary: "#22c55e",
+              secondary: "#fff",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#ef4444",
+              secondary: "#fff",
+            },
+          },
+        }}
+      />
         <BrowserRouter>
           <Routes>
               <Route element={<MainLayout theme={theme} setTheme={setTheme} />}>
