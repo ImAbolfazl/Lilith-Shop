@@ -1,10 +1,10 @@
 import { Outlet } from "react-router";
 import Header from "../components/Header";
 
-export default function BlankLayout({theme, setTheme}) {
+export default function BlankLayout() {
     return (
         <>
-            <Header theme={theme} setTheme={setTheme} />
+            <Header/>
             <Outlet />
         </>
     );

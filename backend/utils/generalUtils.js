@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import axios from "axios";
+import { exchangeRates } from "../services/exchangePrice.js";
 
 export async function sendSMSValidation(number, code) {
     const response = await axios({

@@ -1,16 +1,16 @@
 @import "tailwindcss";
 @font-face {
-  font-family: "Vazir";
-  src: url("./assets/Vazir.ttf");
+  font-family: "Estedad";
+  src: url("./assets/Estedad[wght,kshd].ttf");
 }
 
 @theme {
-  --color-bg-primary: var(--color-bg-primary);
-  --color-bg-secondary: var(--color-bg-secondary);
-  --color-accent-primary: #FF00F5;
-  --color-accent-secondary: #9E00FF;
-  --color-text-primary: var(--color-text-primary);
-  --color-text-secondary: var(--color-text-secondary);
+  --color-bg-primary: #0B0818;
+  --color-bg-secondary: #161124;
+  --color-accent-primary: #FF5BAA;
+  --color-accent-secondary: #8B19D1;
+  --color-text-primary: #F7F5FA;
+  --color-text-secondary: #6C6880;
 }
 
 * {
@@ -52,7 +52,7 @@
 
 body {
   background-color: var(--color-bg-primary);
-  font-family: "Vazir";
+  font-family: "Estedad";
   font-weight: medium;
   color: var(--color-text-primary);
 }

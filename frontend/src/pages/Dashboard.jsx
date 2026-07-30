@@ -3,8 +3,8 @@ import axios from "axios";
 import { UserContext } from '../App';
 import { useNavigate } from 'react-router';
 import { motion } from "framer-motion";
-import { FaShoppingCart, FaUser, FaStar, FaCrown, FaSignOutAlt, FaTrash } from "react-icons/fa";
-import PriceSVG from '../components/PriceSVG';
+import { FaShoppingCart, FaUser, FaStar, FaCrown, FaSignOutAlt } from "react-icons/fa";
+import OrderCard from '../components/OrderCard';
 
 const Dashboard = () => {
     document.title = "Lilith | Dashboard";
@@ -214,38 +214,7 @@ const Dashboard = () => {
 
                     <div className="flex flex-col gap-4">
                         {orders.map((order) => (
-                            <div
-                                key={order.id}
-                                className="bg-bg-secondary rounded-2xl p-4 flex items-center gap-4 border border-text-primary/10"
-                            >
-                                {order.product?.image && (
-                                    <img
-                                        src={`${import.meta.env.VITE_BACKEND_URL}${order.product.image}`}
-                                        alt={order.product.title}
-                                        className="w-16 h-16 object-cover rounded-xl"
-                                    />
-                                )}
-                                <div className="flex-1">
-                                    <p className="font-bold">{order.product?.title || `محصول #${order.productId}`}</p>
-                                    <p className="text-sm text-text-secondary">تعداد: {order.quantity}</p>
-                                    {order.info?.region && (
-                                        <p className="text-sm text-text-secondary">ریجن: {order.info.region}</p>
-                                    )}
-                                </div>
-                                {order.info?.price && (
-                                    <div className="flex items-center gap-2 font-bold">
-                                        <span>{order.info.discount.expires ? new Date() < new Date(order.info.discount.expires) ? order.info.price.toLocaleString("fa-IR") : (order.info.price * (1 - (order.info.discount.percent + order.info.realDiscount) / 100)).toLocaleString("fa-IR") : order.info.price.toLocaleString("fa-IR")}</span>
-                                        <PriceSVG />
-                                    </div>
-                                )}
-                                <button
-                                    onClick={() => handleDeleteOrder(order.id)}
-                                    className="text-red-400 hover:text-red-500 p-2"
-                                    aria-label="حذف سفارش"
-                                >
-                                    <FaTrash />
-                                </button>
-                            </div>
+                            <OrderCard key={order.id} order={order}/>
                         ))}
                     </div>
 

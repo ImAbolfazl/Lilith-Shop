@@ -21,51 +21,11 @@ export const UserContext = createContext();
 
 
 const App = () => {
-  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark")
   const [token, setToken] = useState(localStorage.getItem("token"))
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-  localStorage.setItem("theme", theme);
-
-  document.documentElement.style.setProperty(
-    "--color-bg-primary",
-    theme === "dark" ? "#0B0818" : "#CECECE"
-  );
-
-  document.documentElement.style.setProperty(
-    "--color-bg-secondary",
-    theme === "dark" ? "#161124" : "#F1F1F1"
-  );
-
-  document.documentElement.style.setProperty(
-    "--color-text-primary",
-    theme === "dark" ? "#F7F5FA" : "#1F1A2E"
-  );
-
-  document.documentElement.style.setProperty(
-    "--color-text-secondary",
-    theme === "dark" ? "#B3ADBF" : "#6C6880"
-  );
-
-  document.documentElement.style.setProperty(
-    "--color-accent-primary",
-    theme === "dark" ? "#FF5BAA" : "#E93F95"
-  );
-
-  document.documentElement.style.setProperty(
-    "--color-accent-secondary",
-    theme === "dark" ? "#B86BFF" : "#9A5CF8"
-  );
-}, [theme]);
-
-  useEffect(() => {
-    if(token){
-      localStorage.setItem("token", token)
-    }else{
-      localStorage.removeItem("token")
-    }
     const fetchData = async () => {
           try{
             const response = await axios({
@@ -150,13 +110,13 @@ const App = () => {
       />
         <BrowserRouter>
           <Routes>
-              <Route element={<MainLayout theme={theme} setTheme={setTheme} />}>
+              <Route element={<MainLayout/>}>
                   <Route path="/" element={<Main />} />
                   <Route path="/Products" element={<Products />} />
                   <Route path="/Product/:id" element={<Product />} />
                   <Route path="/Discounts" element={<Discounts />} />
               </Route>
-              <Route element={<BlankLayout theme={theme} setTheme={setTheme}  />}>
+              <Route element={<BlankLayout/>}>
                   <Route path="/Login" element={<Login />} />
                   <Route path="/Register" element={<Register />} />
                   <Route path="/Dashboard" element={<Dashboard />} />

@@ -206,6 +206,18 @@ export function getAllProducts(page = 1, limit = 20) {
     }
 }
 
+const getAllProductsNotSteamStmt = db.prepare(
+    "SELECT * FROM products WHERE category != 'steam';"
+);
+
+export function getAllProductsNotSteam(){
+    try{
+        return getAllProductsNotSteamStmt.all()
+    }catch(err){
+        console.log(err);
+    }
+}
+
 const createProductStmt = db.prepare(
     "INSERT INTO products (title, category, image, banner, price, discount, info, steamId, recommended, minimum, publisher, dlc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 );
@@ -270,6 +282,19 @@ export function updateGamePrice(price, discount, steamId) {
     }
 }
 
+const updateProductPriceStmt = db.prepare(
+    "UPDATE products SET price = ? WHERE id = ?"
+);
+
+export function updateProductPrice(price, id) {
+    try {
+        updateProductPrice.run(price, id)
+    } catch (err) {
+        console.error('Error updating price:', err);
+        throw err;
+    }
+}
+
 const updatePriceByIdStmt = db.prepare(
     "UPDATE products SET price = ?, discount = ? WHERE id = ?"
 );
@@ -323,10 +348,10 @@ export function getProductById(id) {
 }
 
 const updateProductByIdStmt = db.prepare(
-    "UPDATE products SET title = ?, category = ?, image = ?, banner = ?, price = ?, discount = ?, info = ?, recommended = ?, minimum = ?, publisher = ?, dlc = ? WHERE id = ?"
+    "UPDATE products SET title = ?, category = ?, price = ?, discount = ?, info = ?, recommended = ?, minimum = ?, publisher = ?, dlc = ? WHERE id = ?"
 );
 
-export function updateProductById(id, title, category, image, banner, price, discount, info, recommended, minimum, publisher, dlc) {
+export function updateProductById(id, title, category, price, discount, info, recommended, minimum, publisher, dlc) {
     if (!id || typeof id !== 'number') {
         console.error('Invalid product ID for update:', id);
         return null;
@@ -336,8 +361,6 @@ export function updateProductById(id, title, category, image, banner, price, dis
         const result = updateProductByIdStmt.run(
             title,
             category,
-            image,
-            banner,
             priceStr,
             discount || 0,
             info,

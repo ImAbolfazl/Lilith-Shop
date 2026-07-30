@@ -36,7 +36,7 @@ export async function addSteamGameToDB(steamId) {
                         {
                             tag: countryCodes[country].tag.toUpperCase(),
                             name: name,
-                            price: Math.floor((sub.price_in_cents_with_discount / 100) * steamExchangeRates[countryCodes[country].tag])
+                            price: Math.floor(sub.price_in_cents_with_discount / 100)
                         }
                     ]
                 }
@@ -49,16 +49,20 @@ export async function addSteamGameToDB(steamId) {
     const sortedSubs = Object.fromEntries(
         Object.entries(price.subs).sort(
             ([, countryA], [, countryB]) =>
-                countryA[0].price - countryB[0].price
+                (countryA[0].price * (steamExchangeRates[countryA[0].tag.toLowerCase()] || 0)) -
+                (countryB[0].price * (steamExchangeRates[countryB[0].tag.toLowerCase()] || 0))
         )
     );
 
-    const cheapest = sortedSubs[Object.keys(sortedSubs)[0]][0].price
+    const cheapestItem = sortedSubs[Object.keys(sortedSubs)[0]][0];
+    const cheapest = cheapestItem.price;
+    const cheapestTag = cheapestItem.tag;
 
     if(gameData.price_overview){
         price = {
             subs: sortedSubs,
             initial: cheapest === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.price_overview.discount_percent / 100)),
+            initialTag: cheapestTag,
             discount: gameData.price_overview.discount_percent
         };
         discount = gameData.price_overview.discount_percent
@@ -66,6 +70,7 @@ export async function addSteamGameToDB(steamId) {
         price = {
             subs: sortedSubs,
             initial: cheapest === 0 ? cheapest : Math.floor(gameData.package_groups[0].subs[0].percent_savings / (1 - 0 / 100)),
+            initialTag: cheapestTag,
             discount: gameData.package_groups[0].subs[0].percent_savings
         };
         discount = gameData.package_groups[0].subs[0].percent_savings
@@ -158,7 +163,7 @@ export async function updateGmaePriceInDB(steamId) {
                         {
                             tag: countryCodes[country].tag.toUpperCase(),
                             name: name,
-                            price: Math.floor((sub.price_in_cents_with_discount / 100) * steamExchangeRates[countryCodes[country].tag])
+                            price: Math.floor(sub.price_in_cents_with_discount / 100)
                         }
                     ]
                 }
@@ -172,22 +177,27 @@ export async function updateGmaePriceInDB(steamId) {
     const sortedSubs = Object.fromEntries(
         Object.entries(price.subs).sort(
             ([, countryA], [, countryB]) =>
-                countryA[0].price - countryB[0].price
+                (countryA[0].price * (steamExchangeRates[countryA[0].tag.toLowerCase()] || 0)) -
+                (countryB[0].price * (steamExchangeRates[countryB[0].tag.toLowerCase()] || 0))
         )
     );
 
-    const cheapest = sortedSubs[Object.keys(sortedSubs)[0]][0].price
+    const cheapestItem = sortedSubs[Object.keys(sortedSubs)[0]][0];
+    const cheapest = cheapestItem.price;
+    const cheapestTag = cheapestItem.tag;
 
     if(gameData.price_overview){
         price = {
             subs: sortedSubs,
             initial: cheapest === 0 ? cheapest : Math.floor(cheapest / (1 - gameData.price_overview.discount_percent / 100)),
+            initialTag: cheapestTag
         };
         discount = gameData.price_overview.discount_percent
     }else{
         price = {
             subs: sortedSubs,
             initial: cheapest === 0 ? cheapest : Math.floor(gameData.package_groups[0].subs[0].percent_savings / (1 - 0 / 100)),
+            initialTag: cheapestTag
         };
         discount = gameData.package_groups[0].subs[0].percent_savings
     }

@@ -18,6 +18,18 @@ import { countryCodes, exchangeRates } from "../services/exchangePrice.js";
 
 export const router = express.Router();
 
+const getExchangeRate = (tag, isSteamCategory) => {
+    if (!tag) return 1;
+
+    const lower = tag.toLowerCase();
+
+    if (isSteamCategory && (lower === "tr" || lower === "ar")) {
+        return exchangeRates.us || 1;
+    }
+
+    return exchangeRates[lower] || 1;
+};
+
 export const applyProfit = async (products) => {
     return products.map(product => {
         const parsedPrice =
@@ -27,32 +39,41 @@ export const applyProfit = async (products) => {
 
         const profitMultiplier = 1 + Number(config.profitPercentage) / 100;
 
+        const isSteamCategory = product.category === "Steam";
+
+        const exchangedSubs = parsedPrice.subs
+            ? Object.fromEntries(
+                Object.entries(parsedPrice.subs).map(([country, items]) => [
+                    country,
+                    items.map(item => ({
+                        ...item,
+                        price: Math.floor(
+                            item.price * getExchangeRate(item.tag, isSteamCategory) * profitMultiplier
+                        )
+                    }))
+                ])
+            )
+            : {};
+
+        const initialTag = parsedPrice.initialTag
+            || Object.values(parsedPrice.subs || {})[0]?.[0]?.tag;
+
+        const initialRate = getExchangeRate(initialTag, isSteamCategory);
+
         return {
             ...product,
             price: {
                 ...parsedPrice,
 
                 initial: parsedPrice.initial
-                    ? Math.floor(parsedPrice.initial * profitMultiplier)
+                    ? Math.floor(parsedPrice.initial * initialRate * profitMultiplier)
                     : parsedPrice.initial,
 
                 final: parsedPrice.final
                     ? Math.floor(parsedPrice.final * profitMultiplier)
                     : parsedPrice.final,
 
-                subs: parsedPrice.subs
-                    ? Object.fromEntries(
-                        Object.entries(parsedPrice.subs).map(([country, items]) => [
-                            country,
-                            items.map(item => ({
-                                ...item,
-                                price: Math.floor(
-                                    item.price * profitMultiplier
-                                )
-                            }))
-                        ])
-                    )
-                    : {}
+                subs: exchangedSubs
             }
         };
     });
@@ -179,15 +200,16 @@ router.post(
                         "initial": price
                     }
                 }else{
-                    finalPrice = finalPrice = {
+                    finalPrice = {
                         "subs": {
                             [countryCodes[currency].persian]: [{
                                 "tag": countryCodes[currency].tag.toUpperCase(),
                                 "name": title,
-                                "price": price * exchangeRates[countryCodes[currency].tag]
+                                "price": price
                             }]
                         },
-                        "initial": price * exchangeRates[countryCodes[currency].tag]
+                        "initial": price,
+                        "initialTag": countryCodes[currency].tag.toUpperCase()
                     }
                 }
             }
@@ -224,20 +246,18 @@ router.post(
     }
 );
 
-router.put("/", authMiddleware, roleMiddleware, async (req, res) => {
+router.put("/:id", authMiddleware, roleMiddleware, async (req, res) => {
     if (req.role !== "admin") {
         return res.status(401).json({
             status: "access denied"
         });
     }
 
+    const id = req.params.id
     try {
         const {
-            id,
             title,
             category,
-            image,
-            banner,
             price,
             discount,
             info,
@@ -248,11 +268,9 @@ router.put("/", authMiddleware, roleMiddleware, async (req, res) => {
         } = req.body;
 
         await updateProductById(
-            id,
+            Number(id),
             title,
             category,
-            image,
-            banner,
             JSON.stringify(price),
             discount,
             info,
