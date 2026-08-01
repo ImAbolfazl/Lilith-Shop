@@ -12,7 +12,7 @@ const infoFieldLabels = {
     name: "نسخه / آیتم",
     username: "نام کاربری",
     password: "رمز عبور",
-    steamGuard: "کد استیم گارد",
+    code: "ریکاوری کد",
     price: "قیمت",
     discount: "تخفیف",
     realDiscount: "تخفیف واقعی"

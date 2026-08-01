@@ -148,7 +148,7 @@ const Product = () => {
                         name: orderBody.name,
                         username: orderBody.username,
                         password: orderBody.password,
-                        steamGuard: orderBody.steamGuard
+                        code: orderBody.code
                     }
                 },
                 headers: {authorization: token}
@@ -344,7 +344,13 @@ const Product = () => {
                             {data.category == "Steam" && <input
                                 type="text"
                                 placeholder="کد استیم گارد سالم"
-                                onChange={(e) => setOrderBody({...orderBody, steamGuard: e.target.value})}
+                                onChange={(e) => setOrderBody({...orderBody, code: e.target.value})}
+                                className="bg-bg-primary border border-transparent rounded-2xl px-5 py-4 outline-none transition-all duration-200 placeholder:text-text-secondary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20"
+                            />}
+                            {data.category == "Discord" && <input
+                                type="text"
+                                placeholder="ریکاوری کد"
+                                onChange={(e) => setOrderBody({...orderBody, code: e.target.value})}
                                 className="bg-bg-primary border border-transparent rounded-2xl px-5 py-4 outline-none transition-all duration-200 placeholder:text-text-secondary focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20"
                             />}
                         </div>
@@ -658,8 +664,10 @@ const Product = () => {
                             className='flex flex-col gap-2'
                         >
                             <p className='text-xl text-red-600'>توجه!</p>
-                            <p>قبل از ثبت سفارش <Link target='_blank' to="/steam-guard" className="text-red-600 border-b">استیم گارد</Link> خودتون رو خاموش کنید</p>
-                            <p>اگه ریجن اکانتتون ایران باشه میتونید هر ریجنی خواستید سفارش بدید.</p>
+                            {data.category == "Steam" && <>
+                                <p>قبل از ثبت سفارش <Link target='_blank' to="/steam-guard" className="text-red-600 border-b">استیم گارد</Link> خودتون رو خاموش کنید</p>
+                                <p>اگه ریجن اکانتتون ایران باشه میتونید هر ریجنی خواستید سفارش بدید.</p>    
+                            </>}
                             <p>قیمت های وبسایت هر 10 ساعت یکبار بروز میشوند!</p>
                             <p>تمامی محصولات دیجیتال بوده و نسخه فیزیکی برای شما ارسال نمیشود.</p>
                             <p>اطلاعات خود را قبل از ثبت سفارش بررسی کنید. اطلاعات بعد از ثبت قابل تغییر نیستند.</p>
