@@ -2,10 +2,21 @@ import React, { useContext, useEffect, useState } from 'react';
 import axios from "axios";
 import { UserContext } from '../App';
 import { useNavigate } from 'react-router';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaShoppingCart, FaUser, FaStar, FaCrown, FaSignOutAlt } from "react-icons/fa";
 import OrderCard from '../components/OrderCard';
 import PriceSVG from '../components/PriceSVG.jsx';
+
+const infoFieldLabels = {
+    region: "ریجن",
+    name: "نسخه / آیتم",
+    username: "نام کاربری",
+    password: "رمز عبور",
+    steamGuard: "کد استیم گارد",
+    price: "قیمت",
+    discount: "تخفیف",
+    realDiscount: "تخفیف واقعی"
+}
 
 const Dashboard = () => {
     document.title = "Lilith | Dashboard";
@@ -43,6 +54,7 @@ const Dashboard = () => {
     const [allOrdersError, setAllOrdersError] = useState(null)
     const [allOrdersPage, setAllOrdersPage] = useState(1)
     const [allOrdersTotalPages, setAllOrdersTotalPages] = useState(1)
+    const [selectedOrder, setSelectedOrder] = useState(null)
 
     useEffect(() => {
         if (!token) {
@@ -345,7 +357,7 @@ const Dashboard = () => {
     }
 
     if(user){
-        return <div className='flex items-center justify-center h-screen flex-col'>
+        return <div className='flex items-center justify-center h-screen flex-col md:pr-24 lg:pr-28'>
             {selected == "سبد خرید" &&
                 <div className='md:w-[80vw] max-md:h-[95vh] w-full h-full overflow-y-auto pt-28 pb-24 px-5'>
                     <h1 className="text-2xl font-bold mb-6">سبد خرید</h1>
@@ -730,7 +742,7 @@ const Dashboard = () => {
 
                                 <div className="flex flex-col gap-3">
                                     {allOrders.map((order) => (
-                                        <div key={order.id} className="bg-bg-primary rounded-2xl p-4 flex flex-col gap-2 border border-white/5">
+                                        <div key={order.id} onClick={() => setSelectedOrder(order)} className="bg-bg-primary rounded-2xl p-4 flex flex-col gap-2 border border-white/5 cursor-pointer hover:border-accent-secondary/40 transition">
                                             <div className="flex justify-between items-center flex-wrap gap-2">
                                                 <p className="font-bold">{order.product?.title || "محصول حذف شده"}</p>
                                                 <p className="text-xs text-text-secondary">
@@ -793,7 +805,194 @@ const Dashboard = () => {
                 </div>
             }
 
-            <div className="fixed bottom-0 left-0 w-screen h-[6vh] md:h-[8vh]
+            <AnimatePresence>
+                {selectedOrder && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[6000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-5"
+                        onClick={() => setSelectedOrder(null)}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 20, scale: 0.98 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-bg-secondary rounded-2xl p-6 w-full max-w-md flex flex-col gap-3 max-h-[85vh] overflow-y-auto"
+                        >
+                            <div className="flex justify-between items-center mb-2">
+                                <h2 className="text-xl font-bold">جزئیات سفارش #{selectedOrder.id}</h2>
+                                <button
+                                    onClick={() => setSelectedOrder(null)}
+                                    className="text-text-secondary hover:text-text-primary text-sm"
+                                >
+                                    بستن
+                                </button>
+                            </div>
+
+                            <div className="flex justify-between border-b border-text-primary/10 pb-2">
+                                <span className="text-text-secondary">محصول</span>
+                                <span>{selectedOrder.product?.title || "محصول حذف شده"}</span>
+                            </div>
+
+                            <div className="flex justify-between border-b border-text-primary/10 pb-2">
+                                <span className="text-text-secondary">کاربر</span>
+                                <span>{selectedOrder.user ? `${selectedOrder.user.firstname} ${selectedOrder.user.lastname}` : "کاربر نامشخص"}</span>
+                            </div>
+
+                            <div className="flex justify-between border-b border-text-primary/10 pb-2">
+                                <span className="text-text-secondary">شماره تماس</span>
+                                <span dir="ltr">{selectedOrder.user?.phone}</span>
+                            </div>
+
+                            {Object.entries(selectedOrder.info || {}).map(([key, value]) => {
+                                if (value === null || value === undefined || value === "") return null;
+
+                                if (key === "price" && typeof value === "number") {
+                                    return (
+                                        <div key={key} className="flex justify-between border-b border-text-primary/10 pb-2">
+                                            <span className="text-text-secondary">{infoFieldLabels[key] || key}</span>
+                                            <span className="flex items-center gap-2">{value.toLocaleString("fa-IR")} <PriceSVG/></span>
+                                        </div>
+                                    );
+                                }
+
+                                if (key === "discount" && typeof value === "object") {
+                                    const percent = value.percent || 0;
+                                    return (
+                                        <div key={key} className="flex justify-between border-b border-text-primary/10 pb-2">
+                                            <span className="text-text-secondary">{infoFieldLabels[key] || key}</span>
+                                            <span dir="ltr">
+                                                {percent > 0
+                                                    ? `${percent}%${value.expires ? " تا " + new Date(value.expires).toLocaleDateString("fa-IR") : ""}`
+                                                    : "ندارد"}
+                                            </span>
+                                        </div>
+                                    );
+                                }
+
+                                if (typeof value === "object") return null;
+
+                                return (
+                                    <div key={key} className="flex justify-between border-b border-text-primary/10 pb-2">
+                                        <span className="text-text-secondary">{infoFieldLabels[key] || key}</span>
+                                        <span dir="ltr">{String(value)}</span>
+                                    </div>
+                                );
+                            })}
+
+                            <div className="flex justify-between border-b border-text-primary/10 pb-2">
+                                <span className="text-text-secondary">تعداد</span>
+                                <span>{selectedOrder.quantity}</span>
+                            </div>
+
+                            <div className="flex justify-between">
+                                <span className="text-text-secondary">تاریخ ثبت</span>
+                                <span className="text-xs">{selectedOrder.created_at ? new Date(selectedOrder.created_at).toLocaleString("fa-IR") : ""}</span>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <div className="hidden md:flex md:flex-col fixed top-0 right-0 h-screen w-24 lg:w-28
+                bg-bgSecondary/60 backdrop-blur-xl
+                border-l border-white/10
+                shadow-[-5px_0_25px_rgba(0,0,0,0.4)]
+                items-center justify-center gap-10 z-50 py-10">
+
+                <motion.div whileTap={{ scale: 0.95 }} onClick={() => setSelected("سبد خرید")}
+                            className={`relative flex flex-col items-center justify-center gap-1.5 cursor-pointer w-full py-2
+                        text-xs font-bold transition-all duration-200
+                        ${selected === "سبد خرید" ? "text-white" : "text-textSecondary"}`}>
+                    <motion.div animate={{
+                        scale: selected === "سبد خرید" ? 1.2 : 1,
+                        color: selected === "سبد خرید" ? "var(--color-accent-secondary)" : "var(--color-text-secondary)"
+                    }} className="text-2xl">
+                        <FaShoppingCart />
+                    </motion.div>
+                    <span className={`${selected === "سبد خرید" && "text-accentSecondary drop-shadow-[0_0_6px_var(--color-accent-secondary)]"}`}>
+                        سبد خرید
+                    </span>
+                    {selected === "سبد خرید" && (
+                        <motion.div layoutId="navIndicatorDesktop" className="absolute right-0 top-0 h-full w-[3px]
+                            bg-gradient-to-b from-accentPrimary to-accentSecondary
+                            shadow-[0_0_10px_var(--color-accent-secondary)]" />
+                    )}
+                </motion.div>
+
+                <motion.div whileTap={{ scale: 0.95 }} onClick={() => setSelected("اطلاعات کاربر")}
+                            className={`relative flex flex-col items-center justify-center gap-1.5 cursor-pointer w-full py-2
+                        text-xs font-bold transition-all duration-200
+                        ${selected === "اطلاعات کاربر" ? "text-white" : "text-textSecondary"}`}>
+                    <motion.div animate={{
+                        scale: selected === "اطلاعات کاربر" ? 1.2 : 1,
+                        color: selected === "اطلاعات کاربر" ? "var(--color-accent-secondary)" : "var(--color-text-secondary)"
+                    }} className="text-xl">
+                        <FaUser />
+                    </motion.div>
+                    <span className={`${selected === "اطلاعات کاربر" && "text-accentSecondary drop-shadow-[0_0_6px_var(--color-accent-secondary)]"}`}>
+                        اطلاعات کاربر
+                    </span>
+                    {selected === "اطلاعات کاربر" && (
+                        <motion.div layoutId="navIndicatorDesktop" className="absolute right-0 top-0 h-full w-[3px]
+                            bg-gradient-to-b from-accentPrimary to-accentSecondary
+                            shadow-[0_0_10px_var(--color-accent-secondary)]" />
+                    )}
+                </motion.div>
+
+                <motion.div whileTap={{ scale: 0.95 }} onClick={() => setSelected("امتیازات")}
+                            className={`relative flex flex-col items-center justify-center gap-1.5 cursor-pointer w-full py-2
+                        text-xs font-bold transition-all duration-200
+                        ${selected === "امتیازات" ? "text-white" : "text-textSecondary"}`}>
+                    <motion.div animate={{
+                        scale: selected === "امتیازات" ? 1.2 : 1,
+                        color: selected === "امتیازات" ? "var(--color-accent-secondary)" : "var(--color-text-secondary)"
+                    }} className="text-xl">
+                        <FaStar />
+                    </motion.div>
+                    <span className={`${selected === "امتیازات" && "text-accentSecondary drop-shadow-[0_0_6px_var(--color-accent-secondary)]"}`}>
+                        امتیازات
+                    </span>
+                    {selected === "امتیازات" && (
+                        <motion.div layoutId="navIndicatorDesktop" className="absolute right-0 top-0 h-full w-[3px]
+                            bg-gradient-to-b from-accentPrimary to-accentSecondary
+                            shadow-[0_0_10px_var(--color-accent-secondary)]" />
+                    )}
+                </motion.div>
+
+                {user.role === "admin" && (
+                    <motion.div whileTap={{ scale: 0.95 }} onClick={() => setSelected("ادمین")}
+                                className={`relative flex flex-col items-center justify-center gap-1.5 cursor-pointer w-full py-2
+                            text-xs font-bold transition-all duration-200
+                            ${selected === "ادمین" ? "text-white" : "text-textSecondary"}`}>
+                        <motion.div animate={{
+                            scale: selected === "ادمین" ? 1.2 : 1,
+                            color: selected === "ادمین" ? "var(--color-accent-secondary)" : "var(--color-text-secondary)"
+                        }} className="text-xl">
+                            <FaCrown />
+                        </motion.div>
+                        <span className={`${selected === "ادمین" && "text-accentSecondary drop-shadow-[0_0_6px_var(--color-accent-secondary)]"}`}>
+                            ادمین
+                        </span>
+                        {selected === "ادمین" && (
+                            <motion.div layoutId="navIndicatorDesktop" className="absolute right-0 top-0 h-full w-[3px]
+                                bg-gradient-to-b from-accentPrimary to-accentSecondary
+                                shadow-[0_0_10px_var(--color-accent-secondary)]" />
+                        )}
+                    </motion.div>
+                )}
+
+                <motion.div whileTap={{ scale: 0.95 }} onClick={() => setToken(null)}
+                            className="flex flex-col items-center justify-center gap-1.5 w-full py-2 cursor-pointer
+                        text-xs font-bold text-red-400">
+                    <div className="text-xl"><FaSignOutAlt /></div>
+                    <span>خروج</span>
+                </motion.div>
+            </div>
+
+            <div className="md:hidden fixed bottom-0 left-0 w-screen h-[6vh] md:h-[8vh]
                 bg-bgSecondary/60 backdrop-blur-xl
                 border-t border-white/10
                 shadow-[0_-5px_25px_rgba(0,0,0,0.4)]
