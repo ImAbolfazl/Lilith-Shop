@@ -1,4 +1,5 @@
 export const gamesDataSet = [
+    730, // Counter-Strike: Global Offensive
     // 1245620, // ELDEN RING
     // 3764200, // Resident Evil Requiem
     // 883710, // Resident Evil 2

@@ -59,25 +59,23 @@ const Card = ({discount, realDiscount, id, image, price, title, category}) => {
 
     const finalDiscount = formatedPercent + realDiscount
 
-    let formatedPrice = Math.round(Number(price.initial)).toLocaleString("fa-IR")
+    let formatedPrice = Math.round(Number(price.initial))
 
-    
     let formatedDiscountPrice
     
-    if (finalDiscount > 0) {
-        formatedDiscountPrice = Math.round(
-            Number(price.initial * (1 - finalDiscount / 100))
-        ).toLocaleString("fa-IR")
+    if(price.initial == 0){
+        formatedPrice = price.subs[Object.keys(price.subs)[0]][0].price
+    }
+
+    if(formatedPrice == 0){
+        formatedPrice = price.subs[Object.keys(price.subs)[0]][1].price
     }
     
-    if(price.initial == 0){
-        formatedPrice = price.subs[Object.keys(price.subs)[0]][0].price.toLocaleString("fa-IR")
-        if (finalDiscount > 0) {
-            formatedDiscountPrice = Math.round(
-                Number(formatedPrice * (1 - finalDiscount / 100))
-            ).toLocaleString("fa-IR")
-        }
+    if (finalDiscount > 0) {
+        formatedDiscountPrice = Math.round(Number(price.initial * (1 - finalDiscount / 100))).toLocaleString("fa-IR")
     }
+
+    formatedPrice = formatedPrice.toLocaleString("fa-IR")
 
     return (
         <div className="relative h-60">
