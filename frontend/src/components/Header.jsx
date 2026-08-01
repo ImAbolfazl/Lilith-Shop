@@ -56,10 +56,10 @@ const Header = () => {
   ];
 
   const mainNavItems = [
-    { name: "خدمات استیم", path: "/Products?c=Steam" },
-    { name: "خدمات ماینکرفت", path: "/Products?c=MineCraft", dropdown: minecraftDropdownMap },
-    { name: "خدمات کالاف دیوتی", path: "/Products?c=CallOfDuty", dropdown: callOfDutyDropdownMap },
-    { name: "سایر خدمات", path: "/Products?c=All", dropdown: allDropDownMap },
+    { name: "خدمات استیم", path: "/Products?c=Steam", isClickable: true },
+    { name: "خدمات ماینکرفت", path: "/Products?c=MineCraft", dropdown: minecraftDropdownMap, isClickable: false },
+    { name: "خدمات کالاف دیوتی", path: "/Products?c=CallOfDuty", dropdown: callOfDutyDropdownMap, isClickable: false },
+    { name: "سایر خدمات", path: "/Products?c=All", dropdown: allDropDownMap, isClickable: true },
   ];
 
   useEffect(() => {
@@ -101,11 +101,23 @@ const Header = () => {
   };
 
   const headerStyles = {
-        borderColor: scrolled ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0)",
-        boxShadow: scrolled ? "0 4px 30px rgba(0,0,0,0.4)" : "0 4px 30px rgba(0,0,0,0.4)",
-        backdropFilter: scrolled ? "blur(20px)" : "none",
-        WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+    borderColor: scrolled ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0)",
+    boxShadow: scrolled ? "0 4px 30px rgba(0,0,0,0.4)" : "0 4px 30px rgba(0,0,0,0.4)",
+    backdropFilter: scrolled ? "blur(20px)" : "none",
+    WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
   }
+
+  const navLinkStyle = (itemPath) => {
+    return (
+      `px-3 py-1.5 text-sm rounded-lg transition-all duration-200 flex items-center cursor-pointer ${
+      isActive(itemPath)
+          ? "bg-accent-primary/10 text-accent-primary"
+          : scrolled
+          ? "text-text-secondary hover:text-text-primary hover:bg-white/5"
+          : "text-text-secondary/70 hover:text-text-primary hover:bg-white/5"
+      }`
+    )
+  };
 
   return (
     <>
@@ -141,19 +153,17 @@ const Header = () => {
                 onMouseEnter={() => handleDropdownEnter(item.path)}
                 onMouseLeave={handleDropdownLeave}
               >
-                <Link
-                  to={item.path}
-                  className={`px-3 py-1.5 text-sm rounded-lg transition-all duration-200 flex items-center ${
-                    isActive(item.path)
-                      ? "bg-accent-primary/10 text-accent-primary"
-                      : scrolled
-                      ? "text-text-secondary hover:text-text-primary hover:bg-white/5"
-                      : "text-text-secondary/70 hover:text-text-primary hover:bg-white/5"
-                  }`}
-                >
-                  {item.name}
-                  {item.dropdown && <span className="mr-1 text-[10px] opacity-50">▾</span>}
-                </Link>
+                {item.isClickable ? (
+                  <Link to={item.path} className={navLinkStyle(item.path)}>
+                    {item.name}
+                    {item.dropdown && <span className="mr-1 text-[10px] opacity-50">▾</span>}
+                  </Link>
+                ) : (
+                  <div className={navLinkStyle(item.path)}>
+                    {item.name}
+                    {item.dropdown && <span className="mr-1 text-[10px] opacity-50">▾</span>}
+                  </div>
+                )}
 
                 <AnimatePresence>
                   {activeDropdown === item.path && item.dropdown && (

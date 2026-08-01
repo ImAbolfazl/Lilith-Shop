@@ -26,6 +26,11 @@ const App = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if(!token){
+      localStorage.removeItem("token")
+    }else{
+      localStorage.setItem("token", token)
+    }
     const fetchData = async () => {
           try{
             const response = await axios({
@@ -43,6 +48,7 @@ const App = () => {
           }catch(err){
             setLoading(false)
             localStorage.removeItem("token")
+            console.log("token token");
             console.log(err);
           }
       }

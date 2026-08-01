@@ -147,7 +147,8 @@ const Product = () => {
                         region: region,
                         name: orderBody.name,
                         username: orderBody.username,
-                        password: orderBody.password
+                        password: orderBody.password,
+                        steamGuard: orderBody.steamGuard
                     }
                 },
                 headers: {authorization: token}

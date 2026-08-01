@@ -14,7 +14,7 @@ import { authMiddleware } from "../middlewares/auth.js";
 import { roleMiddleware } from "../middlewares/adminMiddleware.js";
 import { upload } from "../middlewares/upload.js";
 import { config } from "../utils/fetchSettingsJSON.js";
-import { countryCodes, exchangeRates } from "../services/exchangePrice.js";
+import { exchangeRates } from "../services/exchangePrice.js";
 
 export const router = express.Router();
 
@@ -182,37 +182,14 @@ router.post(
     ]),
     async (req, res) => {
         try {
-            const { title, category, price, info, steamId, publisher, dlc, currency, discount } = req.body;
-            let finalPrice
+            const { title, category, price, info, steamId, publisher, dlc, discount } = req.body;
+
             if (steamId) {
                 await addSteamGameToDB(steamId);
                 return res.json({ status: "success" });
-            }else{
-                if(currency == "Iran"){
-                    finalPrice = {
-                        "subs": {
-                            [countryCodes[currency].persian]: [{
-                                    "tag": countryCodes[currency].tag.toUpperCase(),
-                                    "name": title,
-                                    "price": price
-                                }]
-                        },
-                        "initial": price
-                    }
-                }else{
-                    finalPrice = {
-                        "subs": {
-                            [countryCodes[currency].persian]: [{
-                                "tag": countryCodes[currency].tag.toUpperCase(),
-                                "name": title,
-                                "price": price
-                            }]
-                        },
-                        "initial": price,
-                        "initialTag": countryCodes[currency].tag.toUpperCase()
-                    }
-                }
             }
+
+            const finalPrice = typeof price === "string" ? JSON.parse(price) : price;
 
             const image = req.files.image
                 ? `/uploads/others/${req.files.image[0].filename}`

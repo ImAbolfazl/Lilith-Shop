@@ -156,6 +156,44 @@ export function updateUserById(id, firstname, lastname, phone, email, password) 
     }
 }
 
+const getAllUsersStmt = db.prepare(
+    "SELECT id, firstname, lastname, email, phone, score, role FROM users ORDER BY id DESC LIMIT ? OFFSET ?"
+);
+const countAllUsersStmt = db.prepare("SELECT COUNT(*) as count FROM users");
+
+export function getAllUsers(page = 1, limit = 20) {
+    try {
+        const offset = (page - 1) * limit;
+        const rows = getAllUsersStmt.all(limit, offset);
+        const total = countAllUsersStmt.get().count;
+        return {
+            data: rows,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit)
+        };
+    } catch (err) {
+        console.error('Error getting all users:', err);
+        return { data: [], total: 0, page, totalPages: 0 };
+    }
+}
+
+const deleteUserByIdStmt = db.prepare("DELETE FROM users WHERE id = ?");
+
+export function deleteUserById(id) {
+    if (!id || typeof id !== 'number') {
+        console.error('Invalid user ID for delete:', id);
+        return null;
+    }
+    try {
+        const result = deleteUserByIdStmt.run(id);
+        return { changes: result.changes };
+    } catch (err) {
+        console.error('Error deleting user:', err);
+        throw err;
+    }
+}
+
 const getProductsByCategoryStmt = db.prepare(
     "SELECT * FROM products WHERE category = ? ORDER BY id DESC LIMIT ? OFFSET ?"
 );
@@ -432,6 +470,28 @@ export function getOrdersByUserID(id, page = 1, limit = 20) {
         };
     } catch (err) {
         console.error('Error getting orders by user ID:', err);
+        return { data: [], total: 0, page, totalPages: 0 };
+    }
+}
+
+const getAllOrdersStmt = db.prepare(
+    "SELECT * FROM orders ORDER BY created_at ASC, id ASC LIMIT ? OFFSET ?"
+);
+const countAllOrdersStmt = db.prepare("SELECT COUNT(*) as count FROM orders");
+
+export function getAllOrders(page = 1, limit = 20) {
+    try {
+        const offset = (page - 1) * limit;
+        const rows = getAllOrdersStmt.all(limit, offset);
+        const total = countAllOrdersStmt.get().count;
+        return {
+            data: rows.map(parseOrder),
+            total,
+            page,
+            totalPages: Math.ceil(total / limit)
+        };
+    } catch (err) {
+        console.error('Error getting all orders:', err);
         return { data: [], total: 0, page, totalPages: 0 };
     }
 }

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router';
 import { motion } from "framer-motion";
 import { FaShoppingCart, FaUser, FaStar, FaCrown, FaSignOutAlt } from "react-icons/fa";
 import OrderCard from '../components/OrderCard';
+import PriceSVG from '../components/PriceSVG.jsx';
 
 const Dashboard = () => {
     document.title = "Lilith | Dashboard";
@@ -24,6 +25,24 @@ const Dashboard = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
     const [totalOrders, setTotalOrders] = useState(0)
+    const [createPriceForm, setCreatePriceForm] = useState({
+        initialPrice: 0,
+        regions: [{ name: "", items: [{ tag: "US", name: "", price: 0 }] }]
+    })
+
+    const [adminView, setAdminView] = useState("افزودن محصول")
+
+    const [allUsers, setAllUsers] = useState([])
+    const [usersLoading, setUsersLoading] = useState(false)
+    const [usersError, setUsersError] = useState(null)
+    const [usersPage, setUsersPage] = useState(1)
+    const [usersTotalPages, setUsersTotalPages] = useState(1)
+
+    const [allOrders, setAllOrders] = useState([])
+    const [allOrdersLoading, setAllOrdersLoading] = useState(false)
+    const [allOrdersError, setAllOrdersError] = useState(null)
+    const [allOrdersPage, setAllOrdersPage] = useState(1)
+    const [allOrdersTotalPages, setAllOrdersTotalPages] = useState(1)
 
     useEffect(() => {
         if (!token) {
@@ -113,6 +132,71 @@ const Dashboard = () => {
         }
     }, [selected, token, currentPage]);
 
+    const fetchAllUsers = async (page = usersPage) => {
+        setUsersLoading(true)
+        setUsersError(null)
+        try {
+            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users/all`, {
+                headers: { authorization: token },
+                params: { page, limit: 20 }
+            });
+
+            setAllUsers(res.data.data || []);
+            setUsersPage(res.data.pagination?.page || page);
+            setUsersTotalPages(res.data.pagination?.totalPages || 1);
+        } catch (err) {
+            console.error(err);
+            setUsersError("خطا در دریافت کاربران");
+        } finally {
+            setUsersLoading(false)
+        }
+    };
+
+    const handleDeleteUser = async (id) => {
+        if (!confirm("آیا از حذف این کاربر مطمئن هستید؟")) return;
+        try {
+            await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/users/${id}`, {
+                headers: { authorization: token }
+            });
+            setAllUsers(prev => prev.filter(u => u.id !== id));
+        } catch (err) {
+            console.error(err);
+            alert(err.response?.data?.data || "حذف کاربر با خطا مواجه شد");
+        }
+    };
+
+    useEffect(() => {
+        if (selected === "ادمین" && adminView === "کاربران" && token) {
+            fetchAllUsers(usersPage);
+        }
+    }, [selected, adminView, usersPage, token]);
+
+    const fetchAllOrders = async (page = allOrdersPage) => {
+        setAllOrdersLoading(true)
+        setAllOrdersError(null)
+        try {
+            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/orders/all`, {
+                headers: { authorization: token },
+                params: { page, limit: 20 }
+            });
+
+            setAllOrders(res.data.data || []);
+            setAllOrdersPage(res.data.pagination?.page || page);
+            setAllOrdersTotalPages(res.data.pagination?.totalPages || 1);
+        } catch (err) {
+            console.error(err);
+            setAllOrdersError("خطا در دریافت سفارش‌ها");
+        } finally {
+            setAllOrdersLoading(false)
+        }
+    };
+
+    useEffect(() => {
+        if (selected === "ادمین" && adminView === "سفارش‌ها" && token) {
+            fetchAllOrders(allOrdersPage);
+        }
+    }, [selected, adminView, allOrdersPage, token]);
+
     const startEdit = () => {
         setEditForm({
             firstname: displayedUser.firstname || "",
@@ -154,6 +238,52 @@ const Dashboard = () => {
         }
     };
 
+    const updateCreateRegionName = (regionIndex, value) => {
+        const regions = [...createPriceForm.regions]
+        regions[regionIndex] = {...regions[regionIndex], name: value}
+        setCreatePriceForm({...createPriceForm, regions})
+    }
+
+    const updateCreateItemField = (regionIndex, itemIndex, field, value) => {
+        const regions = [...createPriceForm.regions]
+        const items = [...regions[regionIndex].items]
+        items[itemIndex] = {...items[itemIndex], [field]: field === "price" ? Number(value) : value}
+        regions[regionIndex] = {...regions[regionIndex], items}
+        setCreatePriceForm({...createPriceForm, regions})
+    }
+
+    const addCreateRegion = () => {
+        setCreatePriceForm({
+            ...createPriceForm,
+            regions: [...createPriceForm.regions, {name: "", items: [{tag: "US", name: "", price: 0}]}]
+        })
+    }
+
+    const removeCreateRegion = (regionIndex) => {
+        setCreatePriceForm({
+            ...createPriceForm,
+            regions: createPriceForm.regions.filter((_, i) => i !== regionIndex)
+        })
+    }
+
+    const addCreateItem = (regionIndex) => {
+        const regions = [...createPriceForm.regions]
+        regions[regionIndex] = {
+            ...regions[regionIndex],
+            items: [...regions[regionIndex].items, {tag: "US", name: "", price: 0}]
+        }
+        setCreatePriceForm({...createPriceForm, regions})
+    }
+
+    const removeCreateItem = (regionIndex, itemIndex) => {
+        const regions = [...createPriceForm.regions]
+        regions[regionIndex] = {
+            ...regions[regionIndex],
+            items: regions[regionIndex].items.filter((_, i) => i !== itemIndex)
+        }
+        setCreatePriceForm({...createPriceForm, regions})
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const form = e.target;
@@ -162,9 +292,20 @@ const Dashboard = () => {
         formData.append('category', form.category.value);
         formData.append('publisher', form.publisher.value);
         formData.append('dlc', form.dlc.value);
-        formData.append('price', form.price.value);
-        formData.append('currency', form.currency.value);
         formData.append('info', form.info.value);
+
+        const subs = {}
+        createPriceForm.regions.forEach((r) => {
+            subs[r.name] = r.items
+        })
+
+        const priceObject = {
+            subs,
+            initial: Number(createPriceForm.initialPrice),
+            initialTag: createPriceForm.regions[0]?.items[0]?.tag || ""
+        }
+
+        formData.append('price', JSON.stringify(priceObject));
 
         if (form.image.files[0]) {
             formData.append('image', form.image.files[0]);
@@ -184,10 +325,13 @@ const Dashboard = () => {
                     authorization: token,
                 },
             });
-            console.log(formData)
 
             alert("Product uploaded successfully!");
             form.reset()
+            setCreatePriceForm({
+                initialPrice: 0,
+                regions: [{ name: "", items: [{ tag: "US", name: "", price: 0 }] }]
+            })
         } catch (err) {
             console.error(err);
             alert("Upload failed");
@@ -381,11 +525,26 @@ const Dashboard = () => {
             {selected == "ادمین" && (
                 <div className="w-full h-[96vh] pt-[8vh] pb-10 px-5 flex justify-center items-start">
                     <div className="w-full max-w-7xl bg-bg-secondary rounded-2xl border border-text-primary/20 shadow-2xl p-8">
-                        <div className="mb-8">
-                            <h1 className="text-3xl font-bold text-text-primary">پنل مدیریت</h1>
-                            <p className="text-text-secondary mt-2">افزودن محصول جدید به فروشگاه</p>
+                        <div className="mb-8 flex flex-col gap-5">
+                            <div>
+                                <h1 className="text-3xl font-bold text-text-primary">پنل مدیریت</h1>
+                                <p className="text-text-secondary mt-2">مدیریت محصولات، کاربران و سفارش‌ها</p>
+                            </div>
+
+                            <div className="flex items-center gap-2 flex-wrap">
+                                {["افزودن محصول", "کاربران", "سفارش‌ها"].map((view) => (
+                                    <button
+                                        key={view}
+                                        onClick={() => setAdminView(view)}
+                                        className={`px-4 py-2 rounded-xl text-sm font-bold transition ${adminView === view ? "bg-accent-secondary text-white" : "bg-bg-primary text-text-secondary hover:text-text-primary"}`}
+                                    >
+                                        {view}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
 
+                        {adminView === "افزودن محصول" && (
                         <form onSubmit={handleSubmit} className="flex flex-col gap-8">
                             <div className="grid xl:grid-cols-4 lg:grid-cols-2 gap-6">
                                 <div className="bg-bg-primary rounded-2xl p-6 flex flex-col gap-4">
@@ -405,10 +564,61 @@ const Dashboard = () => {
 
                                 <div className="bg-bg-primary rounded-2xl p-6 flex flex-col gap-4">
                                     <h2 className="text-xl font-bold border-r-4 border-accent-secondary pr-3">قیمت</h2>
-                                    <input type="number" name="price" placeholder="قیمت" required
-                                           className="bg-bg-secondary rounded-xl p-3 outline-none border border-transparent focus:border-accent-secondary transition" />
-                                    <input name="currency" placeholder="واحد پول" required
-                                           className="bg-bg-secondary rounded-xl p-3 outline-none border border-transparent focus:border-accent-secondary transition" />
+                                    <input
+                                        type="number"
+                                        placeholder="قیمت پایه (initial)"
+                                        value={createPriceForm.initialPrice}
+                                        onChange={(e) => setCreatePriceForm({...createPriceForm, initialPrice: e.target.value})}
+                                        className="bg-bg-secondary rounded-xl p-3 outline-none border border-transparent focus:border-accent-secondary transition"
+                                    />
+
+                                    <div className="flex flex-col gap-3 max-h-64 overflow-y-auto">
+                                        {createPriceForm.regions.map((regionItem, regionIndex) => (
+                                            <div key={regionIndex} className="bg-bg-secondary rounded-xl p-3 flex flex-col gap-2 border border-white/5">
+                                                <div className="flex justify-between items-center gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={regionItem.name}
+                                                        onChange={(e) => updateCreateRegionName(regionIndex, e.target.value)}
+                                                        placeholder="نام ریجن"
+                                                        className="bg-bg-primary rounded-lg px-3 py-2 outline-none flex-1 border border-transparent focus:border-accent-secondary"
+                                                    />
+                                                    <p onClick={() => removeCreateRegion(regionIndex)} className="text-red-400 cursor-pointer text-xs hover:text-red-300 shrink-0">حذف ریجن</p>
+                                                </div>
+
+                                                {regionItem.items.map((item, itemIndex) => (
+                                                    <div key={itemIndex} className="grid grid-cols-4 gap-2 items-center">
+                                                        <input
+                                                            type="text"
+                                                            value={item.tag}
+                                                            onChange={(e) => updateCreateItemField(regionIndex, itemIndex, "tag", e.target.value)}
+                                                            placeholder="کد کشور"
+                                                            className="bg-bg-primary rounded-lg px-2 py-2 outline-none border border-transparent focus:border-accent-secondary text-sm"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            value={item.name}
+                                                            onChange={(e) => updateCreateItemField(regionIndex, itemIndex, "name", e.target.value)}
+                                                            placeholder="نام"
+                                                            className="bg-bg-primary rounded-lg px-2 py-2 outline-none border border-transparent focus:border-accent-secondary text-sm"
+                                                        />
+                                                        <input
+                                                            type="number"
+                                                            value={item.price}
+                                                            onChange={(e) => updateCreateItemField(regionIndex, itemIndex, "price", e.target.value)}
+                                                            placeholder="قیمت"
+                                                            className="bg-bg-primary rounded-lg px-2 py-2 outline-none border border-transparent focus:border-accent-secondary text-sm"
+                                                        />
+                                                        <p onClick={() => removeCreateItem(regionIndex, itemIndex)} className="text-red-400 cursor-pointer text-xs text-center hover:text-red-300">حذف</p>
+                                                    </div>
+                                                ))}
+
+                                                <p onClick={() => addCreateItem(regionIndex)} className="text-accent-secondary text-xs cursor-pointer w-fit hover:brightness-110">+ افزودن آیتم</p>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <p onClick={addCreateRegion} className="text-accent-secondary text-sm cursor-pointer w-fit hover:brightness-110">+ افزودن ریجن</p>
                                 </div>
 
                                 <div className="bg-bg-primary rounded-2xl p-6 flex flex-col gap-4">
@@ -440,6 +650,140 @@ const Dashboard = () => {
                                           className="w-full bg-bg-secondary rounded-xl p-5 resize-none outline-none border border-transparent focus:border-accent-secondary transition" />
                             </div>
                         </form>
+                        )}
+
+                        {adminView === "کاربران" && (
+                            <div className="flex flex-col gap-4">
+                                {usersLoading && <p className="text-text-secondary">در حال بارگذاری...</p>}
+                                {usersError && <p className="text-red-400">{usersError}</p>}
+                                {!usersLoading && !usersError && allUsers.length === 0 && (
+                                    <p className="text-text-secondary">کاربری یافت نشد</p>
+                                )}
+
+                                <div className="flex flex-col gap-3">
+                                    {allUsers.map((u) => (
+                                        <div key={u.id} className="bg-bg-primary rounded-2xl p-4 flex items-center justify-between gap-4 border border-white/5">
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-2">
+                                                    <p className="font-bold">{u.firstname} {u.lastname}</p>
+                                                    {u.role === "admin" && (
+                                                        <span className="text-xs bg-accent-secondary/20 text-accent-secondary px-2 py-0.5 rounded-lg">ادمین</span>
+                                                    )}
+                                                </div>
+                                                <p className="text-sm text-text-secondary" dir="ltr">{u.phone}</p>
+                                                {u.email && <p className="text-xs text-text-secondary" dir="ltr">{u.email}</p>}
+                                            </div>
+
+                                            <div className="flex items-center gap-4">
+                                                <p className="text-sm text-text-secondary">امتیاز: {u.score}</p>
+                                                <button
+                                                    onClick={() => handleDeleteUser(u.id)}
+                                                    disabled={u.id === user.id}
+                                                    className="text-red-400 hover:text-red-300 text-sm font-bold disabled:opacity-30 disabled:cursor-not-allowed"
+                                                >
+                                                    حذف
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {!usersLoading && !usersError && usersTotalPages > 1 && (
+                                    <div className="flex items-center gap-2 flex-wrap justify-center mt-2">
+                                        <button
+                                            onClick={() => setUsersPage(prev => Math.max(1, prev - 1))}
+                                            disabled={usersPage === 1}
+                                            className="rounded-xl bg-bg-primary px-3 py-2 text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                                        >
+                                            قبلی
+                                        </button>
+
+                                        {Array.from({ length: usersTotalPages }, (_, index) => index + 1).map((page) => (
+                                            <button
+                                                key={page}
+                                                onClick={() => setUsersPage(page)}
+                                                className={`min-w-10 rounded-xl px-3 py-2 text-sm font-bold transition ${page === usersPage ? "bg-accent-secondary text-white" : "bg-bg-primary text-text-secondary"}`}
+                                            >
+                                                {page}
+                                            </button>
+                                        ))}
+
+                                        <button
+                                            onClick={() => setUsersPage(prev => Math.min(usersTotalPages, prev + 1))}
+                                            disabled={usersPage === usersTotalPages}
+                                            className="rounded-xl bg-bg-primary px-3 py-2 text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                                        >
+                                            بعدی
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {adminView === "سفارش‌ها" && (
+                            <div className="flex flex-col gap-4">
+                                {allOrdersLoading && <p className="text-text-secondary">در حال بارگذاری...</p>}
+                                {allOrdersError && <p className="text-red-400">{allOrdersError}</p>}
+                                {!allOrdersLoading && !allOrdersError && allOrders.length === 0 && (
+                                    <p className="text-text-secondary">سفارشی یافت نشد</p>
+                                )}
+
+                                <div className="flex flex-col gap-3">
+                                    {allOrders.map((order) => (
+                                        <div key={order.id} className="bg-bg-primary rounded-2xl p-4 flex flex-col gap-2 border border-white/5">
+                                            <div className="flex justify-between items-center flex-wrap gap-2">
+                                                <p className="font-bold">{order.product?.title || "محصول حذف شده"}</p>
+                                                <p className="text-xs text-text-secondary">
+                                                    {order.created_at ? new Date(order.created_at).toLocaleString("fa-IR") : ""}
+                                                </p>
+                                            </div>
+
+                                            <div className="flex justify-between items-center flex-wrap gap-2 text-sm text-text-secondary">
+                                                <p>{order.user ? `${order.user.firstname} ${order.user.lastname}` : "کاربر نامشخص"}</p>
+                                                <p dir="ltr">{order.user?.phone}</p>
+                                            </div>
+
+                                            <div className="flex justify-between items-center flex-wrap gap-2 text-sm">
+                                                <p className="text-text-secondary">{order.info?.region}</p>
+                                                {typeof order.info?.price === "number" && (
+                                                    <p className="flex items-center gap-2">{order.info.price.toLocaleString("fa-IR")} <PriceSVG/></p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {!allOrdersLoading && !allOrdersError && allOrdersTotalPages > 1 && (
+                                    <div className="flex items-center gap-2 flex-wrap justify-center mt-2">
+                                        <button
+                                            onClick={() => setAllOrdersPage(prev => Math.max(1, prev - 1))}
+                                            disabled={allOrdersPage === 1}
+                                            className="rounded-xl bg-bg-primary px-3 py-2 text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                                        >
+                                            قبلی
+                                        </button>
+
+                                        {Array.from({ length: allOrdersTotalPages }, (_, index) => index + 1).map((page) => (
+                                            <button
+                                                key={page}
+                                                onClick={() => setAllOrdersPage(page)}
+                                                className={`min-w-10 rounded-xl px-3 py-2 text-sm font-bold transition ${page === allOrdersPage ? "bg-accent-secondary text-white" : "bg-bg-primary text-text-secondary"}`}
+                                            >
+                                                {page}
+                                            </button>
+                                        ))}
+
+                                        <button
+                                            onClick={() => setAllOrdersPage(prev => Math.min(allOrdersTotalPages, prev + 1))}
+                                            disabled={allOrdersPage === allOrdersTotalPages}
+                                            className="rounded-xl bg-bg-primary px-3 py-2 text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                                        >
+                                            بعدی
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
