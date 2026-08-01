@@ -28,6 +28,7 @@ const App = () => {
   useEffect(() => {
     if(!token){
       localStorage.removeItem("token")
+      setUser(null)
     }else{
       localStorage.setItem("token", token)
     }
@@ -48,7 +49,6 @@ const App = () => {
           }catch(err){
             setLoading(false)
             localStorage.removeItem("token")
-            console.log("token token");
             console.log(err);
           }
       }

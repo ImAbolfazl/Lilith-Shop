@@ -577,10 +577,12 @@ const Product = () => {
                                     <img className='w-70 object-cover rounded-2xl' src={`${import.meta.env.VITE_BACKEND_URL}${data.image}`} alt={data.title} />
                                     <div className='flex items-center gap-10'>
                                         <h1 className="text-4xl">{data.title}</h1>
-                                        {user.role == "admin" && <div className='text-1xl gap-5 flex text-center'>
+                                        {user && (
+                                            user.role == "admin" && <div className='text-1xl gap-5 flex text-center'>
                                             <p onClick={() => openUpdatePanel()} className='bg-accent-primary px-2 py-3 rounded-xl cursor-pointer hover:bg-accent-primary/70 duration-300 border border-text-primary'>اپدیت کردن محصول</p>
                                             <p onClick={() => handleDeleteProduct()} className='bg-accent-primary px-2 py-3 rounded-xl cursor-pointer hover:bg-accent-primary/70 duration-300 border border-text-primary'>حذف محصول</p>
-                                        </div>}
+                                        </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
