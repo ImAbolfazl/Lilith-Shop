@@ -1,5 +1,5 @@
 import express from "express"
-import {createOrder, deleteOrderByID, getAllOrders, getOrdersByUserID, getProductById, getUserById, updateOrderByID} from "../src/db.js"
+import {createOrder, deleteOrderByID, getAllOrders, getOrdersByUserID, getProductById, getUserById, updateOrderByID, updateOrderStatus} from "../src/db.js"
 import axios from "axios";
 import {applyProfit} from "./products.js";
 import { authMiddleware } from "../middlewares/auth.js";
@@ -125,6 +125,29 @@ router.get("/all", authMiddleware, roleMiddleware, async (req, res) => {
                 total: result.total
             }
         });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({status: "fail"});
+    }
+});
+
+router.put("/:id/complete", authMiddleware, roleMiddleware, async (req, res) => {
+    if (req.role !== "admin") {
+        return res.status(401).json({
+            status: "access denied"
+        });
+    }
+
+    try {
+        const id = Number(req.params.id);
+
+        if (!id) {
+            return res.status(400).json({status: "fail", data: "please provide a valid order id"});
+        }
+
+        await updateOrderStatus(id, "completed")
+
+        res.status(200).json({status: "success"})
     } catch (err) {
         console.log(err);
         return res.status(500).json({status: "fail"});

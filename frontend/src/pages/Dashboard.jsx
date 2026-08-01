@@ -18,6 +18,12 @@ const infoFieldLabels = {
     realDiscount: "تخفیف واقعی"
 }
 
+const orderStatusLabels = {
+    inList: "در لیست",
+    waiting: "در انتظار تکمیل",
+    completed: "تکمیل شده"
+}
+
 const Dashboard = () => {
     document.title = "Lilith | Dashboard";
     const [selected, setSelected] = useState("سبد خرید")
@@ -200,6 +206,20 @@ const Dashboard = () => {
             setAllOrdersError("خطا در دریافت سفارش‌ها");
         } finally {
             setAllOrdersLoading(false)
+        }
+    };
+
+    const handleCompleteOrder = async (id) => {
+        if (!confirm("این سفارش به عنوان تکمیل شده علامت‌گذاری شود؟ پس از این کار از لیست حذف می‌شود.")) return;
+        try {
+            await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/orders/${id}/complete`, {}, {
+                headers: { authorization: token }
+            });
+            setAllOrders(prev => prev.filter(o => o.id !== id));
+            setSelectedOrder(null);
+        } catch (err) {
+            console.error(err);
+            alert("تکمیل سفارش با خطا مواجه شد");
         }
     };
 
@@ -744,7 +764,14 @@ const Dashboard = () => {
                                     {allOrders.map((order) => (
                                         <div key={order.id} onClick={() => setSelectedOrder(order)} className="bg-bg-primary rounded-2xl p-4 flex flex-col gap-2 border border-white/5 cursor-pointer hover:border-accent-secondary/40 transition">
                                             <div className="flex justify-between items-center flex-wrap gap-2">
-                                                <p className="font-bold">{order.product?.title || "محصول حذف شده"}</p>
+                                                <div className="flex items-center gap-2">
+                                                    <p className="font-bold">{order.product?.title || "محصول حذف شده"}</p>
+                                                    {order.status && (
+                                                        <span className={`text-xs px-2 py-0.5 rounded-lg ${order.status === "waiting" ? "bg-accent-secondary/20 text-accent-secondary" : "bg-white/5 text-text-secondary"}`}>
+                                                            {orderStatusLabels[order.status] || order.status}
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <p className="text-xs text-text-secondary">
                                                     {order.created_at ? new Date(order.created_at).toLocaleString("fa-IR") : ""}
                                                 </p>
@@ -887,10 +914,24 @@ const Dashboard = () => {
                                 <span>{selectedOrder.quantity}</span>
                             </div>
 
+                            <div className="flex justify-between border-b border-text-primary/10 pb-2">
+                                <span className="text-text-secondary">وضعیت</span>
+                                <span>{orderStatusLabels[selectedOrder.status] || selectedOrder.status}</span>
+                            </div>
+
                             <div className="flex justify-between">
                                 <span className="text-text-secondary">تاریخ ثبت</span>
                                 <span className="text-xs">{selectedOrder.created_at ? new Date(selectedOrder.created_at).toLocaleString("fa-IR") : ""}</span>
                             </div>
+
+                            {selectedOrder.status !== "completed" && (
+                                <button
+                                    onClick={() => handleCompleteOrder(selectedOrder.id)}
+                                    className="bg-accent-secondary hover:brightness-110 transition rounded-xl py-3 font-bold mt-2"
+                                >
+                                    تکمیل سفارش
+                                </button>
+                            )}
                         </motion.div>
                     </motion.div>
                 )}

@@ -56,14 +56,24 @@ CREATE TABLE IF NOT EXISTS orders (
     info TEXT,
     userId INTEGER,
     productId INTEGER,
+    status TEXT DEFAULT 'inList',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE
 )
 `);
 
+try {
+    db.exec("ALTER TABLE orders ADD COLUMN status TEXT DEFAULT 'inList'");
+} catch (err) {
+    if (!String(err.message).includes('duplicate column name')) {
+        console.error('Error adding status column to orders:', err);
+    }
+}
+
 db.exec(`
 CREATE INDEX IF NOT EXISTS idx_orders_userId ON orders(userId);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
 CREATE INDEX IF NOT EXISTS idx_products_steamId ON products(steamId);
 `);
@@ -428,10 +438,10 @@ export function getAllCategories() {
 }
 
 const createOrderStmt = db.prepare(
-    "INSERT INTO orders (userId, productId, quantity, info) VALUES (?, ?, ?, ?)"
+    "INSERT INTO orders (userId, productId, quantity, info, status) VALUES (?, ?, ?, ?, ?)"
 );
 
-export function createOrder(userId, productId, quantity, info) {
+export function createOrder(userId, productId, quantity, info, status = 'inList') {
     if (!userId || typeof userId !== 'number') {
         console.error('Invalid user ID for order:', userId);
         return null;
@@ -442,7 +452,7 @@ export function createOrder(userId, productId, quantity, info) {
     }
     try {
         const infoStr = typeof info === 'string' ? info : JSON.stringify(info);
-        const result = createOrderStmt.run(userId, productId, quantity || 1, infoStr);
+        const result = createOrderStmt.run(userId, productId, quantity || 1, infoStr, status || 'inList');
         return { insertId: result.lastInsertRowid, changes: result.changes };
     } catch (err) {
         console.error('Error creating order:', err);
@@ -450,8 +460,8 @@ export function createOrder(userId, productId, quantity, info) {
     }
 }
 
-const getOrdersByUserIDStmt = db.prepare("SELECT * FROM orders WHERE userId = ? ORDER BY id DESC LIMIT ? OFFSET ?");
-const countOrdersByUserIDStmt = db.prepare("SELECT COUNT(*) as count FROM orders WHERE userId = ?");
+const getOrdersByUserIDStmt = db.prepare("SELECT * FROM orders WHERE userId = ? AND status != 'completed' ORDER BY id DESC LIMIT ? OFFSET ?");
+const countOrdersByUserIDStmt = db.prepare("SELECT COUNT(*) as count FROM orders WHERE userId = ? AND status != 'completed'");
 
 export function getOrdersByUserID(id, page = 1, limit = 20) {
     if (!id || typeof id !== 'number') {
@@ -475,9 +485,9 @@ export function getOrdersByUserID(id, page = 1, limit = 20) {
 }
 
 const getAllOrdersStmt = db.prepare(
-    "SELECT * FROM orders ORDER BY created_at ASC, id ASC LIMIT ? OFFSET ?"
+    "SELECT * FROM orders WHERE status = 'waiting' ORDER BY created_at ASC, id ASC LIMIT ? OFFSET ?"
 );
-const countAllOrdersStmt = db.prepare("SELECT COUNT(*) as count FROM orders");
+const countAllOrdersStmt = db.prepare("SELECT COUNT(*) as count FROM orders WHERE status = 'waiting'");
 
 export function getAllOrders(page = 1, limit = 20) {
     try {
@@ -511,6 +521,28 @@ export function updateOrderByID(id, quantity, info) {
         return { changes: result.changes };
     } catch (err) {
         console.error('Error updating order:', err);
+        throw err;
+    }
+}
+
+const updateOrderStatusStmt = db.prepare(
+    "UPDATE orders SET status = ? WHERE id = ?"
+);
+
+export function updateOrderStatus(id, status) {
+    if (!id || typeof id !== 'number') {
+        console.error('Invalid order ID for status update:', id);
+        return null;
+    }
+    if (!status || typeof status !== 'string') {
+        console.error('Invalid status:', status);
+        return null;
+    }
+    try {
+        const result = updateOrderStatusStmt.run(status, id);
+        return { changes: result.changes };
+    } catch (err) {
+        console.error('Error updating order status:', err);
         throw err;
     }
 }
