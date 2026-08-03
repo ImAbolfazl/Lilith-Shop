@@ -63,11 +63,11 @@ const Card = ({discount, realDiscount, id, image, price, title, category}) => {
 
     let formatedDiscountPrice
     
-    if(price.initial == 0){
+    if(price.initial == 0 && price.subs[Object.keys(price.subs)[0]][0].price){
         formatedPrice = price.subs[Object.keys(price.subs)[0]][0].price
     }
 
-    if(formatedPrice == 0){
+    if(formatedPrice == 0 && price.subs[Object.keys(price.subs)[0]][1].price){
         formatedPrice = price.subs[Object.keys(price.subs)[0]][1].price
     }
     
