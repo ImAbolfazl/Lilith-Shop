@@ -140,7 +140,7 @@ const Search = ({ toggleSearch }) => {
                                         <div className="flex flex-row md:flex-col justify-between md:justify-center items-center md:items-end px-5 pb-5 md:pb-0 gap-3">
                                             {finalDiscount > 0 && (
                                                 <span className="bg-red-500 text-white font-bold px-4 py-2 rounded-xl text-sm md:text-base">
-                                                    %{finalDiscount}-
+                                                    %{finalDiscount}
                                                 </span>
                                             )}
 

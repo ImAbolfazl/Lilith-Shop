@@ -1,28 +1,29 @@
 export const gamesDataSet = [
+    3241660, // R.E.P.O.
     730, // Counter-Strike: Global Offensive
-    // 1245620, // ELDEN RING
-    // 3764200, // Resident Evil Requiem
-    // 883710, // Resident Evil 2
-    // 4080220, // EA SPORTS FC™ 27
-    // 3357650, // PRAGMATA
-    // 319630, // Life is Strange
-    // 1938090, // Call of Duty: Modern Warfare II
-    // 209660, // Call of Duty: Advanced Warfare
-    // 952060, // Resident Evil 3
-    // 238320, // Outlast
-    // 1174180, // Red Dead Redemption 2
-    // 2670630, // Supermarket Simulator
-    // 936790, // Life is Strange: True Colors
-    // 613100, // House Flipper
-    // 500, // Left 4 Dead
-    // 524220, // NieR:Automata
-    // 414700, // Outlast 2
-    // 273300, // The Forest
-    // 1304930, // The Outlast Trials
-    // 1888930, // The Last of Us Part I
-    // 513710, // SCUM
-    // 218620, // PAYDAY 2
-    // 2050650, // Resident Evil 4
+    1245620, // ELDEN RING
+    3764200, // Resident Evil Requiem
+    883710, // Resident Evil 2
+    4080220, // EA SPORTS FC™ 27
+    3357650, // PRAGMATA
+    319630, // Life is Strange
+    1938090, // Call of Duty: Modern Warfare II
+    209660, // Call of Duty: Advanced Warfare
+    952060, // Resident Evil 3
+    238320, // Outlast
+    1174180, // Red Dead Redemption 2
+    2670630, // Supermarket Simulator
+    936790, // Life is Strange: True Colors
+    613100, // House Flipper
+    500, // Left 4 Dead
+    524220, // NieR:Automata
+    414700, // Outlast 2
+    273300, // The Forest
+    1304930, // The Outlast Trials
+    1888930, // The Last of Us Part I
+    513710, // SCUM
+    218620, // PAYDAY 2
+    2050650, // Resident Evil 4
     // 554620, // Life is Strange: Before the Storm
     // 1265920, // Life is Strange Remastered
     // 1265930, // Life is Strange: Before the Storm Remastered

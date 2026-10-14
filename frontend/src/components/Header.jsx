@@ -6,7 +6,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { FaMoon, FaSearch, FaUser } from "react-icons/fa";
 import { MdSunny } from "react-icons/md";
 import { UserContext } from "../App";
-import Search from "./search.jsx";
+import Search from "./Search.jsx";
 import { AnimatePresence, motion } from "framer-motion";
 
 const Header = () => {

@@ -66,7 +66,7 @@ const Footer = () => {
         <div className="border-t border-white/10 mt-10 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-sm text-text-secondary">
 
           <p>
-            © {new Date().getFullYear()} Lilith. All rights reserved.
+            &#169; {new Date().getFullYear()} Lilith. All rights reserved.
           </p>
 
           <p>

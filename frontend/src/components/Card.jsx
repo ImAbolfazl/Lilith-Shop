@@ -73,9 +73,9 @@ const Card = ({discount, realDiscount, id, image, price, title, category}) => {
     
     if (finalDiscount > 0) {
         formatedDiscountPrice = Math.round(Number(price.initial * (1 - finalDiscount / 100))).toLocaleString("fa-IR")
+    }else{
+        formatedPrice = formatedPrice.toLocaleString("fa-IR")
     }
-
-    formatedPrice = formatedPrice.toLocaleString("fa-IR")
 
     return (
         <div className="relative h-60">
